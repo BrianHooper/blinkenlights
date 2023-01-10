@@ -1,0 +1,17 @@
+﻿.clock-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 10px;
+    font-size: 26px;
+}
+
+.clock-title {
+    font-size: 20px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+}
+
+.clock-city {
+
+}

@@ -1,0 +1,30 @@
+﻿@using BlinkenLights.Models.WWII
+@model WWIIDayModel
+
+<link rel="stylesheet" href="~/css/wwii.css" asp-append-version="true" />
+
+<div id="wwii-header">
+    <div id="wwii-title">World War II - On this day, 80 years ago</div>
+    <div id="wwii-date">@Model.Date</div>
+</div>
+
+
+<div id="wwii-body">
+    <ul class="wwii-global">
+        @foreach (var item in Model.GlobalEvents)
+        {
+            <li>@(item)</li>
+        }
+    </ul>
+
+    @foreach (var item in Model.RegionalEvents)
+    {
+        <div class="wwii-regionKey">@item.Key</div>
+        <ul class="wwii-regional">
+            @foreach(var wwiiEvent in item.Value)
+            {
+                <li>@wwiiEvent</li>
+            }
+        </ul>
+    }
+</div>
