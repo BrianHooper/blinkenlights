@@ -33,7 +33,7 @@
                 return null;
             }
 
-            if (string.IsNullOrWhiteSpace(longitudeStr) || !Double.TryParse(latitudeStr, out var longitude))
+            if (string.IsNullOrWhiteSpace(longitudeStr) || !Double.TryParse(longitudeStr, out var longitude))
             {
                 return null;
             }

@@ -41,10 +41,10 @@ namespace BlinkenLights.Controllers
             }
             catch (JsonException)
             {
-                return PartialView("WorldClock", null);
+                return null;
             }
 
-            return PartialView("WorldClock", viewModel);
+            return PartialView("WorldClockModule", viewModel);
         }
 
         public IActionResult GetWWIIModule()
@@ -124,7 +124,7 @@ namespace BlinkenLights.Controllers
                 {
                     continue;
                 }
-                JToken location = null;
+                JToken location;
                 member.TryGetValue("firstName", out var firstName);
                 member.TryGetValue("location", out location);
                 var locationObj = location as JObject;
@@ -151,6 +151,29 @@ namespace BlinkenLights.Controllers
             }
 
             return null;
+        }
+
+        public async Task<string> GetWeatherData()
+        {
+            // Upload with:
+            // dotnet user-secrets set "OpenWeatherMap:ServiceApiKey" "{Secret}"
+
+            //var authorizationToken = this.config["OpenWeatherMap:ServiceApiKey"];
+            //var endpointUrl = $"https://api.openweathermap.org/data/3.0/onecall?lat=47.43&lon=-122.33&appid={authorizationToken}&exclude=minutely,daily&units=imperial";
+            //var client = new RestClient(endpointUrl);
+
+            //var request = new RestRequest();
+            //var response = await client.GetAsync(request);
+            //if (response?.StatusCode != System.Net.HttpStatusCode.OK || string.IsNullOrWhiteSpace(response?.Content))
+            //{
+            //    return null;
+            //}
+
+            //var weatherDataJson = response.Content;
+
+            string path = Path.Combine(this.Environment.WebRootPath, "DataSources", "CachedWeather.json");
+            var weatherDataJson = System.IO.File.ReadAllText(path);
+            return weatherDataJson;
         }
 
 

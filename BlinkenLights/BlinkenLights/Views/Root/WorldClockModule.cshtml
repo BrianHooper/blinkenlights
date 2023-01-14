@@ -1,13 +1,6 @@
 ﻿@using BlinkenLights.Models.WorldClock
 @model WorldClockViewModel
 
-<link rel="stylesheet" href="~/css/worldclock.css" asp-append-version="true" />
-
-<script src="~/lib/moment/moment.js"></script>
-<script src="~/js/WorldClock.js" asp-append-version="true"></script>
-
-<div class="clock-title">World Clock</div>
-
 @foreach(var tzInfo in Model.TimeZoneInfos) 
 {
 	<div class="clock-row">

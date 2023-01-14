@@ -1,18 +1,28 @@
 ﻿@model IndexViewModel
 
-<script src="~/js/ModuleHandler.js" asp-append-version="true"></script>
+@{
+    var partialViewsToRender = new List<string>() { "WWIIRoot", "WorldClockRoot", "WeatherRoot", "life360Root" };
+}
 
-<div id="wwii" style="" class="module"></div>
-<div id="worldclock" class="module"></div>
-<div id="weather" class="module"></div>
-<div id="wikipedia" class="module"></div>
-<div id="life360" class="module"></div>
-
-
-
-<div id="ts-example">
-    <br />
-    <button type="button" class="btn btn-primary btn-md" onclick="TSButton()">
-        Click Me
-    </button>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BlinkenLights</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/BlinkenLights.styles.css" asp-append-version="true" />
+    
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+</head>
+<body>
+    <div class="rootContainer">
+        @foreach (var partialView in partialViewsToRender)
+        {
+            <div class="moduleWrapper">
+            <partial name="@partialView" />
+            </div>
+        }
+    </div> 
+</body>
+</html>

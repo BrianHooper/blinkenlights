@@ -1,0 +1,23 @@
+﻿#life360 {
+    position: relative;
+}
+
+#map {
+    z-index: 0;
+    height: 100%;
+    border-radius: 5px;
+}
+
+#life360-time {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    z-index: 1;
+    background-color: rgba(0, 0, 0, 0.35);
+    border-radius: 3px;
+    padding-inline: 5px;
+}
+
+.leaflet-control-attribution.leaflet-control {
+    display: none !important;
+}
