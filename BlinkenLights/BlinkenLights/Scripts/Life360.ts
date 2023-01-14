@@ -4,7 +4,7 @@ var initialized = false;
 
 var gpsHandler = {
     refresh: function (): void {
-        $.get("/Root/GetLife360Locations", function (data) {
+        $.get("/Modules/GetLife360Locations", function (data) {
             var locations = JSON.parse(data);
             var coordinates = locations.map(function (h) { return [h["Latitude"], h["Longitude"]]; })
 

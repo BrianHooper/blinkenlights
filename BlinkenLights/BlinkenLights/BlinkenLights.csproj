@@ -18,9 +18,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="DataSources\WWII_DayByDay.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+	  <Content Update="DataSources\WWII_DayByDay.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="DataSources\CachedWeather.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
+	  <Content Update="DataSources\TimeZoneInfo.json">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,6 @@
 ﻿var WWIIHandler = {
     refresh: function (): void {
-        $.get("/Root/GetWWIIModule", function (data) {
+        $.get("/Modules/GetWWIIModule", function (data) {
             $("#wwii-root").html(data);
         });
     }

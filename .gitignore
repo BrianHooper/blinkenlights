@@ -5,3 +5,4 @@ obj/
 .bin/
 node_modules
 *.bak
+ts-dist/

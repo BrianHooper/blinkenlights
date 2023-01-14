@@ -6,7 +6,7 @@
     "removeComments": false,
     "sourceMap": true,
     "target": "es2015",
-    "outDir": "wwwroot/js"
+    "outDir": "wwwroot/ts-dist"
   },
   "include": [
     "scripts/**/*"

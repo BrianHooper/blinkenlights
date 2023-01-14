@@ -1,6 +1,6 @@
 ﻿var weatherHandler = {
     refresh: function (): void {
-        $.get("/Root/GetWeatherData", function (data) {
+        $.get("/Modules/GetWeatherData", function (data) {
             var weatherData = JSON.parse(data);
             var hourlyTimestamps = weatherData["hourly"].map(function (h) { return h["dt"]; });
             var hourlyChangeOfRain = weatherData["hourly"].map(function (h) { return h["pop"]; });

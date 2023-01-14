@@ -1,20 +1,26 @@
 ﻿.rootContainer {
     color: #ddd;
     background-color: #EEE;
+    height: 100%;
+}
+html {
+    height: 100%;
+}
+
+body {
+    height: calc(100% - 20px);
 }
 
 html, body, .rootContainer {
     font-family: "Trebuchet MS", Helvetica, sans-serif;
-    width: 100%;
-    height: 100%;
     margin: 0;
 }
 
 .rootContainer {
-    padding: 10px;
     display: grid;
+    padding: 10px;
     grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
+    grid-template-rows: repeat(5, 1fr);
     grid-column-gap: 8px;
     grid-row-gap: 8px;
 }

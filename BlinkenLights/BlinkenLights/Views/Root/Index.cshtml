@@ -1,26 +1,23 @@
 ﻿@model IndexViewModel
 
-@{
-    var partialViewsToRender = new List<string>() { "WWIIRoot", "WorldClockRoot", "WeatherRoot", "life360Root" };
-}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BlinkenLights</title>
+
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/BlinkenLights.styles.css" asp-append-version="true" />
     
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
 </head>
 <body>
-    <div class="rootContainer">
-        @foreach (var partialView in partialViewsToRender)
+    <div class="rootContainer" style="@Model.GridTemplateStyle">
+        @foreach (var modulePair in Model.ModulePlacementPairs)
         {
-            <div class="moduleWrapper">
-            <partial name="@partialView" />
+            <div class="moduleWrapper" name="@modulePair.Key" style="@modulePair.Value">
+                <partial name="@modulePair.Key" />
             </div>
         }
     </div> 

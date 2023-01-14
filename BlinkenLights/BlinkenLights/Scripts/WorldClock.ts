@@ -1,7 +1,7 @@
 ﻿var clockHandler = {
     refresh: function () {
 
-        $.get("/Root/GetWorldClockModule", function (data) {
+        $.get("/Modules/GetWorldClockModule", function (data) {
             $("#worldclock-root").html(data);
             $(".clock-time").each(function (i, divElement) {
                 var offset = parseInt(divElement.getAttribute("offset"));
