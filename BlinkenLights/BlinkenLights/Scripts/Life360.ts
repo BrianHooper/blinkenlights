@@ -6,6 +6,11 @@ var gpsHandler = {
     refresh: function (): void {
         $.get("/Modules/GetLife360Locations", function (data) {
             var locations = JSON.parse(data);
+            if (locations["Error"]) {
+                $("#life360-error").html(locations["Error"]);
+                return;
+            }
+
             var coordinates = locations.map(function (h) { return [h["Latitude"], h["Longitude"]]; })
 
             if (!initialized) {

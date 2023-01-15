@@ -82,25 +82,16 @@ namespace BlinkenLights.Controllers
             }
         }
 
-        public IActionResult GetWeatherModule()
-        {
-            return PartialView("Weather", null);
-        }
-
-        public IActionResult GetLife360Module()
-        {
-            return PartialView("Life360", null);
-        }
-
-        public IActionResult GetWikipediaModule()
-        {
-            return PartialView("Wikipedia", null);
-        }
-
         public async Task<string> GetLife360LocationsAsync()
         {
             var authorizationToken = this.config["Life360:AuthorizationToken"];
             var circleId = this.config["Life360:CircleId"];
+
+            if (string.IsNullOrWhiteSpace(authorizationToken) || string.IsNullOrWhiteSpace(circleId))
+            {
+                return JsonConvert.SerializeObject(new Dictionary<string, string>() { { "Error", "Failed to get authorization tokens"} });
+            }
+
             var endpointUrl = $"https://www.life360.com/v3/circles/{circleId}/members";
             var client = new RestClient(endpointUrl);
 
@@ -109,7 +100,7 @@ namespace BlinkenLights.Controllers
             var response = await client.GetAsync(request);
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
             {
-                return null;
+                return JsonConvert.SerializeObject(new Dictionary<string, string>() { { "Error", "API response is invalid" } });
             }
 
             var models = new List<Life360Model>();
@@ -147,7 +138,7 @@ namespace BlinkenLights.Controllers
                 return serialized;
             }
 
-            return null;
+            return JsonConvert.SerializeObject(new Dictionary<string, string>() { { "Error", "Failed to build valid response" } });
         }
 
         public async Task<string> GetWeatherData()
@@ -169,6 +160,12 @@ namespace BlinkenLights.Controllers
             //var weatherDataJson = response.Content;
 
             string path = Path.Combine(this.Environment.WebRootPath, "DataSources", "CachedWeather.json");
+
+            if (!string.IsNullOrWhiteSpace(path))
+            {
+                return JsonConvert.SerializeObject(new Dictionary<string, string>() { { "Error", "API response is invalid" } });
+            }
+
             var weatherDataJson = System.IO.File.ReadAllText(path);
             return weatherDataJson;
         }
