@@ -14,20 +14,20 @@ namespace BlinkenLights.Controllers
 {
     public class ModulesController : Controller
     {
-        private readonly IWebHostEnvironment Environment;
+        private readonly IWebHostEnvironment WebHostEnvironment;
         private readonly ILogger<RootController> _logger;
         private readonly IConfiguration config;
 
         public ModulesController(ILogger<RootController> logger, IWebHostEnvironment environment, IConfiguration config)
         {
             _logger = logger;
-            Environment = environment;
+            WebHostEnvironment = environment;
             this.config = config;
         }
 
         public IActionResult GetWorldClockModule()
         {
-            string path = Path.Combine(this.Environment.WebRootPath, "DataSources", "TimeZoneInfo.json");
+            string path = Path.Combine(this.WebHostEnvironment.WebRootPath, "DataSources", "TimeZoneInfo.json");
             var stringData = System.IO.File.ReadAllText(path);
             WorldClockViewModel viewModel = null;
             try
@@ -46,7 +46,7 @@ namespace BlinkenLights.Controllers
         {
             string partialViewName = "WWIIModule";
 
-            string path = Path.Combine(this.Environment.WebRootPath, "DataSources", "WWII_DayByDay.json");
+            string path = Path.Combine(this.WebHostEnvironment.WebRootPath, "DataSources", "WWII_DayByDay.json");
             var stringData = System.IO.File.ReadAllText(path);
             WWIIJsonModel wWIIViewModel = null;
             try
@@ -84,10 +84,8 @@ namespace BlinkenLights.Controllers
 
         public async Task<string> GetLife360LocationsAsync()
         {
-            var authorizationToken = this.config["Life360:AuthorizationToken"];
-            var circleId = this.config["Life360:CircleId"];
 
-            if (string.IsNullOrWhiteSpace(authorizationToken) || string.IsNullOrWhiteSpace(circleId))
+            if (!TryGetSecret("Life360:AuthorizationToken", out var authorizationToken) || !TryGetSecret("Life360:CircleId", out var circleId))
             {
                 return JsonConvert.SerializeObject(new Dictionary<string, string>() { { "Error", "Failed to get authorization tokens"} });
             }
@@ -146,7 +144,11 @@ namespace BlinkenLights.Controllers
             // Upload with:
             // dotnet user-secrets set "OpenWeatherMap:ServiceApiKey" "{Secret}"
 
-            //var authorizationToken = this.config["OpenWeatherMap:ServiceApiKey"];
+            if (!TryGetSecret("OpenWeatherMap:ServiceApiKey", out var authorizationToken))
+            {
+                return JsonConvert.SerializeObject(new Dictionary<string, string>() { { "Error", "Failed to get API secret" } });
+            }
+
             //var endpointUrl = $"https://api.openweathermap.org/data/3.0/onecall?lat=47.43&lon=-122.33&appid={authorizationToken}&exclude=minutely,daily&units=imperial";
             //var client = new RestClient(endpointUrl);
 
@@ -159,15 +161,32 @@ namespace BlinkenLights.Controllers
 
             //var weatherDataJson = response.Content;
 
-            string path = Path.Combine(this.Environment.WebRootPath, "DataSources", "CachedWeather.json");
+            string path = Path.Combine(this.WebHostEnvironment.WebRootPath, "DataSources", "CachedWeather.json");
 
-            if (!string.IsNullOrWhiteSpace(path))
+            if (string.IsNullOrWhiteSpace(path))
             {
                 return JsonConvert.SerializeObject(new Dictionary<string, string>() { { "Error", "API response is invalid" } });
             }
 
             var weatherDataJson = System.IO.File.ReadAllText(path);
             return weatherDataJson;
+        }
+
+        private bool TryGetSecret(string key, out string secret)
+        {
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                secret = null;
+                return false;
+            }
+
+            secret = this.config[key];
+            if (string.IsNullOrWhiteSpace(secret))
+            {
+                secret = Environment.GetEnvironmentVariable(key, EnvironmentVariableTarget.Machine);
+            }
+
+            return !string.IsNullOrWhiteSpace(secret);
         }
     }
 }
