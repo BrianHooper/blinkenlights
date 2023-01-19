@@ -39,7 +39,21 @@
             }
 
             var offset = DateTimeOffset.Now.Offset;
-            var timeStr = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddSeconds(epoch).Add(offset).ToString("MM/dd/yyyy h:mm tt");
+            var lastSignalDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddSeconds(epoch).Add(offset);
+            var diffMinutes = DateTime.Now.Subtract(lastSignalDateTime).Minutes;
+            var diffMinutesStr = diffMinutes > 0 ? $"Diff: -{diffMinutes}" : String.Empty;
+
+            var lastRefreshTimeStr = DateTime.Now.ToString("h:mm tt");
+            var lastSignalTimeStr = lastSignalDateTime.ToString("h:mm tt");
+
+            var fields = new string[]
+            {
+                $"Signal: {lastSignalTimeStr}",
+                $"Refresh: {lastRefreshTimeStr}",
+                diffMinutes > 0 ? $"Diff: -{diffMinutes}" : String.Empty
+            }.Where(s => !string.IsNullOrWhiteSpace(s));
+
+            var timeStr = String.Join(", ", fields);
             return new Life360Model(name, timeStr, latitude, longitude);
         }
     }

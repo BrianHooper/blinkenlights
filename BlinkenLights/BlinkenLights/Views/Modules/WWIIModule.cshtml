@@ -8,21 +8,27 @@
 
 
 <div id="wwii-body">
-    <ul class="wwii-global">
-        @foreach (var item in Model.GlobalEvents)
-        {
-            <li>@(item)</li>
-        }
-    </ul>
-
-    @foreach (var item in Model.RegionalEvents)
+    @if (Model?.GlobalEvents?.Any() == true)
     {
-        <div class="wwii-regionKey">@item.Key</div>
-        <ul class="wwii-regional">
-            @foreach(var wwiiEvent in item.Value)
-            {
-                <li>@wwiiEvent</li>
-            }
+        <ul class="wwii-global">
+                @foreach (var item in Model.GlobalEvents)
+                {
+                    <li>@(item)</li>
+                }
         </ul>
+    }
+
+    @if (Model?.RegionalEvents?.Any() == true)
+    {
+        @foreach (var item in Model.RegionalEvents)
+        {
+            <div class="wwii-regionKey">@item.Key</div>
+            <ul class="wwii-regional">
+                @foreach (var wwiiEvent in item.Value)
+                {
+                    <li>@wwiiEvent</li>
+                }
+            </ul>
+        }
     }
 </div>

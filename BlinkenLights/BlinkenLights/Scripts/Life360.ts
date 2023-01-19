@@ -14,7 +14,7 @@ var gpsHandler = {
             var coordinates = locations.map(function (h) { return [h["Latitude"], h["Longitude"]]; })
 
             if (!initialized) {
-                mapElement = L.map("map", { attributionControl: false });
+                mapElement = L.map("life360-map", { attributionControl: false });
                 layerGroup = L.layerGroup().addTo(mapElement);
                 initialized = true;
             }
@@ -38,3 +38,7 @@ var gpsHandler = {
 
 gpsHandler.refresh();
 setInterval(gpsHandler.refresh, 120 * 1000);
+
+$("#life360-refresh").bind("click", function () {
+    alert("User clicked on 'foo.'");
+});

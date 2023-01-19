@@ -3,7 +3,7 @@
     position: relative;
 }
 
-#map {
+#life360-map {
     z-index: 0;
     height: 100%;
     border-radius: 5px;
@@ -14,11 +14,28 @@
     bottom: 10px;
     left: 10px;
     z-index: 1;
-    background-color: rgba(0, 0, 0, 0.35);
+    background-color: rgba(0, 0, 0, 0.60);
     border-radius: 3px;
     padding-inline: 5px;
 }
 
-.leaflet-control-attribution.leaflet-control {
-    display: none !important;
+#life360-refresh {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background-color: rgba(0, 0, 0, 0.60);
+    width: 30px;
+    height: 30px;
+    border-radius: 5px;
+    font-size: 20px;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-wrap: wrap;
+    cursor: pointer;
+    line-height: 30px;
+}
+
+#life360-refresh:hover {
+    background-color: rgba(255, 0, 0, 0.60);
 }
