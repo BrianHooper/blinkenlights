@@ -17,12 +17,14 @@ namespace BlinkenLights.Controllers
         private readonly IWebHostEnvironment WebHostEnvironment;
         private readonly ILogger<RootController> _logger;
         private readonly IConfiguration config;
+        private readonly ApiCache ApiCache;
 
         public ModulesController(ILogger<RootController> logger, IWebHostEnvironment environment, IConfiguration config)
         {
             _logger = logger;
             WebHostEnvironment = environment;
             this.config = config;
+            this.ApiCache = new ApiCache(Path.Combine(this.WebHostEnvironment.WebRootPath, "DataSources", "ApiCache.json"));
         }
 
         public IActionResult GetWorldClockModule()
@@ -84,25 +86,33 @@ namespace BlinkenLights.Controllers
 
         public async Task<string> GetLife360LocationsAsync()
         {
+            var apiCacheKey = "Life360";
+            string apiResponse;
+            if (!this.ApiCache.TryGetCachedValue(apiCacheKey, 1, out apiResponse))
+            { 
+                if (!TryGetSecret("Life360:AuthorizationToken", out var authorizationToken) || !TryGetSecret("Life360:CircleId", out var circleId))
+                {
+                    return JsonConvert.SerializeObject(new Dictionary<string, string>() { { "Error", "Failed to get authorization tokens" } });
+                }
 
-            if (!TryGetSecret("Life360:AuthorizationToken", out var authorizationToken) || !TryGetSecret("Life360:CircleId", out var circleId))
-            {
-                return JsonConvert.SerializeObject(new Dictionary<string, string>() { { "Error", "Failed to get authorization tokens"} });
-            }
+                var endpointUrl = $"https://www.life360.com/v3/circles/{circleId}/members";
+                var client = new RestClient(endpointUrl);
 
-            var endpointUrl = $"https://www.life360.com/v3/circles/{circleId}/members";
-            var client = new RestClient(endpointUrl);
+                var request = new RestRequest();
+                request.AddHeader("Authorization", $"Bearer {authorizationToken}");
+                var response = await client.GetAsync(request);
 
-            var request = new RestRequest();
-            request.AddHeader("Authorization", $"Bearer {authorizationToken}");
-            var response = await client.GetAsync(request);
-            if (response.StatusCode != System.Net.HttpStatusCode.OK)
-            {
-                return JsonConvert.SerializeObject(new Dictionary<string, string>() { { "Error", "API response is invalid" } });
+                if (response.StatusCode != System.Net.HttpStatusCode.OK || string.IsNullOrEmpty(response.Content))
+                {
+                    return JsonConvert.SerializeObject(new Dictionary<string, string>() { { "Error", "API response is invalid" } });
+                }
+
+                apiResponse = response.Content;
+                this.ApiCache.TryUpdateCache(apiCacheKey, apiResponse);
             }
 
             var models = new List<Life360Model>();
-            JObject content = JsonConvert.DeserializeObject<JObject>(response.Content);
+            JObject content = JsonConvert.DeserializeObject<JObject>(apiResponse);
             content.TryGetValue("members", out var members);
             foreach (JObject member in members)
             {
@@ -141,39 +151,54 @@ namespace BlinkenLights.Controllers
 
         public async Task<string> GetWeatherData()
         {
-            // Upload with:
-            // dotnet user-secrets set "OpenWeatherMap:ServiceApiKey" "{Secret}"
-
-            if (!TryGetSecret("OpenWeatherMap:ServiceApiKey", out var authorizationToken))
+            var apiCacheKey = "OpenWeatherMap";
+            string apiResponse;
+            if (!this.ApiCache.TryGetCachedValue(apiCacheKey, -1, out apiResponse))
             {
-                return JsonConvert.SerializeObject(new Dictionary<string, string>() { { "Error", "Failed to get API secret" } });
+                if (!TryGetSecret("OpenWeatherMap:ServiceApiKey", out var authorizationToken))
+                {
+                    return JsonConvert.SerializeObject(new Dictionary<string, string>() { { "Error", "Failed to get API secret" } });
+                }
+
+                var endpointUrl = $"https://api.openweathermap.org/data/3.0/onecall?lat=47.43&lon=-122.33&appid={authorizationToken}&exclude=minutely,daily&units=imperial";
+                var client = new RestClient(endpointUrl);
+
+                var request = new RestRequest();
+                var response = await client.GetAsync(request);
+                if (response?.StatusCode != System.Net.HttpStatusCode.OK || string.IsNullOrWhiteSpace(response?.Content))
+                {
+                    return JsonConvert.SerializeObject(new Dictionary<string, string>() { { "Error", "API response is invalid" } });
+                }
+
+                apiResponse = response.Content;
+                this.ApiCache.TryUpdateCache(apiCacheKey, apiResponse);
             }
 
-            //var endpointUrl = $"https://api.openweathermap.org/data/3.0/onecall?lat=47.43&lon=-122.33&appid={authorizationToken}&exclude=minutely,daily&units=imperial";
-            //var client = new RestClient(endpointUrl);
+            var weatherData = JsonConvert.DeserializeObject<JObject>(apiResponse);
 
-            //var request = new RestRequest();
-            //var response = await client.GetAsync(request);
-            //if (response?.StatusCode != System.Net.HttpStatusCode.OK || string.IsNullOrWhiteSpace(response?.Content))
-            //{
-            //    return null;
-            //}
 
-            //var weatherDataJson = response.Content;
 
-            string path = Path.Combine(this.WebHostEnvironment.WebRootPath, "DataSources", "CachedWeather.json");
-
-            if (string.IsNullOrWhiteSpace(path))
+            var hourly = weatherData.GetValue("hourly");
+            if (hourly != null)
             {
-                return JsonConvert.SerializeObject(new Dictionary<string, string>() { { "Error", "API response is invalid" } });
+                foreach (JObject frame in hourly)
+                {
+                    var dt = frame?.GetValue("dt")?.Value<string>();
+                    if (!string.IsNullOrWhiteSpace(dt) && long.TryParse(dt, out var epoch))
+                    {
+                        var frameDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(epoch);//.Add(DateTimeOffset.Now.Offset);
+                        var frameDateStr = frameDateTime.Date.ToShortDateString();
+                    }
+                    continue;
+                }
             }
-
-            var weatherDataJson = System.IO.File.ReadAllText(path);
-            return weatherDataJson;
+            return apiResponse;
         }
 
         private bool TryGetSecret(string key, out string secret)
         {
+            // Upload with:
+            // dotnet user-secrets set "OpenWeatherMap:ServiceApiKey" "{Secret}"
             if (string.IsNullOrWhiteSpace(key))
             {
                 secret = null;
