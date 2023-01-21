@@ -1,4 +1,6 @@
-﻿function drawWeatherAxis(data, divElement, chartYMin, chartYMax) {
+﻿var moduleHeight = 100;
+
+function drawWeatherAxis(data, divElement, chartYMin, chartYMax) {
     var dataset = data.map(function (d) {
         var dateTimeItem = new Date(0);
         dateTimeItem.setUTCSeconds(d["datetimeEpoch"]);
@@ -11,7 +13,7 @@
 
     var margin = { top: 5, right: 5, bottom: 5, left: 30 },
         width = 0,
-        height = 200;
+        height = moduleHeight;
 
     var svg = d3.select("#" + divElement)
         .append("svg")
@@ -54,11 +56,9 @@ function drawTemperatureGraph(data, divElement, chartYMin, chartYMax) {
         }
     });
 
-    console.log(dataset);
-
     var margin = { top: 5, right:5, bottom: 5, left: 5 },
         width = 70,
-        height = 200;
+        height = moduleHeight;
 
     var svg = d3.select("#" + divElement)
         .append("svg")
@@ -155,7 +155,6 @@ var weatherHandler = {
 
             var parent = $("#weather-temp");
             parent.html("");
-            console.log(weatherData);
 
             var days = weatherData["days"].slice(0, 5);
             var minTemperature = Math.min(...days.map(d => Math.min(...d["hours"].map(h => h["temp"]))));
@@ -206,7 +205,6 @@ var weatherHandler = {
                 "id": "weather-day-current",
                 "class": "weather-day-wrapper",
             }).appendTo(parent);
-            xAxisDivRight.height(210);
 
             var chanceRain = parseInt(weatherData["currentConditions"]["precipprob"]) + "%";
             addCurrentBlock(xAxisDivRight, "☂", chanceRain);

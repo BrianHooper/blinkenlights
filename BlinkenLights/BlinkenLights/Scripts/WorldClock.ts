@@ -9,7 +9,7 @@
                 d.setTime(d.getTime() + (offset * 1000));
                 var dateStr = d.toLocaleString("en-US", {
                     timeZone: "Etc/GMT",
-                    hour: "2-digit",
+                    hour: "numeric",
                     minute: "2-digit"
                 });
                 divElement.innerHTML = dateStr;

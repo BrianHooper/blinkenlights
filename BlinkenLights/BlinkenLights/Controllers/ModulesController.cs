@@ -6,24 +6,20 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
-using RestSharp.Authenticators;
-using System.Configuration;
-using System.Diagnostics;
 
 /**
  * Modules:
- *  WWII OTD
- *  Weather
- *  World Clock
- *  Countdown Timers
- *  Life360
+ *  DONE - WWII OTD 
+ *  DONE - Weather
+ *  DONE - World Clock
+ *  DONE - Countdown Timers
+ *  DONE - Life360
  *  Google Calendar upcoming
  *  Upcoming rocket launches
- *  Meh.com item
+ *  DONE - Meh.com item
  *  Wikipedia front page
  *  NYT front page
  *  Stock/Currency graphs
- *  
  */
 
 namespace BlinkenLights.Controllers
@@ -169,7 +165,7 @@ namespace BlinkenLights.Controllers
         {
             var apiCacheKey = "VisualCrossing";
             string apiResponse;
-            if (!this.ApiCache.TryGetCachedValue(apiCacheKey, 15, out apiResponse))
+            if (!this.ApiCache.TryGetCachedValue(apiCacheKey, 120, out apiResponse))
             {
                 if (!TryGetSecret("VisualCrossing:ServiceApiKey", out var authorizationToken))
                 {
@@ -189,6 +185,63 @@ namespace BlinkenLights.Controllers
                 this.ApiCache.TryUpdateCache(apiCacheKey, apiResponse);
             }
             return apiResponse;
+        }
+
+        public async Task<string> GetMehData()
+        {
+            var apiCacheKey = "Meh";
+            string apiResponse;
+            if (!this.ApiCache.TryGetCachedValue(apiCacheKey, 120, out apiResponse))
+            {
+                if (!TryGetSecret("Meh:ServiceApiKey", out var authorizationToken))
+                {
+                    return JsonConvert.SerializeObject(new Dictionary<string, string>() { { "Error", "Failed to get API secret" } });
+                }
+                var endpointUrl = $"https://meh.com/api/1/current.json?apikey={authorizationToken}";
+                var client = new RestClient(endpointUrl);
+
+                var request = new RestRequest();
+                var response = await client.GetAsync(request);
+                if (response?.StatusCode != System.Net.HttpStatusCode.OK || string.IsNullOrWhiteSpace(response?.Content))
+                {
+                    return JsonConvert.SerializeObject(new Dictionary<string, string>() { { "Error", "API response is invalid" } });
+                }
+
+                apiResponse = response.Content;
+                this.ApiCache.TryUpdateCache(apiCacheKey, apiResponse);
+            }
+            return apiResponse;
+        }
+        
+        public async Task<string> GetWikipediaData()
+        {
+            var apiCacheKey = "Wikipedia";
+            string apiResponse;
+            if (!this.ApiCache.TryGetCachedValue(apiCacheKey, 120, out apiResponse))
+            {
+                apiResponse = await CallApi($"http://127.0.0.1:5000/wikipedia");
+                if (string.IsNullOrWhiteSpace(apiResponse))
+                {
+                    return JsonConvert.SerializeObject(new Dictionary<string, string>() { { "Error", "API response is invalid" } });
+                }
+
+                this.ApiCache.TryUpdateCache(apiCacheKey, apiResponse);
+            }
+            return apiResponse;
+        }
+
+        private async Task<string> CallApi(string endpointUrl)
+        {
+            var client = new RestClient(endpointUrl);
+
+            var request = new RestRequest();
+            var response = await client.GetAsync(request);
+            if (response?.StatusCode != System.Net.HttpStatusCode.OK || string.IsNullOrWhiteSpace(response?.Content))
+            {
+                return null;
+            }
+
+            return response.Content;
         }
 
         private bool TryGetSecret(string key, out string secret)
