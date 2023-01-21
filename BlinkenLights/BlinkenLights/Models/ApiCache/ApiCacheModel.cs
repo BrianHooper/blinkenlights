@@ -1,4 +1,4 @@
-﻿namespace BlinkenLights.Models
+﻿namespace BlinkenLights.Models.ApiCache
 {
     public class ApiCacheModel
     {

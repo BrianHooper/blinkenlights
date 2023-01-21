@@ -38,7 +38,6 @@
                 // Column 2
                 new ModuleViewModel(name: "WeatherRoot", row: 1, col: 2, colSpan: 2),
                 new ModuleViewModel(name: "WorldClockRoot", row: 2, col: 2),
-                new ModuleViewModel(name: "CountdownRoot", row: 3, col: 2),
 
                 // Column 3
                 new ModuleViewModel(name: "MehRoot", row: 2, col: 3),

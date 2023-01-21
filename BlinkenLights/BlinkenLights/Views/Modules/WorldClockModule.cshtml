@@ -1,10 +1,29 @@
-﻿@using BlinkenLights.Models.WorldClock
+﻿@using BlinkenLights.Modules.WorldClock
 @model WorldClockViewModel
 
-@foreach(var tzInfo in Model.TimeZoneInfos) 
+@if (Model.TimeZoneInfos?.Any() == true) 
 {
-	<div class="clock-row">
-		<div class="clock-city">@tzInfo.Key</div>
-		<div class="clock-time" offset="@tzInfo.Value"></div>
-	</div>
+	@foreach(var tzInfo in Model.TimeZoneInfos) 
+	{
+		<div class="time-worldclock-row">
+			<div class="time-worldclock-city">@tzInfo.Key</div>
+			<div class="time-worldclock-time" offset="@tzInfo.Value"></div>
+		</div>
+	}
+}
+
+@if (Model.TimeZoneInfos?.Any() == true && Model.CountdownInfos?.Any() == true)
+{
+	<div id="worldclock-divider"></div>
+}
+
+@if (Model.CountdownInfos?.Any() == true)
+{
+	@foreach(var countdownInfo in Model.CountdownInfos) 
+	{
+		<div class="time-countdown-row">
+			<div class="time-countdown-name">@countdownInfo.Value</div>
+			<div class="time-countdown-remaining" endDate="@countdownInfo.Key"></div>
+		</div>
+	}
 }

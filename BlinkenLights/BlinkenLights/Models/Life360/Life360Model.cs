@@ -1,4 +1,4 @@
-﻿namespace BlinkenLights.Models
+﻿namespace BlinkenLights.Models.Life360
 {
     public class Life360Model
     {
@@ -8,12 +8,12 @@
         public double Longitude { get; private set; }
 
 
-        private Life360Model(string name, string timestamp, double latitude, double longitude) 
+        private Life360Model(string name, string timestamp, double latitude, double longitude)
         {
-            this.Name = name;
-            this.Longitude = longitude;
-            this.Latitude = latitude;
-            this.TimeStr = timestamp;
+            Name = name;
+            Longitude = longitude;
+            Latitude = latitude;
+            TimeStr = timestamp;
         }
 
         public static Life360Model Parse(string name, string timestamp, string latitudeStr, string longitudeStr)
@@ -23,17 +23,17 @@
                 return null;
             }
 
-            if (string.IsNullOrWhiteSpace(timestamp) || !Double.TryParse(timestamp, out var epoch))
+            if (string.IsNullOrWhiteSpace(timestamp) || !double.TryParse(timestamp, out var epoch))
             {
                 return null;
             }
 
-            if (string.IsNullOrWhiteSpace(latitudeStr) || !Double.TryParse(latitudeStr, out var latitude))
+            if (string.IsNullOrWhiteSpace(latitudeStr) || !double.TryParse(latitudeStr, out var latitude))
             {
                 return null;
             }
 
-            if (string.IsNullOrWhiteSpace(longitudeStr) || !Double.TryParse(longitudeStr, out var longitude))
+            if (string.IsNullOrWhiteSpace(longitudeStr) || !double.TryParse(longitudeStr, out var longitude))
             {
                 return null;
             }
@@ -41,7 +41,7 @@
             var offset = DateTimeOffset.Now.Offset;
             var lastSignalDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddSeconds(epoch).Add(offset);
             var diffMinutes = DateTime.Now.Subtract(lastSignalDateTime).Minutes;
-            var diffMinutesStr = diffMinutes > 0 ? $"Diff: -{diffMinutes}" : String.Empty;
+            var diffMinutesStr = diffMinutes > 0 ? $"Diff: -{diffMinutes}" : string.Empty;
 
             var lastRefreshTimeStr = DateTime.Now.ToString("h:mm tt");
             var lastSignalTimeStr = lastSignalDateTime.ToString("h:mm tt");
@@ -50,10 +50,10 @@
             {
                 $"Signal: {lastSignalTimeStr}",
                 $"Refresh: {lastRefreshTimeStr}",
-                diffMinutes > 0 ? $"Diff: -{diffMinutes}" : String.Empty
+                diffMinutes > 0 ? $"Diff: -{diffMinutes}" : string.Empty
             }.Where(s => !string.IsNullOrWhiteSpace(s));
 
-            var timeStr = String.Join(", ", fields);
+            var timeStr = string.Join(", ", fields);
             return new Life360Model(name, timeStr, latitude, longitude);
         }
     }
