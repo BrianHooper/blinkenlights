@@ -10,6 +10,22 @@ using RestSharp.Authenticators;
 using System.Configuration;
 using System.Diagnostics;
 
+/**
+ * Modules:
+ *  WWII OTD
+ *  Weather
+ *  World Clock
+ *  Countdown Timers
+ *  Life360
+ *  Google Calendar upcoming
+ *  Upcoming rocket launches
+ *  Meh.com item
+ *  Wikipedia front page
+ *  NYT front page
+ *  Stock/Currency graphs
+ *  
+ */
+
 namespace BlinkenLights.Controllers
 {
     public class ModulesController : Controller
@@ -151,16 +167,15 @@ namespace BlinkenLights.Controllers
 
         public async Task<string> GetWeatherData()
         {
-            var apiCacheKey = "OpenWeatherMap";
+            var apiCacheKey = "VisualCrossing";
             string apiResponse;
-            if (!this.ApiCache.TryGetCachedValue(apiCacheKey, -1, out apiResponse))
+            if (!this.ApiCache.TryGetCachedValue(apiCacheKey, 15, out apiResponse))
             {
-                if (!TryGetSecret("OpenWeatherMap:ServiceApiKey", out var authorizationToken))
+                if (!TryGetSecret("VisualCrossing:ServiceApiKey", out var authorizationToken))
                 {
                     return JsonConvert.SerializeObject(new Dictionary<string, string>() { { "Error", "Failed to get API secret" } });
                 }
-
-                var endpointUrl = $"https://api.openweathermap.org/data/3.0/onecall?lat=47.43&lon=-122.33&appid={authorizationToken}&exclude=minutely,daily&units=imperial";
+                var endpointUrl = $"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/98148?unitGroup=us&key={authorizationToken}&contentType=json";
                 var client = new RestClient(endpointUrl);
 
                 var request = new RestRequest();
@@ -172,25 +187,6 @@ namespace BlinkenLights.Controllers
 
                 apiResponse = response.Content;
                 this.ApiCache.TryUpdateCache(apiCacheKey, apiResponse);
-            }
-
-            var weatherData = JsonConvert.DeserializeObject<JObject>(apiResponse);
-
-
-
-            var hourly = weatherData.GetValue("hourly");
-            if (hourly != null)
-            {
-                foreach (JObject frame in hourly)
-                {
-                    var dt = frame?.GetValue("dt")?.Value<string>();
-                    if (!string.IsNullOrWhiteSpace(dt) && long.TryParse(dt, out var epoch))
-                    {
-                        var frameDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0).AddSeconds(epoch);//.Add(DateTimeOffset.Now.Offset);
-                        var frameDateStr = frameDateTime.Date.ToShortDateString();
-                    }
-                    continue;
-                }
             }
             return apiResponse;
         }

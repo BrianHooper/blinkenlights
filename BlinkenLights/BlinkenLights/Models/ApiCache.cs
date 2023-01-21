@@ -44,7 +44,8 @@ namespace BlinkenLights.Models
                 return false;
             }
 
-            if ((cacheTimeoutMinutes > 0 && DateTime.Now.Subtract(apiCacheModule.LastUpdateTime).Minutes >= cacheTimeoutMinutes) || string.IsNullOrWhiteSpace(apiCacheModule.ApiData))
+            var cacheStalenessMinutes = DateTime.Now.Subtract(apiCacheModule.LastUpdateTime).TotalMinutes;
+            if ((cacheTimeoutMinutes > 0 && cacheStalenessMinutes >= cacheTimeoutMinutes) || string.IsNullOrWhiteSpace(apiCacheModule.ApiData))
             {
                 cachedValue = null;
                 this.Mutex.ReleaseMutex();

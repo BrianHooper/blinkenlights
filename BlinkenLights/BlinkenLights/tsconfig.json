@@ -8,7 +8,5 @@
     "target": "es2015",
     "outDir": "wwwroot/ts-dist"
   },
-  "include": [
-    "scripts/**/*"
-  ]
+  "include": ["scripts/**/*"]
 }
