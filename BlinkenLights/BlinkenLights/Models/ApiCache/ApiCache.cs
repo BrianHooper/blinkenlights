@@ -1,8 +1,43 @@
 ﻿using Newtonsoft.Json;
 using RestSharp;
+using System.ComponentModel;
 
 namespace BlinkenLights.Models.ApiCache
 {
+    public enum ApiSecret
+    {
+        Default = 0,
+        [Description("Life360:AuthorizationToken")]
+        Life360AuthorizationToken = 1,
+        [Description("Life360:CircleId")]
+        Life360CircleId = 2,
+        [Description("VisualCrossing:ServiceApiKey")]
+        VisualCrossingServiceApiKey = 3,
+        [Description("Meh:ServiceApiKey")]
+        MehServiceApiKey = 4,
+        [Description("NewYorkTimes:ServiceApiKey")]
+        NewYorkTimesServiceApiKey = 5,
+    }
+
+    static class ApiSecretExtensions
+    {
+        public static string ToDescriptionString(this ApiSecret val)
+        {
+            var apiSecretType = val.GetType();
+            var vts = val.ToString();
+            var field = apiSecretType.GetField(vts);
+            var tpof = typeof(DescriptionAttribute);
+            var customs = field.GetCustomAttributes(tpof, false);
+            var descriptionAttributes = customs as DescriptionAttribute[];
+
+            DescriptionAttribute[] attributes = (DescriptionAttribute[])val
+               .GetType()
+               .GetField(val.ToString())
+               .GetCustomAttributes(typeof(DescriptionAttribute), false);
+            return attributes.Length > 0 ? attributes[0].Description : string.Empty;
+        }
+    }
+
     public class ApiCache
     {
         private string CachePath { get; init; }
@@ -13,6 +48,26 @@ namespace BlinkenLights.Models.ApiCache
         {
             CachePath = cachePath;
             Mutex = new Mutex();
+        }
+
+        public static bool TryGetSecret(IConfiguration config, ApiSecret secretKey, out string secret)
+        {
+            // Upload with:
+            // dotnet user-secrets set "OpenWeatherMap:ServiceApiKey" "{Secret}"
+            var key = secretKey.ToDescriptionString();
+            if (secretKey == ApiSecret.Default || string.IsNullOrWhiteSpace(key))
+            {
+                secret = null;
+                return false;
+            }
+
+            secret = config[key];
+            if (string.IsNullOrWhiteSpace(secret))
+            {
+                secret = Environment.GetEnvironmentVariable(key, EnvironmentVariableTarget.Machine);
+            }
+
+            return !string.IsNullOrWhiteSpace(secret);
         }
 
         public bool TryGetCachedValue(string cacheKey, int cacheTimeoutMinutes, out string cachedValue)

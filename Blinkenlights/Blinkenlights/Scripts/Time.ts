@@ -1,6 +1,6 @@
 ﻿var clockHandler = {
     refresh: function () {
-        $.get("/Modules/GetWorldClockModule", function (data) {
+        $.get("/Modules/GetTimeModule", function (data) {
             $("#time-root").html(data);
 
             $(".time-worldclock-time").each(function () {

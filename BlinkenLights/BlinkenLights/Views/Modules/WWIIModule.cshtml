@@ -20,13 +20,20 @@
 
     @if (Model?.RegionalEvents?.Any() == true)
     {
-        @foreach (var item in Model.RegionalEvents)
+        @foreach (var item in Model.RegionalEvents)//(int i = 0; i < Model.RegionalEvents.Count(); i++)
         {
-            <div class="wwii-regionKey">@item.Key</div>
             <ul class="wwii-regional">
-                @foreach (var wwiiEvent in item.Value)
+                @for(int i = 0; i < item.Value.Count(); i++)
                 {
-                    <li>@wwiiEvent</li>
+                    var wwiiEvent = item.Value[i];
+                    if (i == 0)
+                    {
+                        <li><span class="wwii-regionKey">@item.Key</span> - @wwiiEvent</li>
+                    }
+                    else
+                    {
+                        <li>@wwiiEvent</li>
+                    }
                 }
             </ul>
         }

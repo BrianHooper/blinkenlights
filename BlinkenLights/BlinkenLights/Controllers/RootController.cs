@@ -1,7 +1,6 @@
 ﻿using BlinkenLights.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-
 namespace BlinkenLights.Controllers
 {
     public class RootController : Controller
@@ -20,6 +19,11 @@ namespace BlinkenLights.Controllers
         public IActionResult Index()
         {
             return View(new IndexViewModel());
+        }
+
+        public IActionResult Privacy()
+        {
+            return View();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

@@ -1,13 +1,12 @@
 
 import uvicorn
-from fastapi import FastAPI
-from Engine import Engine
+from fastapi import FastAPI, Request
+from Engine import Engine, ApiError
 import json
 from datetime import date
+from GoogleCalendarApi import GetCalendar
 
 app = FastAPI()
-
-
 
 @app.get("/wikipedia")
 def wikipedia():
@@ -30,9 +29,15 @@ def wikipedia():
     }
     return data
 
-@app.get("/other")
-def other():
-  return {"other!"}
-
+@app.get("/googlecalendar")
+async def GoogleCalendar(request: Request):
+    userAccount = request.headers.get("X-user-account")
+    if userAccount is None or len(userAccount) == 0:
+        return ApiError("Missing header: X-user-account")
+    secret = request.headers.get("X-user-secret")
+    if secret is None or len(secret) == 0:
+        return ApiError("Missing header: X-user-secret")
+    return GetCalendar(userAccount, secret)
+    
 if __name__ == "__main__":
     uvicorn.run("PageParseApi:app", host="127.0.0.1", port=5000, log_level="info")

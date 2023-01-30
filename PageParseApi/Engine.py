@@ -4,7 +4,10 @@ from bs4 import BeautifulSoup
 import time
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+import json
 
+def ApiError(msg):
+    return { "Error": f"Error: {msg}" }
 
 class Engine:
 	def  __init__(self):
@@ -26,4 +29,4 @@ class Engine:
 		page_html = driver.page_source
 		soup = BeautifulSoup(page_html, 'html.parser')
 		driver.close()
-		return soup
+		return soup, page_html

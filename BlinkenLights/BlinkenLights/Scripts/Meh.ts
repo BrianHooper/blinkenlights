@@ -7,6 +7,13 @@
                 return;
             }
 
+            var root = $("#meh-root");
+            if (!root) {
+                return;
+            }
+
+            $(root).attr("report", "This is a status report");
+
 
             $("#meh-title").html(meh["deal"]["title"]);
 

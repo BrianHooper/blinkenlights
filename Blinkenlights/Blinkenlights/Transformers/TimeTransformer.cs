@@ -1,20 +1,17 @@
-﻿using BlinkenLights.Modules.WorldClock;
+﻿using BlinkenLights.Modules.Time;
+using BlinkenLights.Utilities;
 using Newtonsoft.Json;
 
 namespace BlinkenLights.Transformers
 {
-    public class WorldClockTransformer
+    public class TimeTransformer
     {
-        public static WorldClockViewModel GetWorldClockViewModel(IWebHostEnvironment webHostEnvironment)
+        public static TimeViewModel GetTimeViewModel(IWebHostEnvironment webHostEnvironment)
         {
             string path = Path.Combine(webHostEnvironment.WebRootPath, "DataSources", "TimeZoneInfo.json");
             var stringData = File.ReadAllText(path);
-            WorldClockViewModel viewModel = null;
-            try
-            {
-                viewModel = JsonConvert.DeserializeObject<WorldClockViewModel>(stringData);
-            }
-            catch (JsonException)
+
+            if (!Helpers.TryDeserialize<TimeViewModel>(stringData, out var viewModel))
             {
                 return null;
             }

@@ -1,6 +1,6 @@
-﻿namespace BlinkenLights.Modules.WorldClock
+﻿namespace BlinkenLights.Modules.Time
 {
-    public class WorldClockViewModel
+    public class TimeViewModel
     {
         public Dictionary<string, int> TimeZoneInfos { get; set; }
 

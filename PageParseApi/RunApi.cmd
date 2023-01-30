@@ -1,0 +1,1 @@
+uvicorn PageParseApi:app --port 9000 --app-dir "C:\Users\brian\Documents\code\blinkenlights\PageParseApi\"

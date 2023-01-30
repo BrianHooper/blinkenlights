@@ -1,14 +1,15 @@
 ﻿using BlinkenLights.Models.ApiCache;
-using BlinkenLights.Models.Life360;
-using BlinkenLights.Models.WWII;
-using BlinkenLights.Modules.WorldClock;
-using BlinkenLights.Transformers;
+using BlinkenLights.Transformers; 
 using BlinkenLights.Utilities;
-using Humanizer;
+
+using Google.Apis.Discovery.v1;
+using Google.Apis.Discovery.v1.Data;
+using Google.Apis.Services;
+
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using RestSharp;
+using RestSharp.Authenticators;
+using System.Text.Json.Serialization;
 
 /**
  * Modules:
@@ -16,11 +17,11 @@ using RestSharp;
  *  DONE - Weather
  *  DONE - World Clock / Countdown Timers
  *  DONE - Life360
+ *  DONE - Meh.com item
+ *  DONE - Wikipedia front page
+ *  DONE - NYT front page
  *  Google Calendar upcoming
  *  Upcoming rocket launches
- *  DONE - Meh.com item
- *  Wikipedia front page
- *  NYT front page
  *  Stock/Currency graphs
  */
 
@@ -41,11 +42,16 @@ namespace BlinkenLights.Controllers
             this.ApiCache = new ApiCache(Path.Combine(this.WebHostEnvironment.WebRootPath, "DataSources", "ApiCache.json"));
         }
 
-        public IActionResult GetWorldClockModule()
+        public async Task<IActionResult> GetCalendarModule()
         {
+            var apiResponse = await this.ApiCache.GetAndUpdateApiValue("GoogleCalendar", 60, null);
+            return PartialView("CalendarModule");
+        }
 
-            var viewModel = WorldClockTransformer.GetWorldClockViewModel(this.WebHostEnvironment);
-            return PartialView("WorldClockModule", viewModel);
+        public IActionResult GetTimeModule()
+        {
+            var viewModel = TimeTransformer.GetTimeViewModel(this.WebHostEnvironment);
+            return PartialView("TimeModule", viewModel);
         }
 
         public IActionResult GetWWIIModule()
@@ -74,7 +80,7 @@ namespace BlinkenLights.Controllers
 
         private string GetLife360ApiEndpoint(out Dictionary<string, string> headers)
         {
-            if (Helpers.TryGetSecret(this.config, "Life360:AuthorizationToken", out var authorizationToken) && Helpers.TryGetSecret(this.config, "Life360:CircleId", out var circleId))
+            if (ApiCache.TryGetSecret(this.config, ApiSecret.Life360AuthorizationToken, out var authorizationToken) && ApiCache.TryGetSecret(this.config, ApiSecret.Life360CircleId, out var circleId))
             {
                 headers = new Dictionary<string, string>()
                 {
@@ -89,26 +95,36 @@ namespace BlinkenLights.Controllers
         public async Task<string> GetWeatherData()
         {
             var apiEndpoint =
-                Helpers.TryGetSecret(this.config, "VisualCrossing:ServiceApiKey", out var authorizationToken)
+                ApiCache.TryGetSecret(this.config, ApiSecret.VisualCrossingServiceApiKey, out var authorizationToken)
                 ? $"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/98148?unitGroup=us&key={authorizationToken}&contentType=json"
                 : null;
 
-            return await this.ApiCache.GetAndUpdateApiValue("VisualCrossing", 0, apiEndpoint);
+            return await this.ApiCache.GetAndUpdateApiValue("VisualCrossing", 60, apiEndpoint);
         }
 
         public async Task<string> GetMehData()
         {
             var apiEndpoint =
-                Helpers.TryGetSecret(this.config, "Meh:ServiceApiKey", out var authorizationToken)
+                ApiCache.TryGetSecret(this.config, ApiSecret.MehServiceApiKey, out var authorizationToken)
                 ? $"https://meh.com/api/1/current.json?apikey={authorizationToken}"
                 : null;
 
             return await this.ApiCache.GetAndUpdateApiValue("Meh", 120, apiEndpoint);
         }
-        
-        public async Task<string> GetWikipediaData()
+
+        public async Task<IActionResult> GetHeadlinesModule()
         {
-            return await this.ApiCache.GetAndUpdateApiValue("Wikipedia", 120, $"http://127.0.0.1:5000/wikipedia");
+            var wikipediaData = await this.ApiCache.GetAndUpdateApiValue("Wikipedia", -1, $"http://127.0.0.1:5000/wikipedia");
+
+            var nytApiEndpoint =
+                ApiCache.TryGetSecret(this.config, ApiSecret.NewYorkTimesServiceApiKey, out var authorizationToken)
+                ? $"https://api.nytimes.com/svc/topstories/v2/home.json?api-key={authorizationToken}"
+                : null;
+
+            var nytData = await this.ApiCache.GetAndUpdateApiValue("NewYorkTimes", 120, nytApiEndpoint);
+
+            var headlinesViewModel = HeadlinesTransformer.GetHeadlinesViewModel(wikipediaData, nytData);
+            return PartialView("HeadlinesModule", headlinesViewModel);
         }
     }
 }

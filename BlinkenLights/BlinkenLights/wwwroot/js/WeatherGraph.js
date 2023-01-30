@@ -146,6 +146,11 @@ function addCurrentBlock(parent, iconStr, resultStr) {
 var weatherHandler = {
     refresh: function () {
         $.get("/Modules/GetWeatherData", function (weatherApiResponse) {
+            if (!weatherApiResponse) {
+                $("#weather-error").html("Invalid API response");
+                return;
+            }
+
             var weatherData = JSON.parse(weatherApiResponse);
 
             if (weatherData["Error"]) {
@@ -222,6 +227,9 @@ var weatherHandler = {
             sunsetTime.setUTCSeconds(weatherData["currentConditions"]["sunsetEpoch"]);
             var sunsetTimeStr = sunsetTime.toLocaleString("en-us", { hour: "numeric", minute: "numeric" });
             addCurrentBlock(xAxisDivRight, "🌇", sunsetTimeStr);
+
+            var windspeed = weatherData["currentConditions"]["windspeed"] + " mph";
+            addCurrentBlock(xAxisDivRight, "🍃", windspeed);
         });
     }
 };

@@ -32,20 +32,18 @@
         {
             List<ModuleViewModel> modulesToLoad = new List<ModuleViewModel>()
             {
-                // Column 1
-                new ModuleViewModel(name: "WWIIRoot", row: 1, col: 1, rowSpan: 3),
-
-                // Column 2
+                // Row 1
+                new ModuleViewModel(name: "TimeRoot", row: 1, col: 1),
                 new ModuleViewModel(name: "WeatherRoot", row: 1, col: 2, colSpan: 2),
-                new ModuleViewModel(name: "WorldClockRoot", row: 2, col: 2),
-
-                // Column 3
-                new ModuleViewModel(name: "MehRoot", row: 2, col: 3),
-                //new ModuleViewModel(name: "MehRoot", row: 3, col: 3),
-
-                // Column 4
                 new ModuleViewModel(name: "Life360Root", row: 1, col: 4),
-                new ModuleViewModel(name: "WikipediaRoot", row: 2, col: 4),
+
+                // Row 2
+                new ModuleViewModel(name: "WWIIRoot", row: 2, col: 1, colSpan: 2),
+                new ModuleViewModel(name: "HeadlinesRoot", row: 2, col: 3, colSpan: 2),
+
+                // Row 3
+                new ModuleViewModel(name: "CalendarRoot", row: 3, col: 1),
+                new ModuleViewModel(name: "MehRoot", row: 3, col: 2),
             };
             this.ModulePlacementPairs = modulesToLoad.Select(m => new KeyValuePair<string, string>(m.Name, m.ToGridArea())).ToList();
 

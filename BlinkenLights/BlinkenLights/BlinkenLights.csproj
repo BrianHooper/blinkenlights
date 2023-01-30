@@ -1,29 +1,35 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>d6da97aa-57fe-4fab-953d-5a1f7f148aab</UserSecretsId>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Humanizer" Version="2.14.1" />
-    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.9.4">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.11" />
-    <PackageReference Include="MomentSharp" Version="2.0.0" />
-    <PackageReference Include="RestSharp" Version="108.0.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-	  <Content Update="DataSources\WWII_DayByDay.json">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
-	  <Content Update="DataSources\TimeZoneInfo.json">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
-  </ItemGroup>
-
+<Project Sdk="Microsoft.NET.Sdk.Web">
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>aspnet-Blinkenlights-F3944DDA-4358-4321-94BE-2798BDE51F6D</UserSecretsId>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Google.Apis" Version="1.59.0" />
+        <PackageReference Include="Google.Apis.Calendar.v3" Version="1.59.0.2759" />
+        <PackageReference Include="Google.Apis.Discovery.v1" Version="1.59.0" />
+        <PackageReference Include="Humanizer" Version="2.14.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="6.0.13" />
+        <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.9.4">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.11" />
+        <PackageReference Include="MomentSharp" Version="2.0.0" />
+        <PackageReference Include="RestSharp" Version="108.0.3" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="6.0.13" />
+        <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.13" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.13" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.13" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.13" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.13" />
+    </ItemGroup>
+    <ItemGroup>
+        <Content Update="DataSources\WWII_DayByDay.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Update="DataSources\TimeZoneInfo.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
 </Project>

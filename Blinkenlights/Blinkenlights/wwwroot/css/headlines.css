@@ -1,0 +1,27 @@
+﻿.headlines-article {
+    color: white;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    padding-inline-start: 10px;
+}
+
+.headlines-article > a, .headlines-article > a:visited {
+    color: white;
+    text-decoration: none;
+}
+
+.headlines-header {
+    font-weight: bold;
+    border-bottom: 1px solid #1E1E1E;
+    padding-block-end: 2px;
+}
+
+#headlines-root > ul {
+    list-style: none;
+    padding-left: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-block-start: 2px;
+}

@@ -18,48 +18,23 @@ namespace BlinkenLights.Utilities
             return dt;
         }
 
-        public static bool TryGetSecret(IConfiguration config, string key, out string secret)
-        {
-            // Upload with:
-            // dotnet user-secrets set "OpenWeatherMap:ServiceApiKey" "{Secret}"
-            if (string.IsNullOrWhiteSpace(key))
-            {
-                secret = null;
-                return false;
-            }
-
-            secret = config[key];
-            if (string.IsNullOrWhiteSpace(secret))
-            {
-                secret = Environment.GetEnvironmentVariable(key, EnvironmentVariableTarget.Machine);
-            }
-
-            return !string.IsNullOrWhiteSpace(secret);
-        }
-
-        public static async Task<string> CallAndUpdateApi(string endpointUrl, ApiCache apiCache, string apiCacheKey)
-        {
-            if (string.IsNullOrWhiteSpace(endpointUrl))
-            {
-                return null;
-            }
-
-            var client = new RestClient(endpointUrl);
-
-            var request = new RestRequest();
-            var response = await client.GetAsync(request);
-            if (response?.StatusCode != System.Net.HttpStatusCode.OK || string.IsNullOrWhiteSpace(response?.Content))
-            {
-                return null;
-            }
-
-            apiCache.TryUpdateCache(apiCacheKey, response.Content);
-            return response.Content;
-        }
-
         public static string ApiError(string errorMessage)
         {
             return JsonConvert.SerializeObject(new Dictionary<string, string>() { { "Error", errorMessage } });
+        }
+
+        public static bool TryDeserialize<T>(string jsonData, out T deserializedObject)
+        {
+            try
+            {
+                deserializedObject = JsonConvert.DeserializeObject<T>(jsonData);
+                return deserializedObject != null;
+            }
+            catch (JsonException)
+            {
+                deserializedObject = default(T);
+                return false;
+            }
         }
     }
 }
