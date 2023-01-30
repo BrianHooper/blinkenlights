@@ -8,3 +8,4 @@ node_modules
 ts-dist/
 __pycache__/
 *.user
+ApiCache.json

@@ -1,4 +1,5 @@
 ﻿using BlinkenLights.Models;
+using BlinkenLights.Models.ApiCache;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 namespace BlinkenLights.Controllers
@@ -18,6 +19,16 @@ namespace BlinkenLights.Controllers
 
         public IActionResult Index()
         {
+            if (ApiCache.CheckForInvalidSecrets(config, out var invalidSecrets))
+            {
+                var errorModel = new ErrorViewModel()
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier,
+                    MissingSecrets = invalidSecrets
+                };
+                return View("Error", errorModel);
+            }
+
             return View(new IndexViewModel());
         }
 

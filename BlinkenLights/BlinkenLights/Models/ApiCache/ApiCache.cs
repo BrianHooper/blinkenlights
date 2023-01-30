@@ -50,6 +50,30 @@ namespace BlinkenLights.Models.ApiCache
             Mutex = new Mutex();
         }
 
+        public static bool CheckForInvalidSecrets(IConfiguration config, out List<string> invalidSecretsOut)
+        {
+            var invalidSecrets = new List<string>();
+            foreach (var secret in Enum.GetValues<ApiSecret>())
+            {
+                if (secret != ApiSecret.Default && !TryGetSecret(config, secret, out var secretValue))
+                {
+                    var key = secret.ToDescriptionString();
+                    invalidSecrets.Add(key);
+                }
+            }
+
+            if (invalidSecrets.Any())
+            {
+                invalidSecretsOut = invalidSecrets;
+                return true;
+            }
+            else
+            {
+                invalidSecretsOut = null;
+                return false;
+            }
+        }
+
         public static bool TryGetSecret(IConfiguration config, ApiSecret secretKey, out string secret)
         {
             // Upload with:
