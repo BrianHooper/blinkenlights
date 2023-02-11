@@ -1,0 +1,43 @@
+﻿@using BlinkenLights.Models.WWII
+@model WWIIDayModel
+
+<div id="wwii-header" data-api-status="@Model.Status">
+    <div id="wwii-title">World War II - On this day, 80 years ago</div>
+    <div id="wwii-date">@Model.Date</div>
+</div>
+
+
+<div id="wwii-body">
+    @if (Model?.GlobalEvents?.Any() == true)
+    {
+        <ul class="wwii-global">
+                @foreach (var item in Model.GlobalEvents)
+                {
+                    <li>@(item)</li>
+                }
+        </ul>
+    }
+
+    @if (Model?.RegionalEvents?.Any() == true)
+    {
+        @foreach (var item in Model.RegionalEvents)//(int i = 0; i < Model.RegionalEvents.Count(); i++)
+        {
+            <ul class="wwii-regional">
+                @for(int i = 0; i < item.Value.Count(); i++)
+                {
+                    var wwiiEvent = item.Value[i];
+                    if (i == 0)
+                    {
+                        <li><span class="wwii-regionKey">@item.Key</span> - @wwiiEvent</li>
+                    }
+                    else
+                    {
+                        <li>@wwiiEvent</li>
+                    }
+                }
+            </ul>
+        }
+    }
+</div>
+
+<script type="module" src="~/ts-dist/WWIIModule.js"></script>
