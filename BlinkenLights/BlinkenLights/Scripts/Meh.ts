@@ -1,4 +1,6 @@
-﻿var MehHandler = {
+﻿import { SetModuleStatus } from "./Status.js";
+
+var MehHandler = {
     refresh: function (): void {
         $.get("/Modules/GetMehData", function (data) {
             var meh = JSON.parse(data);
@@ -14,14 +16,15 @@
 
             $(root).attr("report", "This is a status report");
 
-
-            $("#meh-title").html(meh["deal"]["title"]);
+            $("#meh-item").html(meh["deal"]["title"]);
 
             $("#meh-price").html("$" + meh["deal"]["items"][0]["price"]);
 
+            var imgBlockHeight = $("#meh-image").height() - 20;
+
             var textBlock = jQuery("<img/>", {
-                "height": 150,
-                "width": 150,
+                "height": imgBlockHeight,
+                "width": imgBlockHeight,
                 "src": meh["deal"]["photos"][0],
             }).appendTo("#meh-image");
         });

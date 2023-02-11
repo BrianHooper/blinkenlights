@@ -32,6 +32,9 @@
         {
             List<ModuleViewModel> modulesToLoad = new List<ModuleViewModel>()
             {
+                // Status should always be first
+                new ModuleViewModel(name: "StatusRoot", row: 3, col: 3),
+
                 // Row 1
                 new ModuleViewModel(name: "TimeRoot", row: 1, col: 1),
                 new ModuleViewModel(name: "WeatherRoot", row: 1, col: 2, colSpan: 2),

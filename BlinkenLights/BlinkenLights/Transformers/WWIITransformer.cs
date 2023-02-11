@@ -1,4 +1,5 @@
-﻿using BlinkenLights.Models.WWII;
+﻿using Blinkenlights.Models.ApiCache;
+using BlinkenLights.Models.WWII;
 using Humanizer;
 using Newtonsoft.Json;
 
@@ -20,7 +21,8 @@ namespace BlinkenLights.Transformers
                 return null;
             }
 
-            var date = DateTime.Now.AddYears(-80);
+            var now = DateTime.Now;
+            var date = now.AddYears(-80);
             var dateStr = date.ToString("d MMM yyyy");
             if (wWIIViewModel?.Days?.TryGetValue(dateStr, out var wWIIDayJsonModel) == true)
             {
@@ -28,19 +30,33 @@ namespace BlinkenLights.Transformers
                 var globalEvents = wWIIDayJsonModel.Events.FirstOrDefault(kv => string.Equals(kv.Key, "Global", StringComparison.OrdinalIgnoreCase)).Value;
                 var regionalEvents = wWIIDayJsonModel.Events.Where(kv => !string.Equals(kv.Key, "Global", StringComparison.OrdinalIgnoreCase)).ToList();
 
-                var dayModel = new WWIIDayModel()
+                return new WWIIDayModel()
                 {
                     Date = dateFormatted,
                     GlobalEvents = globalEvents,
-                    RegionalEvents = regionalEvents
+                    RegionalEvents = regionalEvents,
+                    Status = ApiStatus.Serialize(
+                        name: "WWII On this day",
+                        key: "WWII",
+                        status: "Up to date",
+                        lastUpdate: now.ToString(),
+                        state: ApiState.Good)
                 };
-
-
-                return dayModel;
             }
             else
             {
-                return null;
+                return new WWIIDayModel()
+                {
+                    Date = null,
+                    GlobalEvents = null,
+                    RegionalEvents = null,
+                    Status = ApiStatus.Serialize(
+                        name: "WWII On this day",
+                        key: "WWII",
+                        status: "Failed to get data",
+                        lastUpdate: now.ToString(),
+                        state: ApiState.Error)
+                };
             }
         }
     }
