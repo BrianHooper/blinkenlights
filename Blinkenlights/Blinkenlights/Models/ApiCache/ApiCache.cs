@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Blinkenlights.Models.ApiCache;
+using Newtonsoft.Json;
 using RestSharp;
 using System.ComponentModel;
 
@@ -41,6 +42,7 @@ namespace BlinkenLights.Models.ApiCache
             return attributes.Length > 0 ? attributes[0].Description : string.Empty;
         }
     }
+
 
     public class ApiCache
     {
@@ -98,7 +100,7 @@ namespace BlinkenLights.Models.ApiCache
             return !string.IsNullOrWhiteSpace(secret);
         }
 
-        public bool TryGetCachedValue(string cacheKey, int cacheTimeoutMinutes, out string cachedValue)
+        public bool TryGetCachedValue(string cacheKey, int cacheTimeoutMinutes, out ApiResponse cachedValue)
         {
             Mutex.WaitOne();
             if (cacheTimeoutMinutes == 0 || !File.Exists(CachePath))
@@ -136,12 +138,12 @@ namespace BlinkenLights.Models.ApiCache
                 return false;
             }
 
-            cachedValue = apiCacheModule.ApiData;
+            cachedValue = new ApiResponse(apiCacheModule.ApiData, ApiSource.Cache, apiCacheModule.LastUpdateTime);
             Mutex.ReleaseMutex();
             return true;
         }
 
-        public bool TryUpdateCache(string apiCacheKey, string apiResponse)
+        public bool TryUpdateCache(string apiCacheKey, DateTime lastUpdateTime, string apiResponse)
         {
             Mutex.WaitOne();
             if (string.IsNullOrWhiteSpace(apiCacheKey) || string.IsNullOrWhiteSpace(apiResponse))
@@ -173,7 +175,7 @@ namespace BlinkenLights.Models.ApiCache
 
             ApiCacheModule apiCacheModule = new ApiCacheModule()
             {
-                LastUpdateTime = DateTime.Now,
+                LastUpdateTime = lastUpdateTime,
                 ApiData = apiResponse
             };
             apiCacheModel.Modules[apiCacheKey] = apiCacheModule;
@@ -192,11 +194,11 @@ namespace BlinkenLights.Models.ApiCache
             }
         }
 
-        public async Task<string> GetAndUpdateApiValue(string cacheKey, int cacheTimeoutMinutes, string endpointUrl, Dictionary<string, string> headers = null)
+        public async Task<ApiResponse> GetAndUpdateApiValue(string cacheKey, int cacheTimeoutMinutes, string endpointUrl, Dictionary<string, string> headers = null)
         {
-            if (TryGetCachedValue(cacheKey, cacheTimeoutMinutes, out var apiResponse))
+            if (TryGetCachedValue(cacheKey, cacheTimeoutMinutes, out var apiResponseCached))
             {
-                return apiResponse;
+                return apiResponseCached;
             }
 
             if (string.IsNullOrWhiteSpace(endpointUrl))
@@ -215,14 +217,24 @@ namespace BlinkenLights.Models.ApiCache
                 }
             }
 
-            var response = await client.GetAsync(request);
+            var response = default(RestResponse);
+            try
+            {
+                response = await client.GetAsync(request);
+            }
+            catch (HttpRequestException)
+            {
+                return null;
+            }
+
             if (response?.StatusCode != System.Net.HttpStatusCode.OK || string.IsNullOrWhiteSpace(response?.Content))
             {
                 return null;
             }
 
-            TryUpdateCache(cacheKey, response.Content);
-            return response.Content;
+            var lastUpdateTime = DateTime.Now;
+            TryUpdateCache(cacheKey, lastUpdateTime, response.Content);
+            return new ApiResponse(response.Content, ApiSource.Prod, lastUpdateTime);
         }
     }
 }

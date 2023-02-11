@@ -1,20 +1,46 @@
-﻿import { SetModuleStatus } from "./Status.js";
+﻿import { SetModuleStatusByStr, SetModuleStatusByFields } from "./Status.js";
 
 var MehHandler = {
     refresh: function (): void {
         $.get("/Modules/GetMehData", function (data) {
-            var meh = JSON.parse(data);
-            if (meh["Error"]) {
-                $("#meh-root").html(meh["Error"]);
+            if (!data) {
+                SetModuleStatusByFields("Meh", 1, "Meh", null, "Data response is null");
+                return;
+            }
+
+            var apiResponse = JSON.parse(data);
+            if (!apiResponse) {
+                SetModuleStatusByFields("Meh", 1, "Meh", null, "API response is null");
+                return;
+            }
+
+            var apiStatus: string = apiResponse["Status"];
+            if (apiStatus) {
+                SetModuleStatusByStr(apiStatus);
+            }
+            else {
+                //TODO this should use constants, avoid re-defining key/name/state enum
+                SetModuleStatusByFields("Meh", 1, "Meh", null, "API status response is null");
+                return;
+            }
+
+            var apiData = apiResponse["ApiData"];
+            if (!apiData) {
+                SetModuleStatusByFields("Meh", 1, "Meh", null, "API data response is null");
+                return;
+            }
+
+            var meh = JSON.parse(apiData);
+            if (!meh) {
+                SetModuleStatusByFields("Meh", 1, "Meh", null, "Failed to parse API result");
                 return;
             }
 
             var root = $("#meh-root");
             if (!root) {
+                SetModuleStatusByFields("Meh", 1, "Meh", null, "Failed to find meh root on page");
                 return;
             }
-
-            $(root).attr("report", "This is a status report");
 
             $("#meh-item").html(meh["deal"]["title"]);
 

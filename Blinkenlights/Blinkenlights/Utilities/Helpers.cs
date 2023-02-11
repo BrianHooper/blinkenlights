@@ -36,5 +36,14 @@ namespace BlinkenLights.Utilities
                 return false;
             }
         }
+
+        public static string Serialize<T>(T obj)
+        {
+            var serializerSettings = new JsonSerializerSettings()
+            {
+                NullValueHandling = NullValueHandling.Include
+            };
+            return JsonConvert.SerializeObject(obj, serializerSettings);
+        }
     }
 }

@@ -18,7 +18,18 @@ namespace BlinkenLights.Transformers
             }
             catch (JsonException)
             {
-                return null;
+                return new WWIIDayModel()
+                {
+                    Date = null,
+                    GlobalEvents = null,
+                    RegionalEvents = null,
+                    Status = ApiStatus.Serialize(
+                        name: "WWII On this day",
+                        key: "WWII",
+                        status: "Failed to deserialize data",
+                        lastUpdate: null,
+                        state: ApiState.Error)
+                };
             }
 
             var now = DateTime.Now;
@@ -54,7 +65,7 @@ namespace BlinkenLights.Transformers
                         name: "WWII On this day",
                         key: "WWII",
                         status: "Failed to get data",
-                        lastUpdate: now.ToString(),
+                        lastUpdate: null,
                         state: ApiState.Error)
                 };
             }

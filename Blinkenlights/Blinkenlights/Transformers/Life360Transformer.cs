@@ -1,4 +1,7 @@
-﻿using BlinkenLights.Models.Life360;
+﻿using Blinkenlights.Models;
+using Blinkenlights.Models.ApiCache;
+using BlinkenLights.Models.ApiCache;
+using BlinkenLights.Models.Life360;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -6,10 +9,27 @@ namespace BlinkenLights.Transformers
 {
     public class Life360Transformer
     {
-        public static bool TryGetLife360Model(string apiResponse, out string viewModel)
+        private const string ApiKey = "Life360";
+
+        public static string GetGenericApiModel(ApiResponse apiResponse)
         {
+            if (apiResponse == null)
+            {
+                return GenericApiViewModel.FromApiResponse(null, ApiKey, ApiKey, errorMessage: "API response is null");
+            }
+
             var models = new List<Life360Model>();
-            JObject content = JsonConvert.DeserializeObject<JObject>(apiResponse);
+            JObject content;
+
+            try 
+            {
+                content = JsonConvert.DeserializeObject<JObject>(apiResponse.Data); 
+            }
+            catch (JsonException)
+            {
+                return GenericApiViewModel.FromApiResponse(null, ApiKey, ApiKey, errorMessage: "Exception while deserializing API response");
+            }
+
             content.TryGetValue("members", out var members);
             foreach (JObject member in members)
             {
@@ -39,15 +59,14 @@ namespace BlinkenLights.Transformers
 
             if (models.Any())
             {
-                viewModel = JsonConvert.SerializeObject(models);
-                return true;
+                var viewModel = new Life360ViewModel(models);
+                var viewModelStr = JsonConvert.SerializeObject(viewModel);
+                return GenericApiViewModel.FromFields(viewModelStr, ApiKey, ApiKey);
             }
             else
             {
-                viewModel = null;
-                return false;
+                return GenericApiViewModel.FromApiResponse(null, ApiKey, ApiKey, errorMessage: "Models list was empty");
             }
-
         }
     }
 }

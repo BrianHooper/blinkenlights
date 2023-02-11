@@ -1,6 +1,9 @@
 ﻿@using BlinkenLights.Models.Headlines
 @model HeadlinesViewModel
 
+<div id="headlines-status" data-api-status="@Model.Status" hidden>
+</div>
+
 @if (Model.NewYorkTimesFrontPageUs?.Any() == true)
 {
 	<div class="headlines-header">New York Times - US</div>
@@ -60,3 +63,5 @@
 		}
 	</ul>
 }
+
+<script type="module" src="~/ts-dist/HeadlinesModule.js"></script>

@@ -7,6 +7,8 @@
         public List<HeadlinesArticle> NewYorkTimesFrontPageUs { get; set; }
 
         public List<HeadlinesArticle> NewYorkTimesFrontPageWorld { get; set; }
+
+        public string Status { get; set; }
     }
 
     public class HeadlinesArticle

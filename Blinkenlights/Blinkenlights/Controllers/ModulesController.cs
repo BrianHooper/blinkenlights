@@ -1,4 +1,7 @@
-﻿using BlinkenLights.Models.ApiCache;
+﻿using Blinkenlights.Models;
+using Blinkenlights.Models.ApiCache;
+using Blinkenlights.Models.Calendar;
+using BlinkenLights.Models.ApiCache;
 using BlinkenLights.Transformers; 
 using BlinkenLights.Utilities;
 
@@ -48,7 +51,14 @@ namespace BlinkenLights.Controllers
         {
             var apiEndpoint = GetCalendarApiEndpoint(out var headers);
             var apiResponse = await this.ApiCache.GetAndUpdateApiValue("GoogleCalendar", 60, apiEndpoint, headers);
-            return PartialView("CalendarModule");
+            
+            // TODO Create calendar transformer
+            var viewModel = new CalendarViewModel()
+            {
+                Data = apiResponse?.Data,
+                Status = ApiStatus.Serialize("Calendar", "Calendar", "success", null, ApiState.Stale)
+            };
+            return PartialView("CalendarModule", viewModel);
         }
 
         private string GetCalendarApiEndpoint(out Dictionary<string, string> headers)
@@ -78,22 +88,11 @@ namespace BlinkenLights.Controllers
             return PartialView("WWIIModule", viewModel);
         }
 
-        public async Task<string> GetLife360LocationsAsync()
+        public async Task<string> GetLife360Locations()
         {
             var apiEndpoint = GetLife360ApiEndpoint(out var headers);
             var apiResponse = await this.ApiCache.GetAndUpdateApiValue("Life360", 5, apiEndpoint, headers);
-
-            if (string.IsNullOrWhiteSpace(apiResponse))
-            {
-                return Helpers.ApiError("Failed to get valid API response");
-            }
-
-            if (Life360Transformer.TryGetLife360Model(apiResponse, out string viewModel)) 
-            {
-                return viewModel;
-            }
-
-            return Helpers.ApiError("Failed to build valid response");
+            return Life360Transformer.GetGenericApiModel(apiResponse);
         }
 
         private string GetLife360ApiEndpoint(out Dictionary<string, string> headers)
@@ -117,7 +116,9 @@ namespace BlinkenLights.Controllers
                 ? $"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/98148?unitGroup=us&key={authorizationToken}&contentType=json"
                 : null;
 
-            return await this.ApiCache.GetAndUpdateApiValue("VisualCrossing", 60, apiEndpoint);
+            // TODO Migrate weather to TS & include status data
+            var apiResponse = await this.ApiCache.GetAndUpdateApiValue("VisualCrossing", 60, apiEndpoint);
+            return apiResponse.Data;
         }
 
         public async Task<string> GetMehData()
@@ -127,12 +128,13 @@ namespace BlinkenLights.Controllers
                 ? $"https://meh.com/api/1/current.json?apikey={authorizationToken}"
                 : null;
 
-            return await this.ApiCache.GetAndUpdateApiValue("Meh", 120, apiEndpoint);
+            var apiResponse = await this.ApiCache.GetAndUpdateApiValue("Meh", 120, apiEndpoint);
+            return GenericApiViewModel.FromApiResponse(apiResponse, "Meh", "Meh");
         }
 
         public async Task<IActionResult> GetHeadlinesModule()
         {
-            var wikipediaData = await this.ApiCache.GetAndUpdateApiValue("Wikipedia", -1, $"http://127.0.0.1:5000/wikipedia");
+            var wikipediaData = await this.ApiCache.GetAndUpdateApiValue("Wikipedia", -1, $"http://127.0.0.1:5001/wikipedia");
 
             var nytApiEndpoint =
                 ApiCache.TryGetSecret(this.config, ApiSecret.NewYorkTimesServiceApiKey, out var authorizationToken)

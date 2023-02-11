@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using BlinkenLights.Utilities;
+using Newtonsoft.Json;
 
 namespace Blinkenlights.Models.ApiCache
 {
@@ -18,6 +19,7 @@ namespace Blinkenlights.Models.ApiCache
         Good = 3
     }
 
+    //TODO Add "Source" field
     public class ApiStatus
     {
         public string Name { get; set; }
@@ -41,7 +43,7 @@ namespace Blinkenlights.Models.ApiCache
 
         public static string Serialize(string name, string key, string status, string lastUpdate, ApiState state)
         {
-            return ApiStatusList.Serialize(new List<ApiStatus>() { new ApiStatus(name, key, status, lastUpdate, state) });
+            return ApiStatusList.Serialize(new ApiStatus(name, key, status, lastUpdate, state));
         }
     }
 
@@ -54,14 +56,10 @@ namespace Blinkenlights.Models.ApiCache
             Items = items;
         }
 
-        public static string Serialize(List<ApiStatus> items)
+        public static string Serialize(params ApiStatus[] statusItems)
         {
-            var list = new ApiStatusList(items);
-            var serializerSettings = new JsonSerializerSettings()
-            {
-                NullValueHandling = NullValueHandling.Include
-            };
-            return JsonConvert.SerializeObject(list, serializerSettings);
+            var apiStatusList = new ApiStatusList(statusItems.ToList());
+            return Helpers.Serialize(apiStatusList);
         }
     }
 }

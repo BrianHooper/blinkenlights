@@ -1,4 +1,5 @@
-﻿using BlinkenLights.Modules.Time;
+﻿using Blinkenlights.Models.ApiCache;
+using BlinkenLights.Modules.Time;
 using BlinkenLights.Utilities;
 using Newtonsoft.Json;
 
@@ -13,7 +14,15 @@ namespace BlinkenLights.Transformers
 
             if (!Helpers.TryDeserialize<TimeViewModel>(stringData, out var viewModel))
             {
-                return null;
+                return new TimeViewModel()
+                {
+                    Status = ApiStatus.Serialize(
+                        name: "Time",
+                        key: "Time",
+                        status: "Failed to deserialize data",
+                        lastUpdate: null,
+                        state: ApiState.Error)
+                };
             }
 
             viewModel.CountdownInfos = new SortedDictionary<string, string>()
@@ -23,6 +32,13 @@ namespace BlinkenLights.Transformers
                 { "2023-07-03", "Portugal" },
                 { "2023-08-27", "Burning Man" },
             };
+
+            viewModel.Status = ApiStatus.Serialize(
+                name: "Time",
+                key: "Time",
+                status: "API Success",
+                lastUpdate: DateTime.Now.ToString(),
+                state: ApiState.Good);
 
             return viewModel;
         }
