@@ -1,0 +1,13 @@
+﻿@using BlinkenLights.Models
+@model IndexViewModel
+<link rel="stylesheet" href="~/css/index.css" />
+<div class="index-root" style="@Model.GridTemplateStyle">
+    @foreach (var modulePair in Model.ModulePlacementPairs)
+    {
+        <div class="index-module" name="@modulePair.Key" style="@modulePair.Value">
+            <partial name="@modulePair.Key" />
+            <div class="module-name module-name-hide" name="@modulePair.Key"></div>
+        </div>
+    }
+</div>
+<script type="module" src="~/ts-dist/Index.js"></script>

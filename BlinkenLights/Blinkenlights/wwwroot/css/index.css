@@ -1,0 +1,47 @@
+﻿.index-root {
+    color: #ddd;
+    background-color: #EEE;
+    height: 100%;
+}
+html {
+    height: 100%;
+}
+
+body {
+    height: calc(100% - 20px);
+}
+
+html, body, .index-root {
+    font-family: "Trebuchet MS", Helvetica, sans-serif;
+    font-size: 11px;
+    margin: 0;
+}
+
+.index-root {
+    display: grid;
+    padding: 5px;
+}
+
+.index-module {
+    margin: 5px;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+    background-color: #383838;
+    position: relative;
+}
+
+.module-name {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    height: 10px;
+    background-color: white;
+    color: black;
+    font-size: 10px;
+    padding: 1px;
+}
+
+.module-name-hide {
+    visibility: hidden;
+}

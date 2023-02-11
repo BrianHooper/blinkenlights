@@ -1,0 +1,22 @@
+﻿#time-root {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.time-block {
+    display: flex;
+    flex-direction: column;
+}
+
+.time-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 2px 5px;
+    font-size: 16px;
+}
+
+#time-divider {
+    /* border-bottom: 3px solid #282828; */
+}
