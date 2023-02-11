@@ -17,6 +17,10 @@ namespace BlinkenLights.Models.ApiCache
         MehServiceApiKey = 4,
         [Description("NewYorkTimes:ServiceApiKey")]
         NewYorkTimesServiceApiKey = 5,
+        [Description("GoogleCalendar:UserAccount")]
+        GoogleCalendarUserAccount = 6,
+        [Description("GoogleCalendar:ApiServiceKey")]
+        GoogleCalendarApiServiceKey = 7,
     }
 
     static class ApiSecretExtensions

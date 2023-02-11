@@ -46,8 +46,24 @@ namespace BlinkenLights.Controllers
 
         public async Task<IActionResult> GetCalendarModule()
         {
-            var apiResponse = await this.ApiCache.GetAndUpdateApiValue("GoogleCalendar", 60, null);
+            var apiEndpoint = GetCalendarApiEndpoint(out var headers);
+            var apiResponse = await this.ApiCache.GetAndUpdateApiValue("GoogleCalendar", 60, apiEndpoint, headers);
             return PartialView("CalendarModule");
+        }
+
+        private string GetCalendarApiEndpoint(out Dictionary<string, string> headers)
+        {
+            if (ApiCache.TryGetSecret(this.config, ApiSecret.GoogleCalendarUserAccount, out var userAccount) && ApiCache.TryGetSecret(this.config, ApiSecret.GoogleCalendarApiServiceKey, out var serviceKey))
+            {
+                headers = new Dictionary<string, string>()
+                {
+                    { "X-user-account", userAccount },
+                    { "X-user-secret", serviceKey },
+                };
+                return "http://127.0.0.1:5001/googlecalendar";
+            }
+            headers = null;
+            return null;
         }
 
         public IActionResult GetTimeModule()
