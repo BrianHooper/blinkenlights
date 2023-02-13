@@ -7,7 +7,6 @@
             }
 
             root.html(data);
-            $(root).attr("report", "This is a status report");
         });
     }
 };

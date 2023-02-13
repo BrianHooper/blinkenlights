@@ -1,4 +1,8 @@
-﻿using BlinkenLights.Models.ApiCache;
+﻿using Blinkenlights.Models;
+using Blinkenlights.Models.ApiCache;
+using Blinkenlights.Models.ApiResult;
+using Blinkenlights.Models.Calendar;
+using BlinkenLights.Models.ApiCache;
 using BlinkenLights.Transformers; 
 using BlinkenLights.Utilities;
 
@@ -47,8 +51,10 @@ namespace BlinkenLights.Controllers
         public async Task<IActionResult> GetCalendarModule()
         {
             var apiEndpoint = GetCalendarApiEndpoint(out var headers);
-            var apiResponse = await this.ApiCache.GetAndUpdateApiValue("GoogleCalendar", 60, apiEndpoint, headers);
-            return PartialView("CalendarModule");
+            var apiResponse = await this.ApiCache.GetAndUpdateApiValue(ApiType.GoogleCalendar, 60, apiEndpoint, headers);
+            var viewModel = CalendarTransformer.GetCalendarViewModel(apiResponse); 
+            
+            return PartialView("CalendarModule", viewModel);
         }
 
         private string GetCalendarApiEndpoint(out Dictionary<string, string> headers)
@@ -78,22 +84,11 @@ namespace BlinkenLights.Controllers
             return PartialView("WWIIModule", viewModel);
         }
 
-        public async Task<string> GetLife360LocationsAsync()
+        public async Task<string> GetLife360Locations()
         {
             var apiEndpoint = GetLife360ApiEndpoint(out var headers);
-            var apiResponse = await this.ApiCache.GetAndUpdateApiValue("Life360", 5, apiEndpoint, headers);
-
-            if (string.IsNullOrWhiteSpace(apiResponse))
-            {
-                return Helpers.ApiError("Failed to get valid API response");
-            }
-
-            if (Life360Transformer.TryGetLife360Model(apiResponse, out string viewModel)) 
-            {
-                return viewModel;
-            }
-
-            return Helpers.ApiError("Failed to build valid response");
+            var apiResponse = await this.ApiCache.GetAndUpdateApiValue(ApiType.Life360, 5, apiEndpoint, headers);
+            return Life360Transformer.GetGenericApiModel(apiResponse);
         }
 
         private string GetLife360ApiEndpoint(out Dictionary<string, string> headers)
@@ -117,7 +112,9 @@ namespace BlinkenLights.Controllers
                 ? $"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/98148?unitGroup=us&key={authorizationToken}&contentType=json"
                 : null;
 
-            return await this.ApiCache.GetAndUpdateApiValue("VisualCrossing", 60, apiEndpoint);
+            // TODO Migrate weather to TS & include status data
+            var apiResponse = await this.ApiCache.GetAndUpdateApiValue(ApiType.VisualCrossingWeather, 60, apiEndpoint);
+            return apiResponse.Data;
         }
 
         public async Task<string> GetMehData()
@@ -127,19 +124,34 @@ namespace BlinkenLights.Controllers
                 ? $"https://meh.com/api/1/current.json?apikey={authorizationToken}"
                 : null;
 
-            return await this.ApiCache.GetAndUpdateApiValue("Meh", 120, apiEndpoint);
+            var apiResponse = await this.ApiCache.GetAndUpdateApiValue(ApiType.Meh, 120, apiEndpoint);
+            if (apiResponse is null)
+            {
+                var status = ApiStatus.Failed(ApiType.Meh, null, "Api response is null");
+                return GenericApiViewModel.FromApiStatus(null, status);
+            }
+            else if (string.IsNullOrWhiteSpace(apiResponse.Data))
+            {
+                var status = ApiStatus.Failed(ApiType.Meh, apiResponse, "Api response is empty");
+                return GenericApiViewModel.FromApiStatus(null, status);
+            }
+            else
+            {
+                var status = ApiStatus.Success(ApiType.Meh, apiResponse);
+                return GenericApiViewModel.FromApiStatus(apiResponse.Data, status);
+            }
         }
 
         public async Task<IActionResult> GetHeadlinesModule()
         {
-            var wikipediaData = await this.ApiCache.GetAndUpdateApiValue("Wikipedia", -1, $"http://127.0.0.1:5000/wikipedia");
+            var wikipediaData = await this.ApiCache.GetAndUpdateApiValue(ApiType.Wikipedia, 120, $"http://127.0.0.1:5001/wikipedia");
 
             var nytApiEndpoint =
                 ApiCache.TryGetSecret(this.config, ApiSecret.NewYorkTimesServiceApiKey, out var authorizationToken)
                 ? $"https://api.nytimes.com/svc/topstories/v2/home.json?api-key={authorizationToken}"
                 : null;
 
-            var nytData = await this.ApiCache.GetAndUpdateApiValue("NewYorkTimes", 120, nytApiEndpoint);
+            var nytData = await this.ApiCache.GetAndUpdateApiValue(ApiType.NewYorkTimes, 120, nytApiEndpoint);
 
             var headlinesViewModel = HeadlinesTransformer.GetHeadlinesViewModel(wikipediaData, nytData);
             return PartialView("HeadlinesModule", headlinesViewModel);

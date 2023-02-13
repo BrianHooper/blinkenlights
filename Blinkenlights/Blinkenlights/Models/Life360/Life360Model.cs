@@ -1,5 +1,15 @@
 ﻿namespace BlinkenLights.Models.Life360
 {
+    public class Life360ViewModel
+    {
+        public Life360ViewModel(List<Life360Model> models)
+        {
+            Models = models;
+        }
+
+        public List<Life360Model> Models { get; set; }
+    }
+
     public class Life360Model
     {
         public string Name { get; private set; }

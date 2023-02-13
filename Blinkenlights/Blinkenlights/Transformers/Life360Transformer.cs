@@ -1,4 +1,8 @@
-﻿using BlinkenLights.Models.Life360;
+﻿using Blinkenlights.Models;
+using Blinkenlights.Models.ApiCache;
+using Blinkenlights.Models.ApiResult;
+using BlinkenLights.Models.ApiCache;
+using BlinkenLights.Models.Life360;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -6,10 +10,29 @@ namespace BlinkenLights.Transformers
 {
     public class Life360Transformer
     {
-        public static bool TryGetLife360Model(string apiResponse, out string viewModel)
+        private const ApiType apiType = ApiType.Life360;
+
+        public static string GetGenericApiModel(ApiResponse apiResponse)
         {
+            if (apiResponse == null)
+            {
+                var status = ApiStatus.Failed(apiType, null, "Response is null");
+                return GenericApiViewModel.FromApiStatus(null, status);
+            }
+
             var models = new List<Life360Model>();
-            JObject content = JsonConvert.DeserializeObject<JObject>(apiResponse);
+            JObject content;
+
+            try 
+            {
+                content = JsonConvert.DeserializeObject<JObject>(apiResponse.Data); 
+            }
+            catch (JsonException)
+            {
+                var status = ApiStatus.Failed(apiType, null, "Exception while deserializing API response");
+                return GenericApiViewModel.FromApiStatus(null, status);
+            }
+
             content.TryGetValue("members", out var members);
             foreach (JObject member in members)
             {
@@ -39,15 +62,16 @@ namespace BlinkenLights.Transformers
 
             if (models.Any())
             {
-                viewModel = JsonConvert.SerializeObject(models);
-                return true;
+                var viewModel = new Life360ViewModel(models);
+                var viewModelStr = JsonConvert.SerializeObject(viewModel);
+                var status = ApiStatus.Success(apiType, apiResponse);
+                return GenericApiViewModel.FromApiStatus(viewModelStr, status);
             }
             else
             {
-                viewModel = null;
-                return false;
+                var status = ApiStatus.Failed(apiType, apiResponse, "Models list was empty");
+                return GenericApiViewModel.FromApiStatus(null, status);
             }
-
         }
     }
 }

@@ -1,6 +1,9 @@
 ﻿@using BlinkenLights.Modules.Time
 @model TimeViewModel
 
+<div id="time-status" data-api-status="@Model.Status" hidden>
+</div>
+
 @if (Model.TimeZoneInfos?.Any() == true) 
 {
 	<div id="time-worldclock" class="time-block">
@@ -31,3 +34,5 @@
 	}
 	</div>
 }
+
+<script type="module" src="~/ts-dist/TimeModule.js"></script>

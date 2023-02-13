@@ -1,4 +1,6 @@
-﻿var moduleHeight = 100;
+﻿//import { SetModuleStatusByStr, SetModuleStatusByFields } from "./Status.js";
+
+var moduleHeight = 100;
 
 function drawWeatherAxis(data, divElement, chartYMin, chartYMax) {
     var dataset = data.map(function (d) {
@@ -146,6 +148,7 @@ function addCurrentBlock(parent, iconStr, resultStr) {
 var weatherHandler = {
     refresh: function () {
         $.get("/Modules/GetWeatherData", function (weatherApiResponse) {
+            //SetModuleStatusByFields("Weather", 1, "Weather", null, "Data response is null");
             if (!weatherApiResponse) {
                 $("#weather-error").html("Invalid API response");
                 return;

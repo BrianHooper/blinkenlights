@@ -1,4 +1,6 @@
 ﻿using Blinkenlights.Models.ApiCache;
+using Blinkenlights.Models.ApiResult;
+using BlinkenLights.Models.ApiCache;
 using BlinkenLights.Models.WWII;
 using Humanizer;
 using Newtonsoft.Json;
@@ -7,6 +9,8 @@ namespace BlinkenLights.Transformers
 {
     public class WWIITransformer
     {
+        private const ApiType apiType = ApiType.WWII;
+
         public static WWIIDayModel GetWWIIViewModel(IWebHostEnvironment webHostEnvironment)
         {
             string path = Path.Combine(webHostEnvironment.WebRootPath, "DataSources", "WWII_DayByDay.json");
@@ -18,7 +22,8 @@ namespace BlinkenLights.Transformers
             }
             catch (JsonException)
             {
-                return null;
+                var status = ApiStatus.Failed(apiType, null, "Failed to deserialize data");
+                return new WWIIDayModel(null, null, null, status);
             }
 
             var now = DateTime.Now;
@@ -30,33 +35,14 @@ namespace BlinkenLights.Transformers
                 var globalEvents = wWIIDayJsonModel.Events.FirstOrDefault(kv => string.Equals(kv.Key, "Global", StringComparison.OrdinalIgnoreCase)).Value;
                 var regionalEvents = wWIIDayJsonModel.Events.Where(kv => !string.Equals(kv.Key, "Global", StringComparison.OrdinalIgnoreCase)).ToList();
 
-                return new WWIIDayModel()
-                {
-                    Date = dateFormatted,
-                    GlobalEvents = globalEvents,
-                    RegionalEvents = regionalEvents,
-                    Status = ApiStatus.Serialize(
-                        name: "WWII On this day",
-                        key: "WWII",
-                        status: "Up to date",
-                        lastUpdate: now.ToString(),
-                        state: ApiState.Good)
-                };
+                var apiResponse = new ApiResponse(apiType, null, ApiSource.Cache, now);
+                var status = ApiStatus.Success(apiType, apiResponse);
+                return new WWIIDayModel(dateFormatted, globalEvents, regionalEvents, status);
             }
             else
             {
-                return new WWIIDayModel()
-                {
-                    Date = null,
-                    GlobalEvents = null,
-                    RegionalEvents = null,
-                    Status = ApiStatus.Serialize(
-                        name: "WWII On this day",
-                        key: "WWII",
-                        status: "Failed to get data",
-                        lastUpdate: now.ToString(),
-                        state: ApiState.Error)
-                };
+                var status = ApiStatus.Failed(apiType, null, "Failed to get data");
+                return new WWIIDayModel(null, null, null, status);
             }
         }
     }

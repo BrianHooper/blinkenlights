@@ -1,4 +1,6 @@
-﻿// To parse this data:
+﻿// Auto-generated with quicktype.io
+//
+// To parse this data:
 //
 //   import { Convert, APIStatus } from "./file";
 //
@@ -8,15 +10,15 @@
 // match the expected interface, even if the JSON is valid.
 
 export interface APIStatus {
-    Items: ApiStatusItem[];
+    Items: APIStatusItem[];
 }
 
-export interface ApiStatusItem {
+export interface APIStatusItem {
     Name: string;
-    Key: string;
     Status: string;
     LastUpdate: string;
     State: number;
+    Source: number;
 }
 
 // Converts JSON strings to/from your types
@@ -189,9 +191,9 @@ const typeMap: any = {
     ], false),
     "Item": o([
         { json: "Name", js: "Name", typ: "" },
-        { json: "Key", js: "Key", typ: "" },
         { json: "Status", js: "Status", typ: "" },
         { json: "LastUpdate", js: "LastUpdate", typ: "" },
         { json: "State", js: "State", typ: 0 },
+        { json: "Source", js: "Source", typ: 0 },
     ], false),
 };
