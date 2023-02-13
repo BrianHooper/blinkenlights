@@ -1,2 +1,4 @@
-﻿body {
+﻿.calendar-row {
+    display: flex;
+    justify-content: space-between;
 }

@@ -1,5 +1,6 @@
 ﻿using Blinkenlights.Models;
 using Blinkenlights.Models.ApiCache;
+using Blinkenlights.Models.ApiResult;
 using Blinkenlights.Models.Calendar;
 using BlinkenLights.Models.ApiCache;
 using BlinkenLights.Transformers; 
@@ -50,14 +51,9 @@ namespace BlinkenLights.Controllers
         public async Task<IActionResult> GetCalendarModule()
         {
             var apiEndpoint = GetCalendarApiEndpoint(out var headers);
-            var apiResponse = await this.ApiCache.GetAndUpdateApiValue("GoogleCalendar", 60, apiEndpoint, headers);
+            var apiResponse = await this.ApiCache.GetAndUpdateApiValue(ApiType.GoogleCalendar, 60, apiEndpoint, headers);
+            var viewModel = CalendarTransformer.GetCalendarViewModel(apiResponse); 
             
-            // TODO Create calendar transformer
-            var viewModel = new CalendarViewModel()
-            {
-                Data = apiResponse?.Data,
-                Status = ApiStatus.Serialize("Calendar", "Calendar", "success", null, ApiState.Stale)
-            };
             return PartialView("CalendarModule", viewModel);
         }
 
@@ -91,7 +87,7 @@ namespace BlinkenLights.Controllers
         public async Task<string> GetLife360Locations()
         {
             var apiEndpoint = GetLife360ApiEndpoint(out var headers);
-            var apiResponse = await this.ApiCache.GetAndUpdateApiValue("Life360", 5, apiEndpoint, headers);
+            var apiResponse = await this.ApiCache.GetAndUpdateApiValue(ApiType.Life360, 5, apiEndpoint, headers);
             return Life360Transformer.GetGenericApiModel(apiResponse);
         }
 
@@ -117,7 +113,7 @@ namespace BlinkenLights.Controllers
                 : null;
 
             // TODO Migrate weather to TS & include status data
-            var apiResponse = await this.ApiCache.GetAndUpdateApiValue("VisualCrossing", 60, apiEndpoint);
+            var apiResponse = await this.ApiCache.GetAndUpdateApiValue(ApiType.VisualCrossingWeather, 60, apiEndpoint);
             return apiResponse.Data;
         }
 
@@ -128,20 +124,34 @@ namespace BlinkenLights.Controllers
                 ? $"https://meh.com/api/1/current.json?apikey={authorizationToken}"
                 : null;
 
-            var apiResponse = await this.ApiCache.GetAndUpdateApiValue("Meh", 120, apiEndpoint);
-            return GenericApiViewModel.FromApiResponse(apiResponse, "Meh", "Meh");
+            var apiResponse = await this.ApiCache.GetAndUpdateApiValue(ApiType.Meh, 120, apiEndpoint);
+            if (apiResponse is null)
+            {
+                var status = ApiStatus.Failed(ApiType.Meh, null, "Api response is null");
+                return GenericApiViewModel.FromApiStatus(null, status);
+            }
+            else if (string.IsNullOrWhiteSpace(apiResponse.Data))
+            {
+                var status = ApiStatus.Failed(ApiType.Meh, apiResponse, "Api response is empty");
+                return GenericApiViewModel.FromApiStatus(null, status);
+            }
+            else
+            {
+                var status = ApiStatus.Success(ApiType.Meh, apiResponse);
+                return GenericApiViewModel.FromApiStatus(apiResponse.Data, status);
+            }
         }
 
         public async Task<IActionResult> GetHeadlinesModule()
         {
-            var wikipediaData = await this.ApiCache.GetAndUpdateApiValue("Wikipedia", -1, $"http://127.0.0.1:5001/wikipedia");
+            var wikipediaData = await this.ApiCache.GetAndUpdateApiValue(ApiType.Wikipedia, 120, $"http://127.0.0.1:5001/wikipedia");
 
             var nytApiEndpoint =
                 ApiCache.TryGetSecret(this.config, ApiSecret.NewYorkTimesServiceApiKey, out var authorizationToken)
                 ? $"https://api.nytimes.com/svc/topstories/v2/home.json?api-key={authorizationToken}"
                 : null;
 
-            var nytData = await this.ApiCache.GetAndUpdateApiValue("NewYorkTimes", 120, nytApiEndpoint);
+            var nytData = await this.ApiCache.GetAndUpdateApiValue(ApiType.NewYorkTimes, 120, nytApiEndpoint);
 
             var headlinesViewModel = HeadlinesTransformer.GetHeadlinesViewModel(wikipediaData, nytData);
             return PartialView("HeadlinesModule", headlinesViewModel);

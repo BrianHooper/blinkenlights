@@ -16,12 +16,14 @@ namespace BlinkenLights.Transformers
             {
                 return new TimeViewModel()
                 {
-                    Status = ApiStatus.Serialize(
-                        name: "Time",
-                        key: "Time",
-                        status: "Failed to deserialize data",
-                        lastUpdate: null,
-                        state: ApiState.Error)
+                    // TODO Fix time deserialize with ApiResultBase
+
+                    //Status = ApiStatus.Serialize(
+                    //    name: "Time",
+                    //    key: "Time",
+                    //    status: "Failed to deserialize data",
+                    //    lastUpdate: null,
+                    //    state: ApiState.Error)
                 };
             }
 
@@ -33,12 +35,12 @@ namespace BlinkenLights.Transformers
                 { "2023-08-27", "Burning Man" },
             };
 
-            viewModel.Status = ApiStatus.Serialize(
-                name: "Time",
-                key: "Time",
-                status: "API Success",
-                lastUpdate: DateTime.Now.ToString(),
-                state: ApiState.Good);
+            //viewModel.Status = ApiStatus.Serialize(
+            //    name: "Time",
+            //    key: "Time",
+            //    status: "API Success",
+            //    lastUpdate: DateTime.Now.ToString(),
+            //    state: ApiState.Good);
 
             return viewModel;
         }

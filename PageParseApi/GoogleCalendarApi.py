@@ -69,4 +69,4 @@ def GetCalendar(userAccount, secret):
     if len(events_filtered) is None:
         return ApiError("Failed to parse any valid events")
 
-    return events_filtered
+    return { "Events": events_filtered }

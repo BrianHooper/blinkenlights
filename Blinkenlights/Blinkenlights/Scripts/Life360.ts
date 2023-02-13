@@ -8,13 +8,13 @@ var gpsHandler = {
     refresh: function (): void {
         $.get("/Modules/GetLife360Locations", function (data) {
             if (!data) {
-                SetModuleStatusByFields("Life360", 1, "Life360", null, "Failed to get data");
+                SetModuleStatusByFields("Life360", "Failed to get data", null, 1, 0);
                 return;
             }
 
             var apiResult = JSON.parse(data);
             if (!apiResult) {
-                SetModuleStatusByFields("Life360", 1, "Life360", null, "Failed to get apiResult");
+                SetModuleStatusByFields("Life360", "Failed to get apiResult", null, 1, 0);
                 return;
             }
 
@@ -24,30 +24,29 @@ var gpsHandler = {
             }
             else {
                 //TODO this should use constants, avoid re-defining key/name/state enum
-                SetModuleStatusByFields("Life360", 1, "Life360", null, "API response is null");
+                SetModuleStatusByFields("Life360", "API response is null", null, 1, 0);
                 return;
             }
-
             var apiData = apiResult["ApiData"];
             if (!apiData) {
-                SetModuleStatusByFields("Life360", 1, "Life360", null, "Failed to get apiData");
+                SetModuleStatusByFields("Life360", "Failed to get apiData", null, 1, 0);
                 return;
             }
 
             var apiResponse = JSON.parse(apiData);
             if (!apiResponse) {
-                SetModuleStatusByFields("Life360", 1, "Life360", null, "Failed to get apiResponse");
+                SetModuleStatusByFields("Life360", "Failed to get apiResponse", null, 1, 0);
                 return;
             }
 
             var locations = apiResponse["Models"];
             if (!locations) {
-                SetModuleStatusByFields("Life360", 1, "Life360", null, "Failed to get models - null");
+                SetModuleStatusByFields("Life360", "Failed to get models - null", null, 1, 0);
                 return;
             }
 
             if (locations.length === 0) {
-                SetModuleStatusByFields("Life360", 1, "Life360", null, "Failed to get models - empty");
+                SetModuleStatusByFields("Life360", "Failed to get models - empty", null, 1, 0);
                 return;
             }
 

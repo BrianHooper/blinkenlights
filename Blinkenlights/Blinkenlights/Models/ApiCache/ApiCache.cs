@@ -1,10 +1,22 @@
-﻿using Blinkenlights.Models.ApiCache;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using RestSharp;
 using System.ComponentModel;
 
 namespace BlinkenLights.Models.ApiCache
 {
+    public enum ApiType
+    {
+        Unknown = 0,
+        TimeZone = 1,
+        Meh = 2,
+        Life360 = 3,
+        WWII = 4,
+        Wikipedia = 5,
+        NewYorkTimes = 6,
+        GoogleCalendar = 7,
+        VisualCrossingWeather = 8
+    }
+
     public enum ApiSecret
     {
         Default = 0,
@@ -42,7 +54,6 @@ namespace BlinkenLights.Models.ApiCache
             return attributes.Length > 0 ? attributes[0].Description : string.Empty;
         }
     }
-
 
     public class ApiCache
     {
@@ -100,7 +111,7 @@ namespace BlinkenLights.Models.ApiCache
             return !string.IsNullOrWhiteSpace(secret);
         }
 
-        public bool TryGetCachedValue(string cacheKey, int cacheTimeoutMinutes, out ApiResponse cachedValue)
+        public bool TryGetCachedValue(ApiType apiType, int cacheTimeoutMinutes, out ApiResponse cachedValue)
         {
             Mutex.WaitOne();
             if (cacheTimeoutMinutes == 0 || !File.Exists(CachePath))
@@ -123,7 +134,7 @@ namespace BlinkenLights.Models.ApiCache
                 return false;
             }
 
-            if (apiCacheModel?.Modules?.TryGetValue(cacheKey, out var apiCacheModule) != true || apiCacheModule is null)
+            if (apiCacheModel?.Modules?.TryGetValue(apiType.ToString(), out var apiCacheModule) != true || apiCacheModule is null)
             {
                 cachedValue = null;
                 Mutex.ReleaseMutex();
@@ -138,15 +149,15 @@ namespace BlinkenLights.Models.ApiCache
                 return false;
             }
 
-            cachedValue = new ApiResponse(apiCacheModule.ApiData, ApiSource.Cache, apiCacheModule.LastUpdateTime);
+            cachedValue = new ApiResponse(apiType, apiCacheModule.ApiData, ApiSource.Cache, apiCacheModule.LastUpdateTime);
             Mutex.ReleaseMutex();
             return true;
         }
 
-        public bool TryUpdateCache(string apiCacheKey, DateTime lastUpdateTime, string apiResponse)
+        public bool TryUpdateCache(ApiType apiType, DateTime lastUpdateTime, string apiResponse)
         {
             Mutex.WaitOne();
-            if (string.IsNullOrWhiteSpace(apiCacheKey) || string.IsNullOrWhiteSpace(apiResponse))
+            if (apiType == ApiType.Unknown || string.IsNullOrWhiteSpace(apiResponse))
             {
                 Mutex.ReleaseMutex();
                 return false;
@@ -178,7 +189,7 @@ namespace BlinkenLights.Models.ApiCache
                 LastUpdateTime = lastUpdateTime,
                 ApiData = apiResponse
             };
-            apiCacheModel.Modules[apiCacheKey] = apiCacheModule;
+            apiCacheModel.Modules[apiType.ToString()] = apiCacheModule;
             var serializedCacheModel = JsonConvert.SerializeObject(apiCacheModel, Formatting.Indented);
 
             try
@@ -194,9 +205,9 @@ namespace BlinkenLights.Models.ApiCache
             }
         }
 
-        public async Task<ApiResponse> GetAndUpdateApiValue(string cacheKey, int cacheTimeoutMinutes, string endpointUrl, Dictionary<string, string> headers = null)
+        public async Task<ApiResponse> GetAndUpdateApiValue(ApiType apiType, int cacheTimeoutMinutes, string endpointUrl, Dictionary<string, string> headers = null)
         {
-            if (TryGetCachedValue(cacheKey, cacheTimeoutMinutes, out var apiResponseCached))
+            if (TryGetCachedValue(apiType, cacheTimeoutMinutes, out var apiResponseCached))
             {
                 return apiResponseCached;
             }
@@ -233,8 +244,8 @@ namespace BlinkenLights.Models.ApiCache
             }
 
             var lastUpdateTime = DateTime.Now;
-            TryUpdateCache(cacheKey, lastUpdateTime, response.Content);
-            return new ApiResponse(response.Content, ApiSource.Prod, lastUpdateTime);
+            TryUpdateCache(apiType, lastUpdateTime, response.Content);
+            return new ApiResponse(apiType, response.Content, ApiSource.Prod, lastUpdateTime);
         }
     }
 }

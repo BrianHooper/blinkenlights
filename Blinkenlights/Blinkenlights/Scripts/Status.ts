@@ -1,41 +1,46 @@
-﻿import { Convert, APIStatus, ApiStatusItem } from "./ApiStatusSerializer.js"
+﻿import { Convert, APIStatus, APIStatusItem } from "./ApiStatus.js"
 
 function createDivElement(className: string, value: any, parent: JQuery<HTMLElement>): void {
-    if (!parent || !value || !className) {
+    if (!parent || !className) {
         return;
     }
 
     const childDiv = jQuery("<div/>", {
-        "class": "status-name",
+        "class": className,
     });
-    childDiv.html(value);
+    if (value) {
+        childDiv.html(value);
+    }
     childDiv.appendTo(parent);
 }
 
-export function SetModuleStatusByFields(key: string, state: number, name: string, lastUpdate: string, status: string): void {
+export function SetModuleStatusByFields(Name: string, Status: string, LastUpdate: string, State: number, Source: number): void {
     const root = $("#status-root");
     if (!root) {
         console.log("SetModuleStatus: Failed to find root element");
         return;
     }
 
-    if (!key) {
+    if (!Name) {
         return;
     }
 
-    var statusRow = $("div[data-status-key='" + key + "']");
+    var statusRow = $("div[data-status-key='" + Name + "']");
     if (!statusRow || statusRow.html() === undefined) {
         statusRow = jQuery("<div/>", {
             "class": "status-row",
-            "data-status-key": key
+            "data-status-key": Name
         });
     }
 
-    // TODO State should render an icon
-    createDivElement("status-State", state, statusRow);
-    createDivElement("status-Name", name, statusRow);
-    createDivElement("status-LastUpdate", lastUpdate, statusRow);
-    createDivElement("status-Status", status, statusRow);
+    statusRow.empty();
+
+    // TODO State & Source should render an icon
+    createDivElement("status-state", State, statusRow);
+    createDivElement("status-state", Source, statusRow);
+    createDivElement("status-name", Name, statusRow);
+    createDivElement("status-lastupdate", LastUpdate, statusRow);
+    createDivElement("status-status", Status, statusRow);
 
     if (statusRow.children.length === 0) {
         return;
@@ -61,25 +66,10 @@ export function SetModuleStatusByObject(apiStatus: APIStatus): void {
         return;
     }
 
-    apiStatus.Items.forEach(function (item: ApiStatusItem) {
+    apiStatus.Items.forEach(function (item: APIStatusItem) {
         if (item) {
-            SetModuleStatusByFields(item.Key, item.State, item.Name, item.LastUpdate, item.Status);
+            SetModuleStatusByFields(item.Name, item.Status, item.LastUpdate, item.State, item.Source);
         }
-
-        //var statusRow = $("div[data-status-key='" + item.Key + "']");
-        //if (!statusRow || statusRow.html() === undefined) {
-        //    statusRow = jQuery("<div/>", {
-        //        "class": "status-row",
-        //        "data-status-key": item.Key
-        //    });
-        //}
-
-        //createDivElement("status-State", item.State, statusRow);
-        //createDivElement("status-Name", item.Name, statusRow);
-        //createDivElement("status-LastUpdate", item.LastUpdate, statusRow);
-        //createDivElement("status-Status", item.Status, statusRow);
-
-        //statusRow.appendTo(root);
     });
 }
 

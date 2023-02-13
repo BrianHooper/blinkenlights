@@ -4,13 +4,13 @@ var MehHandler = {
     refresh: function (): void {
         $.get("/Modules/GetMehData", function (data) {
             if (!data) {
-                SetModuleStatusByFields("Meh", 1, "Meh", null, "Data response is null");
+                SetModuleStatusByFields("Meh", "Data response is null", null, 1, 0);
                 return;
             }
 
             var apiResponse = JSON.parse(data);
             if (!apiResponse) {
-                SetModuleStatusByFields("Meh", 1, "Meh", null, "API response is null");
+                SetModuleStatusByFields("Meh", "API response is null", null, 1, 0);
                 return;
             }
 
@@ -20,25 +20,25 @@ var MehHandler = {
             }
             else {
                 //TODO this should use constants, avoid re-defining key/name/state enum
-                SetModuleStatusByFields("Meh", 1, "Meh", null, "API status response is null");
+                SetModuleStatusByFields("Meh", "API status response is null", null, 1, 0);
                 return;
             }
 
             var apiData = apiResponse["ApiData"];
             if (!apiData) {
-                SetModuleStatusByFields("Meh", 1, "Meh", null, "API data response is null");
+                SetModuleStatusByFields("Meh", "API data response is null", null, 1, 0);
                 return;
             }
 
             var meh = JSON.parse(apiData);
             if (!meh) {
-                SetModuleStatusByFields("Meh", 1, "Meh", null, "Failed to parse API result");
+                SetModuleStatusByFields("Meh", "Failed to parse API result", null, 1, 0);
                 return;
             }
 
             var root = $("#meh-root");
             if (!root) {
-                SetModuleStatusByFields("Meh", 1, "Meh", null, "Failed to find meh root on page");
+                SetModuleStatusByFields("Meh", "Failed to find meh root on page", null, 1, 0);
                 return;
             }
 
@@ -47,7 +47,7 @@ var MehHandler = {
             $("#meh-price").html("$" + meh["deal"]["items"][0]["price"]);
 
             var imgBlockHeight = $("#meh-image").height() - 20;
-
+            $("#meh-image").empty();
             var textBlock = jQuery("<img/>", {
                 "height": imgBlockHeight,
                 "width": imgBlockHeight,

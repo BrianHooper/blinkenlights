@@ -1,6 +1,8 @@
-﻿namespace BlinkenLights.Models.Headlines
+﻿using Blinkenlights.Models.ApiResult;
+
+namespace BlinkenLights.Models.Headlines
 {
-    public class HeadlinesViewModel
+    public class HeadlinesViewModel: ApiResultBase
     {
         public List<HeadlinesArticle> WikipediaInTheNews { get; set; }
 
@@ -8,7 +10,17 @@
 
         public List<HeadlinesArticle> NewYorkTimesFrontPageWorld { get; set; }
 
-        public string Status { get; set; }
+        public HeadlinesViewModel(
+            List<HeadlinesArticle> wikipediaInTheNews,
+            ApiStatus wikipediaApiStatus,
+            List<HeadlinesArticle> newYorkTimesFrontPageUs, 
+            List<HeadlinesArticle> newYorkTimesFrontPageWorld,
+            ApiStatus nytApiStatus) : base(wikipediaApiStatus, nytApiStatus)
+        {
+            WikipediaInTheNews = wikipediaInTheNews;
+            NewYorkTimesFrontPageUs = newYorkTimesFrontPageUs;
+            NewYorkTimesFrontPageWorld = newYorkTimesFrontPageWorld;
+        }
     }
 
     public class HeadlinesArticle

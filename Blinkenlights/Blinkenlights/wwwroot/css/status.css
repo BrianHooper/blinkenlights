@@ -1,1 +1,34 @@
-﻿/* TODO Add styles for status module */
+﻿#status-root {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
+}
+
+.status-row {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    gap: 5px;
+    align-items: center;
+}
+
+.status-row > div {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.status-state {
+    display: flex;
+    width: 20px;
+    justify-content: center;
+}
+
+.status-name {
+    width: 120px;
+}
+
+.status-lastupdate {
+    width: 100px;
+}

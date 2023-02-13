@@ -1,4 +1,5 @@
 ﻿using Blinkenlights.Models.ApiCache;
+using Blinkenlights.Models.ApiResult;
 using BlinkenLights.Models.ApiCache;
 using BlinkenLights.Models.Headlines;
 using Newtonsoft.Json;
@@ -8,24 +9,15 @@ namespace BlinkenLights.Transformers
 
     public class HeadlinesTransformer
     {
-        public const string WikiApiName = "Wikipedia - In The News";
-        public const string WikiApiKey = "WikiITN";
-        public const string NytApiName = "New York Times";
-        public const string NytApiKey = "nyt";
+        public const ApiType WikiApiType = ApiType.Wikipedia;
+        public const ApiType NytApiType = ApiType.NewYorkTimes;
 
         public static HeadlinesViewModel GetHeadlinesViewModel(ApiResponse wikipediaResponse, ApiResponse nytResponse)
         {
             ProcessNytResponse(nytResponse, out var top3us, out var top3world, out var nytStatus);
             ProcessWikipediaResponse(wikipediaResponse, out var wikipediaInTheNews, out var wikiApiStatus);
 
-            var headlinesViewModel = new HeadlinesViewModel()
-            {
-                WikipediaInTheNews = wikipediaInTheNews,
-                NewYorkTimesFrontPageUs = top3us,
-                NewYorkTimesFrontPageWorld = top3world,
-                Status = ApiStatusList.Serialize(nytStatus, wikiApiStatus)
-            };
-
+            var headlinesViewModel = new HeadlinesViewModel(wikipediaInTheNews, wikiApiStatus, top3us, top3world, nytStatus);
             return headlinesViewModel;
         }
 
@@ -35,7 +27,7 @@ namespace BlinkenLights.Transformers
             {
                 top3us = null;
                 top3world = null;
-                status = new ApiStatus(NytApiName, NytApiKey, "nytResponse is null", null, ApiState.Error);
+                status = ApiStatus.Failed(NytApiType, null, "Response is null");
                 return;
             }
 
@@ -45,13 +37,13 @@ namespace BlinkenLights.Transformers
 
             if (top3us?.Any() == true || top3world?.Any() == true)
             {
-                status = new ApiStatus(NytApiName, NytApiKey, "Good", nytResponse.LastUpdateTime.ToString(), ApiState.Good);
+                status = ApiStatus.Success(NytApiType, nytResponse);
             }
             else
             {
                 top3us = null;
                 top3world = null;
-                status = new ApiStatus(NytApiName, NytApiKey, "Failed - no results", nytResponse.LastUpdateTime.ToString(), ApiState.Error);
+                status = ApiStatus.Failed(NytApiType, null, "No results");
             }
         }
 
@@ -60,7 +52,7 @@ namespace BlinkenLights.Transformers
             if (wikipediaResponse is null)
             {
                 headlinesArticles = null;
-                status = new ApiStatus(WikiApiName, WikiApiKey, "Failed", null, ApiState.Error);
+                status = ApiStatus.Failed(WikiApiType, null, "Response is null");
                 return;
             }
 
@@ -69,12 +61,12 @@ namespace BlinkenLights.Transformers
 
             if (headlinesArticles?.Any() == true)
             {
-                status = new ApiStatus(WikiApiName, WikiApiKey, "Good", wikipediaResponse.LastUpdateTime.ToString(), ApiState.Good);
+                status = ApiStatus.Success(WikiApiType, wikipediaResponse);
             }
             else
             {
                 headlinesArticles = null;
-                status = new ApiStatus(WikiApiName, WikiApiKey, "Failed", wikipediaResponse.LastUpdateTime.ToString(), ApiState.Error);
+                status = ApiStatus.Failed(WikiApiType, wikipediaResponse, "No headlines created");
             }
         }
     }
