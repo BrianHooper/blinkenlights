@@ -1,4 +1,22 @@
-﻿.headlines-article {
+﻿#headlines-root {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#headlines-body {
+    overflow-y: scroll;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+#headlines-body::-webkit-scrollbar { /* WebKit */
+    width: 0;
+    height: 0;
+}
+
+.headlines-article {
     color: white;
     overflow: hidden;
     white-space: nowrap;
@@ -17,7 +35,7 @@
     padding-block-end: 2px;
 }
 
-#headlines-root > ul {
+#headlines-body > ul {
     list-style: none;
     padding-left: 0;
     display: flex;

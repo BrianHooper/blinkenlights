@@ -24,13 +24,19 @@ def WriteCachedData(today, data):
 
 def GetWikipedia():
     today = str(date.today())
+
     cache = GetCachedData(today)
     if cache is not None:
         return cache
 
     engine = Engine()
     soup, html = engine.GetSoup("https://en.wikipedia.org/wiki/Main_Page")
+    if soup is None:
+        return ApiError("Failed to get wikipedia page")
     In_the_news = soup.find("div", {"id": "mp-itn"})
+    if In_the_news is None or In_the_news.children is None:
+        return ApiError("Failed to get ITN from wikipedia page")
+
     itn = []
 
     for itnchild in In_the_news.children:
@@ -39,10 +45,19 @@ def GetWikipedia():
     # On_This_day = soup.find("div", {"id": "mp-otd"})
     print()
 
+    if len(itn) == 0:
+        return ApiError("Failed to get ITN from wikipedia page")
+
+    stories = [{"title": i} for i in itn]
+
     data = {
         "Date": today,
-        "InTheNews": itn,
+        "stories": stories,
     }
+    
+    if len(itn) == 0:
+        return ApiError("No ITN items found")
+
     WriteCachedData(today, data)
     return data
 

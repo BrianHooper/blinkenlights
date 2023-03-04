@@ -3,6 +3,7 @@
     flex-direction: column;
     height: 100%;
     justify-content: space-between;
+    gap: 5px;
 }
 
 .status-row {
@@ -11,6 +12,8 @@
     width: 100%;
     gap: 5px;
     align-items: center;
+    color: black;
+    border-radius: 5px;
 }
 
 .status-row > div {
@@ -19,7 +22,7 @@
     text-overflow: ellipsis;
 }
 
-.status-state {
+.status-source {
     display: flex;
     width: 20px;
     justify-content: center;
@@ -31,4 +34,34 @@
 
 .status-lastupdate {
     width: 100px;
+}
+
+.status-success {
+    background-color: lightgreen;
+}
+.status-stale {
+    background-color: lightyellow;
+}
+.status-failed {
+    background-color: lightcoral;
+}
+
+.status-notloaded {
+    background-color: lightslategrey;
+    color: black;
+}
+
+.api-source {
+    height: 10px;
+    width: 10px;
+}
+
+.api-source-cache {
+    fill: darkorange;
+}
+.api-source-prod {
+    fill: green;
+}
+.api-source-error {
+    fill: red;
 }

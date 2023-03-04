@@ -1,20 +1,21 @@
-﻿@using Blinkenlights.Models.Calendar
+﻿@using Blinkenlights.Models.ViewModels.Calendar;
 @model CalendarViewModel
 
 @if (!string.IsNullOrWhiteSpace(Model?.Status)) {
 	<div id="calendar-status" data-api-status="@Model.Status" hidden>
-		@Model.Status
-</div>
+	</div>
 }
 
-@if (Model?.Events?.Any() == true)
-{
-	foreach(var calEvent in Model.Events) {
-		<div class="calendar-row">
-			<div class="calendar-name">@calEvent.Name</div>
-			<div class="calendar-date">@calEvent.Date</div>
-		</div>
+<div id="calendar-events">
+	@if (Model?.Events?.Any() == true)
+	{
+		foreach(var calEvent in Model.Events) {
+			<div class="calendar-row">
+				<div class="calendar-name">@calEvent.Name</div>
+				<div class="calendar-date">@calEvent.Date</div>
+			</div>
+		}
 	}
-}
+</div>
 
 <script type="module" src="~/ts-dist/CalendarModule.js"></script>

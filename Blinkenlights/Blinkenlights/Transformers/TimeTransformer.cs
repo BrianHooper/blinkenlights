@@ -1,48 +1,47 @@
-﻿using Blinkenlights.Models.ApiCache;
-using BlinkenLights.Modules.Time;
-using BlinkenLights.Utilities;
-using Newtonsoft.Json;
+﻿using Blinkenlights.Models.Api.ApiHandler;
+using Blinkenlights.Models.Api.ApiInfoTypes;
+using Blinkenlights.Models.Api.ApiResult;
+using Blinkenlights.Models.ViewModels;
+using Blinkenlights.Models.ViewModels.Time;
+using Blinkenlights.Utilities;
 
-namespace BlinkenLights.Transformers
+namespace Blinkenlights.Transformers
 {
-    public class TimeTransformer
-    {
-        public static TimeViewModel GetTimeViewModel(IWebHostEnvironment webHostEnvironment)
-        {
-            string path = Path.Combine(webHostEnvironment.WebRootPath, "DataSources", "TimeZoneInfo.json");
-            var stringData = File.ReadAllText(path);
+    public class TimeTransformer : TransformerBase
+	{
 
-            if (!Helpers.TryDeserialize<TimeViewModel>(stringData, out var viewModel))
+		public TimeTransformer(IApiHandler apiHandler) : base(apiHandler)
+		{
+		}
+
+		public async override Task<IModuleViewModel> Transform()
+		{
+			var response = await this.ApiHandler.Fetch(ApiType.TimeZone);
+			if (response is null)
+			{
+				var errorStatus = ApiStatus.Failed(ApiType.TimeZone, null, "Failed to get local data");
+				return new TimeViewModel(errorStatus);
+			}
+
+			if (!Helpers.TryDeserialize<TimeViewModel>(response.Data, out var serverModel))
             {
-                return new TimeViewModel()
-                {
-                    // TODO Fix time deserialize with ApiResultBase
-
-                    //Status = ApiStatus.Serialize(
-                    //    name: "Time",
-                    //    key: "Time",
-                    //    status: "Failed to deserialize data",
-                    //    lastUpdate: null,
-                    //    state: ApiState.Error)
-                };
+				var errorStatus = ApiStatus.Failed(ApiType.TimeZone, null, "Failed to read data");
+				return new TimeViewModel(errorStatus);
             }
 
-            viewModel.CountdownInfos = new SortedDictionary<string, string>()
-            {
-                { "2023-03-22", "Ecuador" },
-                { "2023-06-10", "Wedding" },
-                { "2023-07-03", "Portugal" },
-                { "2023-08-27", "Burning Man" },
-            };
+			var apiResponse = new ApiResponse(ApiType.TimeZone, null, ApiSource.Prod, DateTime.Now);
+			var status = ApiStatus.Success(ApiType.TimeZone, apiResponse);
+			var viewModel = new TimeViewModel(status);
+            viewModel.TimeZoneInfos = serverModel.TimeZoneInfos;
+			viewModel.CountdownInfos = new SortedDictionary<string, string>()
+			{
+				{ "2023-03-22", "Ecuador" },
+				{ "2023-06-10", "Wedding" },
+				{ "2023-07-03", "Portugal" },
+				{ "2023-08-27", "Burning Man" },
+			};
 
-            //viewModel.Status = ApiStatus.Serialize(
-            //    name: "Time",
-            //    key: "Time",
-            //    status: "API Success",
-            //    lastUpdate: DateTime.Now.ToString(),
-            //    state: ApiState.Good);
-
-            return viewModel;
+			return viewModel;
         }
     }
 }

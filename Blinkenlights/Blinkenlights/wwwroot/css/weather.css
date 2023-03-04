@@ -84,3 +84,32 @@
     font-size: 12px;
     line-height: 20px;
 }
+
+.weather-outline {
+    stroke: #333333;
+    stroke-width: 2px;
+    fill-opacity: 0;
+}
+
+.weather-hidden {
+    visibility: hidden;
+}
+
+.weather-highlight {
+}
+
+#weather-humidity-button {
+    width: 20px;
+    height: 20px;
+    background-color: gray;
+}
+#weather-rain-button {
+    width: 20px;
+    height: 20px;
+    background-color: blue;
+}
+#weather-temperature-button {
+    width: 20px;
+    height: 20px;
+    background-color: red;
+}

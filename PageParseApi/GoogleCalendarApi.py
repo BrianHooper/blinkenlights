@@ -9,7 +9,7 @@ class Event:
         self.date = date
 
     def toDict(self):
-        return { "Name": self.name, "Date": self.date.isoformat() }
+        return { "Name": self.name, "Date": self.date.strftime("%a - %m/%d") }
 
 def ToEventDict(name, dtstart):
     if name is None or dtstart is None:

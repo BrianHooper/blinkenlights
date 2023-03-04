@@ -1,4 +1,4 @@
-﻿import { SetModuleStatusByStr, SetModuleStatusByFields } from "./Status.js";
+﻿import { SetModuleStatusByStr, SetModuleStatusByFields, SetModuleError } from "./Status.js";
 
 var layerGroup;
 var mapElement;
@@ -7,46 +7,43 @@ var initialized = false;
 var gpsHandler = {
     refresh: function (): void {
         $.get("/Modules/GetLife360Locations", function (data) {
+            console.log(data);
             if (!data) {
-                SetModuleStatusByFields("Life360", "Failed to get data", null, 1, 0);
+                SetModuleError("Life360", "Failed to get data");
                 return;
             }
 
             var apiResult = JSON.parse(data);
             if (!apiResult) {
-                SetModuleStatusByFields("Life360", "Failed to get apiResult", null, 1, 0);
+                SetModuleError("Life360", "Failed to get apiResult");
                 return;
             }
 
             var apiStatus: string = apiResult["Status"];
-            if (apiStatus) {
+            if (apiStatus.length > 0) {
                 SetModuleStatusByStr(apiStatus);
             }
-            else {
-                //TODO this should use constants, avoid re-defining key/name/state enum
-                SetModuleStatusByFields("Life360", "API response is null", null, 1, 0);
-                return;
-            }
+
             var apiData = apiResult["ApiData"];
             if (!apiData) {
-                SetModuleStatusByFields("Life360", "Failed to get apiData", null, 1, 0);
+                SetModuleError("Life360", "Failed to get apiData");
                 return;
             }
 
             var apiResponse = JSON.parse(apiData);
             if (!apiResponse) {
-                SetModuleStatusByFields("Life360", "Failed to get apiResponse", null, 1, 0);
+                SetModuleError("Life360", "Failed to get apiResponse");
                 return;
             }
 
             var locations = apiResponse["Models"];
             if (!locations) {
-                SetModuleStatusByFields("Life360", "Failed to get models - null", null, 1, 0);
+                SetModuleError("Life360", "Failed to get models - null");
                 return;
             }
 
             if (locations.length === 0) {
-                SetModuleStatusByFields("Life360", "Failed to get models - empty", null, 1, 0);
+                SetModuleError("Life360", "Failed to get models - empty");
                 return;
             }
 
@@ -70,7 +67,7 @@ var gpsHandler = {
                 marker.bindTooltip(value["Name"]).openTooltip();
             });
 
-            $("#life360-time").html(locations[1]["TimeStr"]);
+            $("#life360-time").html(locations[0]["TimeStr"]);
         });
     }
 };

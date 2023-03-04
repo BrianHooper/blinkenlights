@@ -1,67 +1,41 @@
-﻿@using BlinkenLights.Models.Headlines
+﻿@using Blinkenlights.Models.ViewModels.Headlines;
 @model HeadlinesViewModel
 
-<div id="headlines-status" data-api-status="@Model.Status" hidden>
+<div id="headlines-body">
+	@if (Model.Headlines?.Any() == true)
+	{
+		@foreach (var headlinesContainer in Model.Headlines)
+		{
+			<div class="headlines-status" data-api-status="@headlinesContainer.Status" hidden>
+			</div>
+
+			@if (headlinesContainer.Categories?.Any() == true)
+			{
+				@foreach (var headlinesCategory in headlinesContainer.Categories)
+				{
+					@if (headlinesCategory?.Articles?.Any() == true)
+					{
+						<div class="headlines-header">@headlinesCategory.Title</div>
+						<ul class="headlines-articles">
+							@foreach (var headline in headlinesCategory.Articles)
+							{
+								<li class="headlines-article">
+									@if (!string.IsNullOrWhiteSpace(headline.Url))
+									{
+										<a href="@headline.Url">@headline.Title</a>
+									}
+									else
+									{
+										@headline.Title
+									}
+								</li>
+							}
+						</ul>
+					}
+				}
+			}
+		}
+	}
 </div>
-
-@if (Model.NewYorkTimesFrontPageUs?.Any() == true)
-{
-	<div class="headlines-header">New York Times - US</div>
-	<ul id="headlines-nyt-us">
-		@foreach(var headline in Model.NewYorkTimesFrontPageUs)
-		{
-			<li class="headlines-article">
-				@if (!string.IsNullOrWhiteSpace(headline.Url))
-				{
-					<a href="@headline.Url">@headline.Title</a>
-				}
-				else
-				{
-					@headline.Title
-				}
-			</li>
-		}
-	</ul>
-}
-
-@if (Model.NewYorkTimesFrontPageWorld?.Any() == true)
-{
-	<div class="headlines-header">New York Times - World</div>
-	<ul id="headlines-nyt-world">
-		@foreach(var headline in Model.NewYorkTimesFrontPageWorld)
-		{
-			<li class="headlines-article">
-				@if (!string.IsNullOrWhiteSpace(headline.Url))
-				{
-					<a href="@headline.Url">@headline.Title</a>
-				}
-				else
-				{
-					@headline.Title
-				}
-			</li>
-		}
-	</ul>
-}
-
-@if (Model.WikipediaInTheNews?.Any() == true)
-{
-	<div class="headlines-header">Wikipedia - In The News</div>
-	<ul id="headlines-wikipedia-inthenews">
-		@foreach(var headline in Model.WikipediaInTheNews)
-		{
-			<li class="headlines-article">
-				@if (!string.IsNullOrWhiteSpace(headline.Url))
-				{
-					<a href="@headline.Url">@headline.Title</a>
-				}
-				else
-				{
-					@headline.Title
-				}
-			</li>
-		}
-	</ul>
-}
 
 <script type="module" src="~/ts-dist/HeadlinesModule.js"></script>

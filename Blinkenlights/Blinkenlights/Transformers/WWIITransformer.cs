@@ -1,28 +1,37 @@
-﻿using Blinkenlights.Models.ApiCache;
-using Blinkenlights.Models.ApiResult;
-using BlinkenLights.Models.ApiCache;
-using BlinkenLights.Models.WWII;
+﻿using Blinkenlights.Models.Api.ApiHandler;
+using Blinkenlights.Models.Api.ApiInfoTypes;
+using Blinkenlights.Models.Api.ApiResult;
+using Blinkenlights.Models.ViewModels;
+using Blinkenlights.Models.ViewModels.WWII;
 using Humanizer;
 using Newtonsoft.Json;
 
-namespace BlinkenLights.Transformers
+namespace Blinkenlights.Transformers
 {
-    public class WWIITransformer
-    {
-        private const ApiType apiType = ApiType.WWII;
+    public class WWIITransformer : TransformerBase
+	{
+		public WWIITransformer(IApiHandler apiHandler) : base(apiHandler)
+		{
 
-        public static WWIIDayModel GetWWIIViewModel(IWebHostEnvironment webHostEnvironment)
-        {
-            string path = Path.Combine(webHostEnvironment.WebRootPath, "DataSources", "WWII_DayByDay.json");
-            var stringData = System.IO.File.ReadAllText(path);
+		}
+
+		public async override Task<IModuleViewModel> Transform()
+		{
+            var response = await this.ApiHandler.Fetch(ApiType.WWII);
+            if (string.IsNullOrWhiteSpace(response?.Data))
+			{
+				var status = ApiStatus.Failed(ApiType.WWII, null, "Failed to get local data");
+				return new WWIIDayModel(null, null, null, status);
+			}
+
             WWIIJsonModel wWIIViewModel = null;
             try
             {
-                wWIIViewModel = JsonConvert.DeserializeObject<WWIIJsonModel>(stringData);
+                wWIIViewModel = JsonConvert.DeserializeObject<WWIIJsonModel>(response.Data);
             }
             catch (JsonException)
             {
-                var status = ApiStatus.Failed(apiType, null, "Failed to deserialize data");
+                var status = ApiStatus.Failed(ApiType.WWII, null, "Failed to deserialize data");
                 return new WWIIDayModel(null, null, null, status);
             }
 
@@ -35,13 +44,13 @@ namespace BlinkenLights.Transformers
                 var globalEvents = wWIIDayJsonModel.Events.FirstOrDefault(kv => string.Equals(kv.Key, "Global", StringComparison.OrdinalIgnoreCase)).Value;
                 var regionalEvents = wWIIDayJsonModel.Events.Where(kv => !string.Equals(kv.Key, "Global", StringComparison.OrdinalIgnoreCase)).ToList();
 
-                var apiResponse = new ApiResponse(apiType, null, ApiSource.Cache, now);
-                var status = ApiStatus.Success(apiType, apiResponse);
+                var apiResponse = new ApiResponse(ApiType.WWII, null, ApiSource.Cache, now);
+                var status = ApiStatus.Success(ApiType.WWII, apiResponse);
                 return new WWIIDayModel(dateFormatted, globalEvents, regionalEvents, status);
             }
             else
             {
-                var status = ApiStatus.Failed(apiType, null, "Failed to get data");
+                var status = ApiStatus.Failed(ApiType.WWII, null, "Failed to get data");
                 return new WWIIDayModel(null, null, null, status);
             }
         }
