@@ -1,6 +1,8 @@
 using Blinkenlights.Data;
+using Blinkenlights.Models.Api.ApiHandler;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Blinkenlights
 {
@@ -31,7 +33,9 @@ namespace Blinkenlights
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddControllersWithViews();
 
-            var app = builder.Build();
+			builder.Services.AddSingleton<IApiHandler, ApiHandler>();
+
+			var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

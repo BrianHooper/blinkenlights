@@ -1,73 +1,125 @@
-﻿using Blinkenlights.Models.ApiCache;
-using Blinkenlights.Models.ApiResult;
-using BlinkenLights.Models.ApiCache;
-using BlinkenLights.Models.Headlines;
+﻿using Blinkenlights.Transformers;
 using Newtonsoft.Json;
+using Blinkenlights.Models.Api.ApiHandler;
+using Blinkenlights.Models.Api.ApiInfoTypes;
+using Blinkenlights.Models.Api.ApiResult;
+using Blinkenlights.Models.ViewModels.Headlines;
+using Blinkenlights.Models.ViewModels;
 
-namespace BlinkenLights.Transformers
+namespace Blinkenlights.Transformers
 {
 
-    public class HeadlinesTransformer
-    {
-        public const ApiType WikiApiType = ApiType.Wikipedia;
-        public const ApiType NytApiType = ApiType.NewYorkTimes;
+    public class HeadlinesTransformer : TransformerBase
+	{
+		public HeadlinesTransformer(IApiHandler apiHandler) : base(apiHandler)
+		{
+		}
 
-        public static HeadlinesViewModel GetHeadlinesViewModel(ApiResponse wikipediaResponse, ApiResponse nytResponse)
-        {
-            ProcessNytResponse(nytResponse, out var top3us, out var top3world, out var nytStatus);
-            ProcessWikipediaResponse(wikipediaResponse, out var wikipediaInTheNews, out var wikiApiStatus);
+		public async override Task<IModuleViewModel> Transform()
+		{
+            var wikipediaData = await this.ApiHandler.Fetch(ApiType.Wikipedia);
+			var nytData = await this.ApiHandler.Fetch(ApiType.NewYorkTimes);
+			var ycombinatorData = await this.ApiHandler.Fetch(ApiType.YCombinator);
+			var rocketData = await this.ApiHandler.Fetch(ApiType.RocketLaunches);
 
-            var headlinesViewModel = new HeadlinesViewModel(wikipediaInTheNews, wikiApiStatus, top3us, top3world, nytStatus);
-            return headlinesViewModel;
-        }
+			ProcessNytResponse(nytData, out var nytModel);
+			ProcessPageParseApiResponse(wikipediaData, ApiType.Wikipedia, "Wikipedia - In the news", out var wikipediaModel);
+			ProcessPageParseApiResponse(ycombinatorData, ApiType.YCombinator, "YCombinator", out var ycombinatorModel);
+			ProcessPageParseApiResponse(rocketData, ApiType.RocketLaunches, "Upcoming rocket launches", out var rocketModel);
 
-        private static void ProcessNytResponse(ApiResponse nytResponse, out List<HeadlinesArticle> top3us, out List<HeadlinesArticle> top3world, out ApiStatus status)
+			var headlinesViewModel = new HeadlinesViewModel(nytModel, wikipediaModel, ycombinatorModel, rocketModel);
+			return headlinesViewModel;
+		}
+
+		private void ProcessNytResponse(ApiResponse nytResponse, out HeadlinesContainer headlines)
         {
             if (nytResponse is null)
             {
-                top3us = null;
-                top3world = null;
-                status = ApiStatus.Failed(NytApiType, null, "Response is null");
+                var errorStatus = ApiStatus.Failed(ApiType.NewYorkTimes, null, "Api response is null");
+                headlines = new HeadlinesContainer(null, errorStatus);
                 return;
             }
 
             var nytModel = !string.IsNullOrWhiteSpace(nytResponse?.Data) ? JsonConvert.DeserializeObject<NewYorkTimesModel>(nytResponse.Data) : default(NewYorkTimesModel);
-            top3us = nytModel?.results?.Where(r => string.Equals(r?.section, "us", StringComparison.OrdinalIgnoreCase))?.Take(3)?.Select(a => new HeadlinesArticle(a))?.ToList();
-            top3world = nytModel?.results?.Where(r => string.Equals(r?.section, "world", StringComparison.OrdinalIgnoreCase))?.Take(3)?.Select(a => new HeadlinesArticle(a))?.ToList();
+            var top3usItems = nytModel?.results?.Where(r => string.Equals(r?.section, "us", StringComparison.OrdinalIgnoreCase))?.Take(3)?.Select(a => new HeadlinesArticle(a))?.ToList();
+            var top3worldItems = nytModel?.results?.Where(r => string.Equals(r?.section, "world", StringComparison.OrdinalIgnoreCase))?.Take(3)?.Select(a => new HeadlinesArticle(a))?.ToList();
 
-            if (top3us?.Any() == true || top3world?.Any() == true)
+            var categories = new List<HeadlinesCategory>();
+            if (top3usItems?.Any() == true)
             {
-                status = ApiStatus.Success(NytApiType, nytResponse);
+                categories.Add(new HeadlinesCategory("NYT - Top US", top3usItems));
+            }
+
+            if (top3worldItems?.Any() == true)
+            {
+                categories.Add(new HeadlinesCategory("NYT - Top World", top3worldItems));
+            }
+
+            if (categories.Any())
+            {
+                var status = ApiStatus.Success(ApiType.NewYorkTimes, nytResponse);
+                headlines = new HeadlinesContainer(categories, status);
+                this.ApiHandler.TryUpdateCache(nytResponse);
+                return;
             }
             else
             {
-                top3us = null;
-                top3world = null;
-                status = ApiStatus.Failed(NytApiType, null, "No results");
+                var errorStatus = ApiStatus.Failed(ApiType.NewYorkTimes, null, "No Results");
+                headlines = new HeadlinesContainer(null, errorStatus);
+                return;
             }
         }
 
-        public static void ProcessWikipediaResponse(ApiResponse wikipediaResponse, out List<HeadlinesArticle> headlinesArticles, out ApiStatus status)
+        public void ProcessPageParseApiResponse(ApiResponse response, ApiType apiType, string title, out HeadlinesContainer headlines)
         {
-            if (wikipediaResponse is null)
+            if (response is null)
             {
-                headlinesArticles = null;
-                status = ApiStatus.Failed(WikiApiType, null, "Response is null");
+                var errorStatus = ApiStatus.Failed(apiType, null, "Api response is null");
+                headlines = new HeadlinesContainer(null, errorStatus);
                 return;
             }
 
-            var wikipediaModel = !string.IsNullOrWhiteSpace(wikipediaResponse?.Data) ? JsonConvert.DeserializeObject<WikipediaModel>(wikipediaResponse.Data) : default(WikipediaModel);
-            headlinesArticles = wikipediaModel?.InTheNews?.Take(3)?.Select(a => new HeadlinesArticle(a))?.ToList();
-
-            if (headlinesArticles?.Any() == true)
+            if (ApiError.IsApiError(response.Data, out var errorMessage))
             {
-                status = ApiStatus.Success(WikiApiType, wikipediaResponse);
+                var errorStatus = ApiStatus.Failed(apiType, response, errorMessage);
+                headlines = new HeadlinesContainer(null, errorStatus);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(response?.Data))
+            {
+				var errorStatus = ApiStatus.Failed(apiType, response, "Response data is null");
+				headlines = new HeadlinesContainer(null, errorStatus);
+				return;
+			}
+
+            PageParseApiModel model;
+            try
+            {
+                model = JsonConvert.DeserializeObject<PageParseApiModel>(response.Data);
+			}
+            catch (JsonException)
+            {
+				var errorStatus = ApiStatus.Failed(apiType, response, "Exception deserializing response");
+				headlines = new HeadlinesContainer(null, errorStatus);
+				return;
+			}
+
+            var articles = model?.stories?.Select(a => new HeadlinesArticle(a))?.Take(3)?.ToList();
+            if (articles?.Any() == true)
+            {
+                var status = ApiStatus.Success(apiType, response);
+                var categories = new List<HeadlinesCategory>() { new HeadlinesCategory(title, articles) };
+                headlines = new HeadlinesContainer(categories, status);
+				this.ApiHandler.TryUpdateCache(response);
+				return;
             }
             else
             {
-                headlinesArticles = null;
-                status = ApiStatus.Failed(WikiApiType, wikipediaResponse, "No headlines created");
+                var errorStatus = ApiStatus.Failed(apiType, response, "No headlines created");
+                headlines = new HeadlinesContainer(null, errorStatus);
+                return;
             }
         }
-    }
+	}
 }

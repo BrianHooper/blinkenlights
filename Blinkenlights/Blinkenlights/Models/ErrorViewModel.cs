@@ -1,4 +1,4 @@
-namespace BlinkenLights.Models
+namespace Blinkenlights.Models
 {
     public class ErrorViewModel
     {

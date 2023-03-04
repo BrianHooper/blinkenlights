@@ -1,15 +1,36 @@
-
 import uvicorn
 from fastapi import FastAPI, Request
 from BrianTools import Engine, ApiError
 from GoogleCalendarApi import GetCalendar
 from WikipediaApi import GetWikipedia
+from YCombinatorApi import GetYCombinatorData
+from RocketLaunchApi import GetRocketData
 
 app = FastAPI()
 
 @app.get("/wikipedia")
 def wikipedia():
-    return GetWikipedia()
+    try:
+        wikiData = GetWikipedia()
+        return wikiData
+    except Exception as e:
+        return ApiError(f"Exception: {e}")
+    
+@app.get("/rockets")
+def rockets():
+    try:
+        rocketData = GetRocketData()
+        return rocketData
+    except Exception as e:
+        return ApiError(f"Exception: {e}")
+    
+@app.get("/ycombinator")
+def ycombinator():
+    try:
+        ycombinatorData = GetYCombinatorData()
+        return ycombinatorData
+    except Exception as e:
+        return ApiError(f"Exception: {e}")
 
 @app.get("/googlecalendar")
 async def GoogleCalendar(request: Request):

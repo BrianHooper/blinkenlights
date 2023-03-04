@@ -1,25 +1,25 @@
-﻿using BlinkenLights.Models;
-using BlinkenLights.Models.ApiCache;
+﻿using Blinkenlights.Models;
+using Blinkenlights.Models.Api.ApiHandler;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-namespace BlinkenLights.Controllers
+namespace Blinkenlights.Controllers
 {
     public class RootController : Controller
     {
-        private readonly IWebHostEnvironment Environment;
         private readonly ILogger<RootController> _logger;
-        private readonly IConfiguration config;
+		private readonly IConfiguration config;
+		private readonly IApiHandler apiHandler;
 
-        public RootController(ILogger<RootController> logger, IWebHostEnvironment environment, IConfiguration config)
+		public RootController(IApiHandler apiHandler, ILogger<RootController> logger, IConfiguration config)
         {
             _logger = logger;
-            Environment = environment;
-            this.config = config;
-        }
+			this.config = config;
+			this.apiHandler = apiHandler;
+		}
 
         public IActionResult Index()
         {
-            if (ApiCache.CheckForInvalidSecrets(config, out var invalidSecrets))
+            if (this.apiHandler.CheckForInvalidSecrets(out var invalidSecrets))
             {
                 var errorModel = new ErrorViewModel()
                 {

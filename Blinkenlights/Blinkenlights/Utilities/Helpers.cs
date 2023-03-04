@@ -1,8 +1,6 @@
-﻿using BlinkenLights.Models.ApiCache;
-using Newtonsoft.Json;
-using RestSharp;
+﻿using Newtonsoft.Json;
 
-namespace BlinkenLights.Utilities
+namespace Blinkenlights.Utilities
 {
     public class Helpers
     {

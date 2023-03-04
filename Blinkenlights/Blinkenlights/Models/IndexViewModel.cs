@@ -1,4 +1,4 @@
-﻿namespace BlinkenLights.Models
+﻿namespace Blinkenlights.Models
 {
     public class ModuleViewModel
     {
@@ -48,6 +48,7 @@
                 new ModuleViewModel(name: "CalendarRoot", row: 3, col: 1),
                 new ModuleViewModel(name: "MehRoot", row: 3, col: 2),
             };
+
             this.ModulePlacementPairs = modulesToLoad.Select(m => new KeyValuePair<string, string>(m.Name, m.ToGridArea())).ToList();
 
             var numColumns = modulesToLoad.Max(m => m.ColEnd) - 1;
