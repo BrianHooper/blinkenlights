@@ -1,6 +1,6 @@
-﻿#life360 {
-    height: 100%;
+﻿#life360-root {
     position: relative;
+    height: 100%;
 }
 
 #life360-map {

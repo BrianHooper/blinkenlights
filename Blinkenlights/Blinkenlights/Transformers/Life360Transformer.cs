@@ -19,7 +19,7 @@ namespace Blinkenlights.Transformers
 			if (apiResponse == null)
             {
                 var status = ApiStatus.Failed(ApiType.Life360, null, "Api response is null");
-                return new GenericApiViewModel(null, status);
+                return new Life360ViewModel(null, status);
 			}
 
             Life360JsonModel serverModel;
@@ -30,22 +30,23 @@ namespace Blinkenlights.Transformers
             catch (JsonException)
             {
                 var status = ApiStatus.Failed(ApiType.Life360, null, "Exception while deserializing API response");
-				return new GenericApiViewModel(null, status);
+				return new Life360ViewModel(null, status);
             }
 
             var models = serverModel?.Members?.Select(m => Life360Model.Parse(m))?.Where(m => m != null)?.ToList();
             if (models?.Any() == true)
             {
-                var viewModel = new Life360ViewModel(models);
+                var viewModel = new Life360ServerModel(models);
                 var viewModelStr = JsonConvert.SerializeObject(viewModel);
                 var status = ApiStatus.Success(ApiType.Life360, apiResponse);
                 this.ApiHandler.TryUpdateCache(apiResponse);
-				return new GenericApiViewModel(viewModelStr, status);
+
+				return new Life360ViewModel(viewModelStr, status);
             }
             else
             {
                 var status = ApiStatus.Failed(ApiType.Life360, apiResponse, "Models list was empty");
-				return new GenericApiViewModel(null, status);
+				return new Life360ViewModel(null, status);
             }
         }
 	}

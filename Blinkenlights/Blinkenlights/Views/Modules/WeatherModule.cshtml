@@ -1,0 +1,12 @@
+﻿@using Blinkenlights.Models.ViewModels.Weather;
+@model WeatherViewModel
+
+<link rel="stylesheet" href="~/css/weather.css" />
+
+<div id="weather-data" data-weather-response="@Model.Response" data-api-status="@Model.Status" hidden></div>
+<div id="weather-temp"></div>
+<div id="weather-humidity-button"></div>
+<div id="weather-rain-button"></div>
+<div id="weather-temperature-button"></div>
+
+<script type="module" src="~/ts-dist/WeatherModule.js"></script>
