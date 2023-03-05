@@ -1,38 +1,27 @@
-﻿import { SetModuleStatusByElement, SetModuleStatusByStr, SetModuleStatusByFields, SetModuleError } from "./Status.js";
+﻿import { create } from "d3";
+import { SetModuleStatusByElement, SetModuleStatusByStr, SetModuleStatusByFields, SetModuleError } from "./Status.js";
+
+export interface Life360JSONModel {
+    Name: string;
+    TimeStr: string;
+    Latitude: number;
+    Longitude: number;
+}
 
 var layerGroup;
 var mapElement;
 var initialized = false;
 
-const dataElement = $("#life360-data");
-SetModuleStatusByElement(dataElement);
+function CreateMap() {
+    const userModels = $(".life360-user-model").map(function (d): Life360JSONModel {
+        const userModel = $(this).attr("data-model-info");
+        return JSON.parse(userModel);
+    }).get();
 
-const apiResponse = dataElement.attr("data-response");
-
-function CreateMap(data) {
-    if (!data) {
-        SetModuleError("Life360", "Failed to get data");
-        return;
-    }
-
-    var apiResponse = JSON.parse(data);
-    if (!apiResponse) {
-        SetModuleError("Life360", "Failed to get apiResponse");
-        return;
-    }
-
-    var locations = apiResponse["Models"];
-    if (!locations) {
-        SetModuleError("Life360", "Failed to get models - null");
-        return;
-    }
-
-    if (locations.length === 0) {
+    if (userModels.length === 0) {
         SetModuleError("Life360", "Failed to get models - empty");
         return;
     }
-
-    var coordinates = locations.map(function (h) { return [h["Latitude"], h["Longitude"]]; })
 
     if (!initialized) {
         mapElement = L.map("life360-map", { attributionControl: false });
@@ -41,18 +30,19 @@ function CreateMap(data) {
     }
     layerGroup.clearLayers();
 
-    var bounds = new L.LatLngBounds(coordinates);
-    mapElement.fitBounds(bounds);
+    var coordinates = userModels.map(function (h) { return L.marker([h.Latitude, h.Longitude]); });
+    var group = L.featureGroup(coordinates).addTo(mapElement);
+    mapElement.fitBounds(group.getBounds());
+
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
     }).addTo(mapElement);
 
-    locations.forEach(function (value) {
-        var marker = L.marker([value["Latitude"], value["Longitude"]],).addTo(layerGroup);
-        marker.bindTooltip(value["Name"]).openTooltip();
+    userModels.forEach(function (userModel) {
+        var marker = L.marker([userModel.Latitude, userModel.Longitude],).addTo(layerGroup);
+        marker.bindTooltip(userModel.Name).openTooltip();
     });
-
-    $("#life360-time").html(locations[0]["TimeStr"]);
 }
 
-CreateMap(apiResponse);
+SetModuleStatusByElement($("#life360-data"));
+CreateMap();

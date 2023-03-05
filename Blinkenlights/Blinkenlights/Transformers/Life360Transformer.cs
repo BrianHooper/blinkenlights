@@ -36,12 +36,9 @@ namespace Blinkenlights.Transformers
             var models = serverModel?.Members?.Select(m => Life360Model.Parse(m))?.Where(m => m != null)?.ToList();
             if (models?.Any() == true)
             {
-                var viewModel = new Life360ServerModel(models);
-                var viewModelStr = JsonConvert.SerializeObject(viewModel);
                 var status = ApiStatus.Success(ApiType.Life360, apiResponse);
                 this.ApiHandler.TryUpdateCache(apiResponse);
-
-				return new Life360ViewModel(viewModelStr, status);
+				return new Life360ViewModel(models, status);
             }
             else
             {
