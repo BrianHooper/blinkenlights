@@ -2,6 +2,7 @@
 using Blinkenlights.Models.Api.ApiInfoTypes;
 using Blinkenlights.Models.Api.ApiResult;
 using Blinkenlights.Models.ViewModels;
+using Blinkenlights.Models.ViewModels.Time;
 using Blinkenlights.Models.ViewModels.WWII;
 using Humanizer;
 using Newtonsoft.Json;
@@ -17,8 +18,8 @@ namespace Blinkenlights.Transformers
 
 		public async override Task<IModuleViewModel> Transform()
 		{
-            var response = await this.ApiHandler.Fetch(ApiType.WWII);
-            if (string.IsNullOrWhiteSpace(response?.Data))
+            var apiResponse = await this.ApiHandler.Fetch(ApiType.WWII);
+            if (string.IsNullOrWhiteSpace(apiResponse?.Data))
 			{
 				var status = ApiStatus.Failed(ApiType.WWII, null, "Failed to get local data");
 				return new WWIIDayModel(null, null, null, status);
@@ -27,7 +28,7 @@ namespace Blinkenlights.Transformers
             WWIIJsonModel wWIIViewModel = null;
             try
             {
-                wWIIViewModel = JsonConvert.DeserializeObject<WWIIJsonModel>(response.Data);
+                wWIIViewModel = JsonConvert.DeserializeObject<WWIIJsonModel>(apiResponse.Data);
             }
             catch (JsonException)
             {
@@ -44,8 +45,9 @@ namespace Blinkenlights.Transformers
                 var globalEvents = wWIIDayJsonModel.Events.FirstOrDefault(kv => string.Equals(kv.Key, "Global", StringComparison.OrdinalIgnoreCase)).Value;
                 var regionalEvents = wWIIDayJsonModel.Events.Where(kv => !string.Equals(kv.Key, "Global", StringComparison.OrdinalIgnoreCase)).ToList();
 
-                var apiResponse = new ApiResponse(ApiType.WWII, null, ApiSource.Cache, now);
-                var status = ApiStatus.Success(ApiType.WWII, apiResponse);
+
+				var status = ApiStatus.Success(ApiType.WWII, apiResponse);
+				this.ApiHandler.TryUpdateCache(apiResponse);
                 return new WWIIDayModel(dateFormatted, globalEvents, regionalEvents, status);
             }
             else

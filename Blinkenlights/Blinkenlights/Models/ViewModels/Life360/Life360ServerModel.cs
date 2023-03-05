@@ -1,8 +1,9 @@
 ﻿namespace Blinkenlights.Models.ViewModels.Life360
 {
-    public class Life360ViewModel
+    public class Life360ServerModel
     {
-        public Life360ViewModel(List<Life360Model> models)
+
+        public Life360ServerModel(List<Life360Model> models)
         {
             Models = models;
         }

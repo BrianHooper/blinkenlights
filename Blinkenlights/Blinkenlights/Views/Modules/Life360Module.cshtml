@@ -1,0 +1,10 @@
+﻿@using Blinkenlights.Models.ViewModels.Life360;
+@model Life360ViewModel
+
+<div id="life360-data" data-response="@Model.Response" data-api-status="@Model.Status" hidden></div>
+<div id="life360-error"></div>
+<div id="life360-map"></div>
+<div id="life360-time"></div>
+<div id="life360-refresh" onclick="gpsHandler.refresh()">🗘</div>
+
+<script type="module" src="~/ts-dist/Life360Module.js"></script>

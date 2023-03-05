@@ -16,22 +16,23 @@ namespace Blinkenlights.Transformers
 
 		public async override Task<IModuleViewModel> Transform()
 		{
-			var response = await this.ApiHandler.Fetch(ApiType.TimeZone);
-			if (response is null)
+			var apiResponse = await this.ApiHandler.Fetch(ApiType.TimeZone);
+			if (apiResponse is null)
 			{
 				var errorStatus = ApiStatus.Failed(ApiType.TimeZone, null, "Failed to get local data");
 				return new TimeViewModel(errorStatus);
 			}
 
-			if (!Helpers.TryDeserialize<TimeViewModel>(response.Data, out var serverModel))
+			if (!Helpers.TryDeserialize<TimeViewModel>(apiResponse.Data, out var serverModel))
             {
 				var errorStatus = ApiStatus.Failed(ApiType.TimeZone, null, "Failed to read data");
 				return new TimeViewModel(errorStatus);
             }
 
-			var apiResponse = new ApiResponse(ApiType.TimeZone, null, ApiSource.Prod, DateTime.Now);
 			var status = ApiStatus.Success(ApiType.TimeZone, apiResponse);
+			this.ApiHandler.TryUpdateCache(apiResponse);
 			var viewModel = new TimeViewModel(status);
+
             viewModel.TimeZoneInfos = serverModel.TimeZoneInfos;
 			viewModel.CountdownInfos = new SortedDictionary<string, string>()
 			{

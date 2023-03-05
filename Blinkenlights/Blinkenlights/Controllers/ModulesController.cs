@@ -45,18 +45,17 @@ namespace Blinkenlights.Controllers
             return PartialView("WWIIModule", viewModel);
         }
 
-        public async Task<string> GetLife360Locations()
+        public async Task<IActionResult> GetLife360Module()
 		{
-			var viewModel = await GetViewModel<Life360Transformer>() as GenericApiViewModel;
-            return viewModel != null ? JsonConvert.SerializeObject(viewModel) : null;
-        }
+			var viewModel = await GetViewModel<Life360Transformer>();
+			return PartialView("Life360Module", viewModel);
+		}
 
-        public async Task<string> GetWeatherData()
+        public async Task<IActionResult> GetWeatherData()
         {
-            // TODO Migrate weather to TS & include status data
-            var apiResponse = await this.ApiHandler.Fetch(ApiType.VisualCrossingWeather);
-            return apiResponse.Data;
-        }
+			var viewModel = await GetViewModel<WeatherTransformer>();
+			return PartialView("WeatherModule", viewModel);
+		}
 
         public async Task<IActionResult> GetMehData()
 		{
