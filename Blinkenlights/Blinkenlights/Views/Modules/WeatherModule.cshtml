@@ -3,10 +3,39 @@
 
 <link rel="stylesheet" href="~/css/weather.css" />
 
-<div id="weather-data" data-weather-response="@Model.Response" data-api-status="@Model.Status" hidden></div>
-<div id="weather-temp"></div>
-<div id="weather-humidity-button"></div>
-<div id="weather-rain-button"></div>
-<div id="weather-temperature-button"></div>
+<div id="weather-data" data-api-status="@Model.Status" hidden>
+</div>
+
+
+<div id="weather-graph">
+	@if (Model.DayModels?.Any() == true)
+	{
+		<div id="weather-axis" data-weather-axis="@Model.GraphModel"></div>
+		@foreach(var dayModel in Model.DayModels)
+		{
+			<div class="weather-day-container">
+				<div class="weather-day-graph" data-weather-day="@dayModel.WeatherDataPointsModel"></div>
+				<div class="weather-day-title">@dayModel.DayName</div>
+				<div class="weather-day-icon"><img src="~/images/weather/@(dayModel.Icon).svg" title="@dayModel.Report" /></div>
+			</div>
+		}
+	}
+	@if (Model.CurrentConditions?.Any() == true)
+	{
+		<div id="weather-current">
+			@foreach (var currentConditionItem in Model.CurrentConditions)
+			{
+				<div class="weather-current-item" title="@currentConditionItem.Description">
+					<img src="~/images/weather-justicon-lineal-color/@(currentConditionItem.Icon)" />
+					<div class="weather-current-item-key">@currentConditionItem.Key</div>
+					<div class="weather-current-item-value">@currentConditionItem.Value</div>
+				</div>
+			}
+		</div>
+	}
+</div>
+<div id="weather-description">
+	@Model.Description
+</div>
 
 <script type="module" src="~/ts-dist/WeatherModule.js"></script>

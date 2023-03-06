@@ -27,8 +27,64 @@ namespace Blinkenlights.Transformers
 			ProcessPageParseApiResponse(ycombinatorData, ApiType.YCombinator, "YCombinator", out var ycombinatorModel);
 			ProcessPageParseApiResponse(rocketData, ApiType.RocketLaunches, "Upcoming rocket launches", out var rocketModel);
 
+			PostProcessWikipedia(wikipediaModel);
+
 			var headlinesViewModel = new HeadlinesViewModel(nytModel, wikipediaModel, ycombinatorModel, rocketModel);
 			return headlinesViewModel;
+		}
+
+		private void PostProcessWikipedia(HeadlinesContainer wikipediaModel)
+		{
+            var articles = wikipediaModel?.Categories?.FirstOrDefault()?.Articles;
+			if (wikipediaModel?.Categories?.Any() != true)
+            {
+                return;
+            }
+
+            foreach(var category in wikipediaModel.Categories)
+            {
+                category.Articles = category?.Articles?.Select(a => ProcessArticle(a))?.ToList();
+            }
+		}
+
+		private HeadlinesArticle ProcessArticle(HeadlinesArticle a)
+		{
+			if (a.Title == null)
+            {
+                return null;
+            }
+
+            var title = a.Title;
+            var titleChars = new List<char>();
+            var controlCharacters = new Stack<char>();
+            foreach(var c in a.Title)
+            {
+                if (c == '(')
+                {
+                    controlCharacters.Push(c);
+                }
+                else if (c == ')')
+                {
+                    controlCharacters.Pop();
+                }
+                else if (!controlCharacters.Any())
+                {
+                    titleChars.Add(c);
+                }
+            }
+
+            title = string.Join("", titleChars);
+			titleChars = new List<char>();
+			for (int i = 0; i < title.Count() - 1; i++)
+            {
+                if (!Char.IsWhiteSpace(title[i]) || !Char.IsPunctuation(title[i + 1]))
+                {
+                    titleChars.Add(title[i]);
+                }
+            }
+			title = string.Join("", titleChars);
+
+			return new HeadlinesArticle(title, a.Url);
 		}
 
 		private void ProcessNytResponse(ApiResponse nytResponse, out HeadlinesContainer headlines)
@@ -40,7 +96,7 @@ namespace Blinkenlights.Transformers
                 return;
             }
 
-            var nytModel = !string.IsNullOrWhiteSpace(nytResponse?.Data) ? JsonConvert.DeserializeObject<NewYorkTimesModel>(nytResponse.Data) : default(NewYorkTimesModel);
+            var nytModel = !string.IsNullOrWhiteSpace(nytResponse?.Data) ? JsonConvert.DeserializeObject<NewYorkTimesModel>(nytResponse.Data) : default;
             var top3usItems = nytModel?.results?.Where(r => string.Equals(r?.section, "us", StringComparison.OrdinalIgnoreCase))?.Take(3)?.Select(a => new HeadlinesArticle(a))?.ToList();
             var top3worldItems = nytModel?.results?.Where(r => string.Equals(r?.section, "world", StringComparison.OrdinalIgnoreCase))?.Take(3)?.Select(a => new HeadlinesArticle(a))?.ToList();
 

@@ -22,7 +22,7 @@
 								<li class="headlines-article">
 									@if (!string.IsNullOrWhiteSpace(headline.Url))
 									{
-										<a href="@headline.Url">@headline.Title</a>
+										<a href="@headline.Url" target="_blank" title="@headline.Title">@headline.Title</a>
 									}
 									else
 									{

@@ -59,5 +59,11 @@ namespace Blinkenlights.Models.ViewModels.Headlines
             Title = article?.title;
             Url = article?.url;
         }
-    }
+
+		public HeadlinesArticle(string title, string url)
+		{
+			Title = title;
+			Url = url;
+		}
+	}
 }

@@ -8,6 +8,7 @@ export interface Life360JSONModel {
     Longitude: number;
 }
 
+// TODO Needs to be initialized in root module
 var layerGroup;
 var mapElement;
 var initialized = false;

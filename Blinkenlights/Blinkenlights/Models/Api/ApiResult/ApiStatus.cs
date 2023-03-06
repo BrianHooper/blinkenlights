@@ -19,7 +19,7 @@ namespace Blinkenlights.Models.Api.ApiResult
         {
             Name = apiType.ToString();
             Status = statusMessage;
-            LastUpdate = response is null ? string.Empty : response.LastUpdateTime.ToString();
+            LastUpdate = response is null ? string.Empty : response.LastUpdateTime.ToString("hh:mm tt");
             State = state;
             Source = response is null ? ApiSource.Unknown : response.ApiSource;
         }
