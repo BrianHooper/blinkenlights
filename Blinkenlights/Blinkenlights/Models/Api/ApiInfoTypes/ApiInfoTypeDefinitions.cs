@@ -161,5 +161,18 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
                 { "Authorization", new StringSecretsPair("Bearer {0}", ApiSecretType.Life360AuthorizationToken) }
             };
         }
-    }
+	}
+
+	public class AstronomyApiInfo : IApiInfo
+	{
+		int IApiInfo.CacheTimeout => 120;
+
+		ApiServerType IApiInfo.ServerType => ApiServerType.Remote;
+
+		public StringSecretsPair Endpoint()
+		{
+			var endpoint = "http://127.0.0.1:5001/astronomypotd";
+			return new StringSecretsPair(endpoint);
+		}
+	}
 }

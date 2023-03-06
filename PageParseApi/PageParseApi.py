@@ -5,6 +5,7 @@ from GoogleCalendarApi import GetCalendar
 from WikipediaApi import GetWikipedia
 from YCombinatorApi import GetYCombinatorData
 from RocketLaunchApi import GetRocketData
+from AstronomyApi import GetPicOfTheDay
 
 app = FastAPI()
 
@@ -41,6 +42,10 @@ async def GoogleCalendar(request: Request):
     if secret is None or len(secret) == 0:
         return ApiError("Missing header: X-user-secret")
     return GetCalendar(userAccount, secret)
-    
+
+@app.get("/astronomypotd")
+def astronomy():
+    return GetPicOfTheDay()
+
 if __name__ == "__main__":
     uvicorn.run("PageParseApi:app", host="127.0.0.1", port=5001, log_level="info")
