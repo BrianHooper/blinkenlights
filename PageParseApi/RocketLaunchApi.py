@@ -28,7 +28,7 @@ def GetRocketData():
 
         title = " - ".join(title_strs)
 
-        story = { "title": title }
+        story = { "title": title, "url": "https://www.spacelaunchschedule.com/" }
         stories.append(story)
 
     if len(stories) == 0:

@@ -1,25 +1,42 @@
 #weather-root {
     background-color: #ccc;
-    height: 100%;
-    width: 100%;
+    padding: 10px;
+    height: calc(100% - 20px);
+    width: calc(100% - 20px);
     border-radius: 3px;
     display: flex;
     align-items: center;
-}
-
-#weather-day-current {
-    color: black;
-    width: 120px;
-    display: flex;
+    justify-content: center;
     flex-direction: column;
-    align-content: baseline;
+    font-size: 12px;
+    color: black;
 }
 
-#weather-temp {
+#weather-graph {
+    display: grid;
+    gap: 8px;
+    grid-template-columns: 30px repeat(5, 1fr) 1fr;
+}
+
+#weather-description {
+    margin-top: 10px;
     display: flex;
     justify-content: center;
-    width: 100%;
-    align-self: auto;
+}
+
+#weather-axis {
+    display: flex;
+    justify-content: flex-end;
+}
+
+#weather-current {
+    color: black;
+    flex-direction: column;
+    align-content: baseline;
+    gap: 5px;
+    display: grid;
+    grid-template-rows: repeat(6, 30px);
+    grid-template-columns: repeat(2, 1fr);
 }
 
 #weather-forecast {
@@ -34,9 +51,12 @@
     align-items: center;
 }
 
-.weather-day-label {
+.weather-day-title {
     margin-top: 5px;
-    color: black;
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: center;
+}
 }
 
 .axisRed line {
@@ -56,60 +76,48 @@
     display: flex;
 }
 
+.weather-day-svg {
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 0px 5px;
+    background-color: #bbb;
+}
+
 .weather-current-item {
     border-radius: 3px;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 0px 5px;
-    width: 100px;
-    height: 20px;
-    margin-block: 3px;
+    width: calc(100% - 6px);
     padding: 3px;
+    gap: 10px;
     display: flex;
     flex-direction: row;
     align-items: center;
+    background-color: #bbb;
 }
 
-.weather-current-icon {
+.weather-current-item-key {
+    width: 80px;
+}
+.weather-current-item-value {
+}
+
+.weather-current-item > img {
     width: 30px;
-    height: 20px;
+}
+
+.weather-day-icon {
     display: flex;
     justify-content: center;
     align-content: center;
     flex-wrap: wrap;
+    height: 20px;
+}
+
+.weather-day-icon > img {
+    width: 30px;
 }
 .weather-current-text {
     height: 20px;
     display: flex;
     align-content: center;
     flex-wrap: wrap;
-    font-size: 12px;
     line-height: 20px;
-}
-
-.weather-outline {
-    stroke: #333333;
-    stroke-width: 2px;
-    fill-opacity: 0;
-}
-
-.weather-hidden {
-    visibility: hidden;
-}
-
-.weather-highlight {
-}
-
-#weather-humidity-button {
-    width: 20px;
-    height: 20px;
-    background-color: gray;
-}
-#weather-rain-button {
-    width: 20px;
-    height: 20px;
-    background-color: blue;
-}
-#weather-temperature-button {
-    width: 20px;
-    height: 20px;
-    background-color: red;
 }

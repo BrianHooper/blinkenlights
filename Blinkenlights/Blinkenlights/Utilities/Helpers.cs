@@ -11,7 +11,7 @@ namespace Blinkenlights.Utilities
 
             if (addOffset)
             {
-                dt.Add(DateTimeOffset.Now.Offset);
+                dt = dt.Add(DateTimeOffset.Now.Offset);
             }
             return dt;
         }
