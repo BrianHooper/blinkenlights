@@ -68,5 +68,12 @@ namespace Blinkenlights.Controllers
 			var viewModel = await GetViewModel<HeadlinesTransformer>();
             return PartialView("HeadlinesModule", viewModel);
         }
-    }
+
+		public async Task<IActionResult> GetAstronomyModule()
+		{
+			var viewModel = await GetViewModel<AstronomyTransformer>();
+			return PartialView("AstronomyModule", viewModel);
+		}
+
+	}
 }

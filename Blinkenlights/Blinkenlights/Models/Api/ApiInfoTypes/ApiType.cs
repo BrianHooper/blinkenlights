@@ -31,7 +31,10 @@
         [ApiInfo(typeof(YCombinatorApiInfo))]
         YCombinator = 9,
 
-        [ApiInfo(typeof(RocketLaunchesApiInfo))]
-        RocketLaunches = 10
-    }
+		[ApiInfo(typeof(RocketLaunchesApiInfo))]
+		RocketLaunches = 10,
+
+		[ApiInfo(typeof(AstronomyApiInfo))]
+		Astronomy = 11
+	}
 }
