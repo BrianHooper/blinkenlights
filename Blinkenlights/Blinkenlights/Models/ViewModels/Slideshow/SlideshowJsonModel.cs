@@ -1,8 +1,8 @@
-﻿namespace Blinkenlights.Models.ViewModels.Astronomy
+﻿namespace Blinkenlights.Models.ViewModels.Slideshow
 {
 	using Newtonsoft.Json;
 
-	public class AstronomyJsonModel
+	public class SlideshowJsonModel
 	{
 		[JsonProperty("Title", Required = Required.Always)]
 		public string Title { get; set; }

@@ -47,7 +47,7 @@
                 // Row 3
                 new ModuleViewModel(name: "CalendarRoot", row: 3, col: 1),
 				new ModuleViewModel(name: "MehRoot", row: 3, col: 2),
-				new ModuleViewModel(name: "AstronomyRoot", row: 3, col: 4),
+				new ModuleViewModel(name: "SlideshowRoot", row: 3, col: 4),
 			};
 
             this.ModulePlacementPairs = modulesToLoad.Select(m => new KeyValuePair<string, string>(m.Name, m.ToGridArea())).ToList();
