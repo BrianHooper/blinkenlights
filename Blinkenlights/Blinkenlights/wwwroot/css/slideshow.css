@@ -1,4 +1,4 @@
-﻿#astronomy-root {
+﻿#slideshow-root {
     display: flex;
     width: 100%;
     height: 100%;
@@ -6,27 +6,38 @@
     align-items: center;
 }
 
-#astro-image {
-    display: flex;
+.slideshow-image {
+    display: none;
     position: relative;
-    justify-content: center;
     height: 100%;
     width: 100%;
+    opacity: 0;
+    transition: opacity 2s;
 }
 
-#astro-title {
+.slideshow-image-visible {
+    display: flex;
+    justify-content: center;
+}
+
+.slideshow-image-fade-visible {
+    opacity: 1;
+    transition: opacity 2s;
+}
+
+#slideshow-title {
     position: absolute;
     margin-top: 5px;
 }
 
-#astro-image > img {
+.slideshow-image > img {
     object-fit: contain;
     max-width: 100%;
     max-height: 100%;
     border-radius: 6px;
 }
 
-#astro-link {
+#slideshow-link {
     position: absolute;
     inset: 0;
     content: "";

@@ -1,8 +1,5 @@
 ﻿import { SetModuleStatusByElement, SetModuleStatusByStr, SetModuleStatusByFields, SetModuleError } from "./Status.js";
 
-
-
-
 export interface Life360JSONModel {
     Name: string;
     TimeStr: string;

@@ -69,10 +69,10 @@ namespace Blinkenlights.Controllers
             return PartialView("HeadlinesModule", viewModel);
         }
 
-		public async Task<IActionResult> GetAstronomyModule()
+		public async Task<IActionResult> GetSlideshowModule()
 		{
-			var viewModel = await GetViewModel<AstronomyTransformer>();
-			return PartialView("AstronomyModule", viewModel);
+			var viewModel = await GetViewModel<SlideshowTransformer>();
+			return PartialView("SlideshowModule", viewModel);
 		}
 
 	}
