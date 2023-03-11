@@ -10,3 +10,4 @@ __pycache__/
 *.user
 ApiCache.json
 WikipediaCache.json
+InstanceSecretsApiCache.json

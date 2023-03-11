@@ -12,68 +12,58 @@ namespace Blinkenlights.Controllers
 {
     public class ModulesController : Controller
 	{
-		private readonly IApiHandler ApiHandler;
 		private readonly IServiceProvider ServiceProvider;
 
-		public ModulesController(IApiHandler apiHandler, IServiceProvider serviceProvider)
+		public ModulesController(IServiceProvider serviceProvider)
         {
-            this.ApiHandler = apiHandler;
             this.ServiceProvider = serviceProvider;
 		}
 
-		private async Task<IModuleViewModel> GetViewModel<T>() where T : TransformerBase
+		private PartialViewResult GetModule<T>(string partialViewName) where T : TransformerBase
 		{
 			var transformer = (TransformerBase)ActivatorUtilities.CreateInstance<T>(this.ServiceProvider);
-			return await transformer.Transform();
+			var viewModel = transformer.Transform();
+			return PartialView(partialViewName, viewModel);
 		}
 
-		public async Task<IActionResult> GetCalendarModule()
+		public IActionResult GetCalendarModule()
 		{
-            var viewModel = await GetViewModel<CalendarTransformer>();
-			return PartialView("CalendarModule", viewModel);
+			return GetModule<CalendarTransformer>("CalendarModule");
 		}
 
-		public async Task<IActionResult> GetTimeModule()
+		public IActionResult GetTimeModule()
 		{
-            var viewModel = await GetViewModel<TimeTransformer>();
-            return PartialView("TimeModule", viewModel);
-        }
-
-		public async Task<IActionResult> GetWWIIModule()
-		{
-			var viewModel = await GetViewModel<WWIITransformer>();
-            return PartialView("WWIIModule", viewModel);
-        }
-
-        public async Task<IActionResult> GetLife360Module()
-		{
-			var viewModel = await GetViewModel<Life360Transformer>();
-			return PartialView("Life360Module", viewModel);
+			return GetModule<TimeTransformer>("TimeModule");
 		}
 
-        public async Task<IActionResult> GetWeatherData()
+		public IActionResult GetWWIIModule()
+		{
+			return GetModule<WWIITransformer>("WWIIModule");
+		}
+
+        public IActionResult GetLife360Module()
+		{
+			return GetModule<Life360Transformer>("Life360Module");
+		}
+
+        public IActionResult GetWeatherData()
         {
-			var viewModel = await GetViewModel<WeatherTransformer>();
-			return PartialView("WeatherModule", viewModel);
+			return GetModule<WeatherTransformer>("WeatherModule");
 		}
 
-        public async Task<IActionResult> GetMehData()
+        public IActionResult GetMehData()
 		{
-			var viewModel = await GetViewModel<MehTransformer>();
-            return PartialView("MehModule", viewModel);
-        }
-
-        public async Task<IActionResult> GetHeadlinesModule()
-		{
-			var viewModel = await GetViewModel<HeadlinesTransformer>();
-            return PartialView("HeadlinesModule", viewModel);
-        }
-
-		public async Task<IActionResult> GetSlideshowModule()
-		{
-			var viewModel = await GetViewModel<SlideshowTransformer>();
-			return PartialView("SlideshowModule", viewModel);
+			return GetModule<MehTransformer>("MehModule");
 		}
 
+        public IActionResult GetHeadlinesModule()
+		{
+			return GetModule<HeadlinesTransformer>("HeadlinesModule");
+		}
+
+		public IActionResult GetSlideshowModule()
+		{
+			return GetModule<SlideshowTransformer>("SlideshowModule");
+		}
 	}
 }

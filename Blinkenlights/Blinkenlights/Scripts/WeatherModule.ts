@@ -5,11 +5,6 @@ interface WeatherAxis {
     yAxisMax: number;
 }
 
-interface WeatherDataPoints {
-    Points: WeatherData[];
-    yAxisMax: number;
-}
-
 interface WeatherData {
     xHour: number;
     temperature: number;
@@ -114,6 +109,6 @@ drawWeatherAxis("weather-axis", weatherAxisModel.yAxisMin, weatherAxisModel.yAxi
 
 $(".weather-day-graph").each(function (d) {
     const modelData = $(this).attr("data-weather-day");
-    const model: WeatherDataPoints = JSON.parse(modelData);
-    drawDayGraph(model.Points, weatherAxisModel.yAxisMin, weatherAxisModel.yAxisMax, $(this));
+    const points: WeatherData[] = JSON.parse(modelData);
+    drawDayGraph(points, weatherAxisModel.yAxisMin, weatherAxisModel.yAxisMax, $(this));
 });

@@ -12,6 +12,6 @@ namespace Blinkenlights.Transformers
 			ApiHandler = apiHandler;
 		}
 
-		public abstract Task<IModuleViewModel> Transform();
+		public abstract IModuleViewModel Transform();
 	}
 }

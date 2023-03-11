@@ -7,7 +7,7 @@ namespace Blinkenlights.Models.ViewModels.Weather
 	{
 		public string Description { get; set; }
 
-		public List<WeatherDayModel> DayModels { get; set; }
+		public List<KeyValuePair<string, WeatherDayModel>> DayModels { get; set; }
 
 		public string GraphModel { get; set; }
 
@@ -17,7 +17,7 @@ namespace Blinkenlights.Models.ViewModels.Weather
 		{
 		}
 
-		public WeatherViewModel(string description, List<WeatherDayModel> dayModels, WeatherGraphModel graphModel, List<CurrentCondition> currentConditions, ApiStatus status) : base(status)
+		public WeatherViewModel(string description, List<KeyValuePair<string, WeatherDayModel>> dayModels, WeatherGraphModel graphModel, List<CurrentCondition> currentConditions, ApiStatus status) : base(status)
 		{
 			this.Description = description;
 			this.DayModels = dayModels;
@@ -28,24 +28,36 @@ namespace Blinkenlights.Models.ViewModels.Weather
 
 	public class WeatherDayModel
 	{
-		public WeatherDayModel(string dayName, string icon, string report, List<WeatherData> points)
-		{
-			DayName = dayName;
-			Icon = icon;
-			Report = report;
-			WeatherDataPoints = new WeatherDataPoints(points);
-			WeatherDataPointsModel = JsonConvert.SerializeObject(WeatherDataPoints);
-		}
-
 		public string DayName { get; set; }
+
+		public WeatherData[] WeatherData { get; init; }
 
 		public string Icon { get; set; }
 
 		public string Report { get; set; }
 
-		public WeatherDataPoints WeatherDataPoints { get; set; }
+		public WeatherDayModel(string dayName, string icon, string report)
+		{
+			DayName = dayName;
+			Icon = icon;
+			Report = report;
 
-		public string WeatherDataPointsModel { get; set; }
+			int size = 24;
+			WeatherData = new WeatherData[size];
+			for (int i = 0; i < size; i++)
+			{
+				WeatherData[i] = new WeatherData(i, 0.0, 0.0, 0.0);
+			}
+		}
+
+		public string SerializePoints()
+		{
+			var jsonSettings = new JsonSerializerSettings()
+			{
+				NullValueHandling = NullValueHandling.Include,
+			};
+			return JsonConvert.SerializeObject(WeatherData, jsonSettings);
+		}
 	}
 
 	public class WeatherGraphModel

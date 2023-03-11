@@ -13,13 +13,13 @@ namespace Blinkenlights.Transformers
 		{
 		}
 
-		public async override Task<IModuleViewModel> Transform()
+		public override IModuleViewModel Transform()
 		{
-			var astronomyResponse = await GetAstronomyPicOfTheDay();
+			var astronomyResponse = GetAstronomyPicOfTheDay();
 
 			var testFrame = new SlideshowFrame("Title", "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Solar_System_true_color_%28captions%29.jpg/800px-Solar_System_true_color_%28captions%29.jpg", "");
-			var frames = new List<SlideshowFrame>() { astronomyResponse.Frame, testFrame }.Where(x => x != null).ToList();
-			return new SlideshowViewModel(frames, astronomyResponse.Status);
+			var frames = new List<SlideshowFrame>() { astronomyResponse.Result.Frame, testFrame }.Where(x => x != null).ToList();
+			return new SlideshowViewModel(frames, astronomyResponse.Result.Status);
 		}
 
 		public async Task<(SlideshowFrame Frame, ApiStatus Status)> GetAstronomyPicOfTheDay()

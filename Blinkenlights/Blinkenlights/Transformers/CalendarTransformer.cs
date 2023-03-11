@@ -14,35 +14,35 @@ namespace Blinkenlights.Transformers
 		{
 		}
 
-		public async override Task<IModuleViewModel> Transform()
+		public override IModuleViewModel Transform()
 		{
-			var apiResponse = await this.ApiHandler.Fetch(ApiType.GoogleCalendar);
+			var response = this.ApiHandler.Fetch(ApiType.GoogleCalendar).Result;
 
-			if (apiResponse is null)
+			if (response is null)
             {
                 var status = ApiStatus.Failed(ApiType.GoogleCalendar, null, "API Response is null");
                 return new CalendarViewModel(null, status);
             }
 
-            if (string.IsNullOrWhiteSpace(apiResponse.Data))
+            if (string.IsNullOrWhiteSpace(response.Data))
             {
-                var status = ApiStatus.Failed(ApiType.GoogleCalendar, apiResponse, "API Response data is empty");
+                var status = ApiStatus.Failed(ApiType.GoogleCalendar, response, "API Response data is empty");
                 return new CalendarViewModel(null, status);
             }
 
-            if (ApiError.IsApiError(apiResponse.Data, out var errorMessage))
+            if (ApiError.IsApiError(response.Data, out var errorMessage))
             {
-                var status = ApiStatus.Failed(ApiType.GoogleCalendar, apiResponse, errorMessage);
+                var status = ApiStatus.Failed(ApiType.GoogleCalendar, response, errorMessage);
             }
 
             CalendarData calendarData;
             try
             {
-                calendarData = JsonConvert.DeserializeObject<CalendarData>(apiResponse.Data);
+                calendarData = JsonConvert.DeserializeObject<CalendarData>(response.Data);
             }
             catch (JsonException)
             {
-                var status = ApiStatus.Failed(ApiType.GoogleCalendar, apiResponse, "Exception while deserializing API response");
+                var status = ApiStatus.Failed(ApiType.GoogleCalendar, response, "Exception while deserializing API response");
                 return new CalendarViewModel(null, status);
             }
 
@@ -51,13 +51,13 @@ namespace Blinkenlights.Transformers
             
             if (events?.Any() == true)
             {
-                var status = ApiStatus.Success(ApiType.GoogleCalendar, apiResponse);
-                this.ApiHandler.TryUpdateCache(apiResponse);
+                var status = ApiStatus.Success(ApiType.GoogleCalendar, response);
+                this.ApiHandler.TryUpdateCache(response);
                 return new CalendarViewModel(events, status);
             }
             else
             {
-                var status = ApiStatus.Failed(ApiType.GoogleCalendar, apiResponse, "Events list is empty");
+                var status = ApiStatus.Failed(ApiType.GoogleCalendar, response, "Events list is empty");
                 return new CalendarViewModel(null, status);
             }
         }

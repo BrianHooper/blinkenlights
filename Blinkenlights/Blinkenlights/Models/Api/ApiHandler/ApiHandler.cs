@@ -1,6 +1,7 @@
 ﻿using Blinkenlights.Models.Api.ApiInfoTypes;
 using Newtonsoft.Json;
 using RestSharp;
+using RestSharp.Authenticators;
 
 namespace Blinkenlights.Models.Api.ApiHandler
 {
@@ -8,30 +9,49 @@ namespace Blinkenlights.Models.Api.ApiHandler
     {
         private const bool CACHE_ENABLED = true;
 
-        private string CachePath { get; init; }
+		private string CachePath { get; init; }
 
-        private Mutex Mutex { get; init; }
+		private string InstanceSecretsCachePath { get; init; }
+
+		private Mutex Mutex { get; init; }
 
         private IConfiguration Config { get; init; }
 
         private IWebHostEnvironment WebHostEnvironment { get; init; }
 
-        public ApiHandler(IWebHostEnvironment environment, IConfiguration config)
+        private Dictionary<ApiSecretType, InstanceSecret> InstanceSecrets { get; init; }
+
+
+		public ApiHandler(IWebHostEnvironment environment, IConfiguration config)
         {
-            WebHostEnvironment = environment;
-            CachePath = Path.Combine(environment.WebRootPath, "DataSources", "ApiCache.json");
-            Mutex = new Mutex();
-            Config = config;
-        }
+			this.WebHostEnvironment = environment;
+			this.Mutex = new Mutex();
+			this.Config = config;
+
+			this.CachePath = Path.Combine(environment.WebRootPath, "DataSources", "ApiCache.json");
+			this.InstanceSecretsCachePath = Path.Combine(environment.WebRootPath, "DataSources", "InstanceSecretsApiCache.json");
+
+			try
+			{
+				var instanceSecretsSerialized = File.ReadAllText(this.InstanceSecretsCachePath);
+				this.InstanceSecrets = JsonConvert.DeserializeObject<Dictionary<ApiSecretType, InstanceSecret>>(instanceSecretsSerialized);
+			}
+			catch (Exception)
+			{
+				this.InstanceSecrets = new Dictionary<ApiSecretType, InstanceSecret>();
+			}
+		}
 
         public bool CheckForInvalidSecrets(out List<string> invalidSecretsOut)
         {
             var invalidSecrets = new List<string>();
             foreach (var secret in Enum.GetValues<ApiSecretType>())
             {
-                if (secret != ApiSecretType.Default && !TryGetSecret(secret, out var secretValue))
+				if (secret != ApiSecretType.Default 
+                    && secret.GetSecretSource() == ApiType.Unknown
+                    && !TryGetSecret(secret, out _))
                 {
-                    var key = secret.ToSecretString();
+                    var key = secret.GetSecretString();
                     invalidSecrets.Add(key);
                 }
             }
@@ -48,30 +68,75 @@ namespace Blinkenlights.Models.Api.ApiHandler
             }
         }
 
-        public bool TryGetSecret(ApiSecretType secretKey, out string secret)
+        public bool TryGetSecret(ApiSecretType secretType, out string secret)
         {
             // Upload with:
             // dotnet user-secrets set "OpenWeatherMap:ServiceApiKey" "{Secret}"
-            var key = secretKey.ToSecretString();
-            if (secretKey == ApiSecretType.Default || string.IsNullOrWhiteSpace(key))
+            var key = secretType.GetSecretString();
+            if (secretType == ApiSecretType.Default || string.IsNullOrWhiteSpace(key))
             {
                 secret = null;
                 return false;
             }
 
-            secret = Config[key];
-            if (string.IsNullOrWhiteSpace(secret))
+            var secretSource = secretType.GetSecretSource();
+            if (secretSource == ApiType.Unknown)
+			{
+				secret = Config[key];
+				if (string.IsNullOrWhiteSpace(secret))
+				{
+					secret = Environment.GetEnvironmentVariable(key, EnvironmentVariableTarget.Machine);
+				}
+				return !string.IsNullOrWhiteSpace(secret);
+			}
+            else
             {
-                secret = Environment.GetEnvironmentVariable(key, EnvironmentVariableTarget.Machine);
+				secret = this.GetInstanceSecret(secretType).Result;
+				return !string.IsNullOrWhiteSpace(secret);
+			}
+		}
+
+		public async Task<string> GetInstanceSecret(ApiSecretType secretType)
+		{
+			if (this.InstanceSecrets.TryGetValue(secretType, out var existingInstanceSecret) && existingInstanceSecret?.IsValid() == true)
+			{
+				return existingInstanceSecret.Secret;
+			}
+
+            var sourceApiType = secretType.GetSecretSource();
+            var sourceApiInfo = sourceApiType.Info();
+            var apiSecretResponse = await this.GetRemoteData(sourceApiType, sourceApiInfo);
+            var updatedInstanceSecret = sourceApiInfo.ResponseToInstanceSecret(apiSecretResponse);
+
+            if (updatedInstanceSecret?.IsValid() == true)
+            {
+				this.InstanceSecrets[secretType] = updatedInstanceSecret;
+
+                UpdateInstanceSecretsCache();
+
+                return updatedInstanceSecret.Secret;
             }
+            else
+            {
+                return null;
+            }
+		}
 
-            return !string.IsNullOrWhiteSpace(secret);
-        }
+		private void UpdateInstanceSecretsCache()
+		{
+			var settings = new JsonSerializerSettings()
+			{
+				NullValueHandling = NullValueHandling.Include,
+				Formatting = Formatting.Indented,
+			};
+			var instanceSecretsSerialized = JsonConvert.SerializeObject(this.InstanceSecrets, settings);
+			File.WriteAllText(this.InstanceSecretsCachePath, instanceSecretsSerialized);
+		}
 
-        private bool TryGetCachedValue(ApiType apiType, int cacheTimeout, out ApiResponse cachedValue)
+		private bool TryGetCachedValue(ApiType apiType, int? cacheTimeout, out ApiResponse cachedValue)
         {
             Mutex.WaitOne();
-            if (!CACHE_ENABLED || cacheTimeout == 0 || !File.Exists(CachePath))
+            if (!CACHE_ENABLED || cacheTimeout == null || cacheTimeout == 0 || !File.Exists(CachePath))
             {
                 cachedValue = null;
                 Mutex.ReleaseMutex();
@@ -106,15 +171,16 @@ namespace Blinkenlights.Models.Api.ApiHandler
                 return false;
             }
 
-            cachedValue = new ApiResponse(apiType, apiHandlerModule.ApiData, ApiSource.Cache, apiHandlerModule.LastUpdateTime);
+            cachedValue = ApiResponse.Success(apiType, apiHandlerModule.ApiData, ApiSource.Cache, apiHandlerModule.LastUpdateTime);
             Mutex.ReleaseMutex();
             return true;
         }
 
         public bool TryUpdateCache(ApiResponse response)
         {
+            var apiInfo = response?.ApiType.Info();
             Mutex.WaitOne();
-            if (response is null || response.ApiType == ApiType.Unknown || response.ApiSource != ApiSource.Prod || string.IsNullOrWhiteSpace(response.Data))
+            if (response is null || response.ApiType == ApiType.Unknown || response.ApiSource != ApiSource.Prod || string.IsNullOrWhiteSpace(response.Data) || apiInfo == null || apiInfo.ServerType == ApiServerType.Local)
             {
                 Mutex.ReleaseMutex();
                 return false;
@@ -141,7 +207,7 @@ namespace Blinkenlights.Models.Api.ApiHandler
                 };
             }
 
-            ApiCacheItem apiHandlerModule = new ApiCacheItem()
+            var apiHandlerModule = new ApiCacheItem()
             {
                 LastUpdateTime = response.LastUpdateTime,
                 ApiData = response.Data
@@ -164,81 +230,127 @@ namespace Blinkenlights.Models.Api.ApiHandler
 
         private ApiResponse GetLocalData(ApiType apiType, IApiInfo apiInfo)
         {
-            var relativePath = this.BuildString(apiInfo?.Endpoint());
-            if (string.IsNullOrWhiteSpace(relativePath))
-            {
-                return null;
-            }
+            if (!TryBuildString(apiInfo?.Endpoint(), out var relativePath))
+			{
+				return ApiResponse.Error(apiType, "Invalid request", ApiSource.Prod);
+			}
 
             var pathParts = new string[] { WebHostEnvironment.WebRootPath, relativePath };
             string path = Path.Combine(pathParts);
 
             if (!File.Exists(path))
-            {
-                return null;
-            }
+			{
+				return ApiResponse.Error(apiType, "Local file does not exist", ApiSource.Prod);
+			}
 
+            string content = null;
             try
             {
-                var content = File.ReadAllText(path);
-                if (!string.IsNullOrWhiteSpace(content))
-                {
-                    return new ApiResponse(apiType, content, ApiSource.Prod, DateTime.Now);
-                }
+                content = File.ReadAllText(path);
             }
             catch (Exception)
             {
-            }
-            return null;
-        }
+			}
 
-        private async Task<ApiResponse> GetRemoteData(ApiType apiType, IApiInfo apiInfo)
+			if (!string.IsNullOrWhiteSpace(content))
+			{
+				return ApiResponse.Success(apiType, content, ApiSource.Prod, DateTime.Now);
+			}
+            else
+			{
+				return ApiResponse.Error(apiType, "Exception while reading local data file", ApiSource.Prod);
+			}
+		}
+
+        private async Task<ApiResponse> GetRemoteData(ApiType apiType, IApiInfo apiInfo, params string[] queryParameters)
         {
-            var endpointFormat = apiInfo?.Endpoint();
-            var endpointUrl = this.BuildString(endpointFormat);
-            if (string.IsNullOrWhiteSpace(endpointUrl))
-            {
-                return null;
-            }
+			if (!TryBuildString(apiInfo?.Endpoint(queryParameters), out var endpointUrl))
+			{
+				return ApiResponse.Error(apiType, "Invalid request", ApiSource.Prod);
+			}
 
             var client = new RestClient(endpointUrl);
+			var authenticationSecrets = apiInfo.AuthenticationSecrets();
+			if (authenticationSecrets?.Any() == true)
+			{
+                if (TryBuildString(authenticationSecrets.ElementAtOrDefault(0), out string username) 
+                    && TryBuildString(authenticationSecrets.ElementAtOrDefault(1), out string password))
+				{
+					client.Authenticator = new HttpBasicAuthenticator(username, password);
+				}
+                else
+                {
+					return ApiResponse.Error(apiType, $"Failed to get authentication keys", ApiSource.Prod);
+				}
+			}
 
-            var request = new RestRequest();
-            var headers = apiInfo.Headers();
+			var request = new RestRequest();
+            var parameters = apiInfo.Parameters(); 
+            if (parameters?.Any() == true)
+			{
+				foreach (var parameter in parameters)
+				{
+					request.AddParameter(parameter.Key, parameter.Value);
+				}
+			}
+
+			var headers = apiInfo.Headers();
             if (headers?.Any() == true)
             {
                 foreach (var header in headers)
                 {
-                    var headerValue = BuildString(header.Value);
-
-                    // TODO catch & report if secret fetch fails
-                    if (!string.IsNullOrWhiteSpace(headerValue))
+                    if (TryBuildString(header.Value, out var formattedHeaderValue))
                     {
-                        request.AddHeader(header.Key, headerValue);
+                        request.AddHeader(header.Key, formattedHeaderValue);
                     }
+                    else
+					{
+						return ApiResponse.Error(apiType, $"Failed to build header: {header.Key}", ApiSource.Prod);
+					}
                 }
             }
+
 
             RestResponse response;
             try
             {
-                response = await client.GetAsync(request);
+                response = apiInfo.ApiRestType == ApiRestType.Post ? await client.PostAsync(request) : await client.GetAsync(request);
             }
-            catch (HttpRequestException)
-            {
-                return null;
-            }
+            catch (HttpRequestException ex)
+			{
+                if (ex?.StatusCode == System.Net.HttpStatusCode.Unauthorized && apiInfo.InstanceSecrets?.Any() == true)
+                {
+                    DeleteInstanceSecrets(apiInfo.InstanceSecrets);
+                }
+				return ApiResponse.Error(apiType, $"Api exception: {ex.Message}", ApiSource.Prod);
+			}
 
-            if (response?.StatusCode != System.Net.HttpStatusCode.OK || string.IsNullOrWhiteSpace(response?.Content))
+            if (response == null)
             {
-                return null;
-            }
+				return ApiResponse.Error(apiType, "Api call returned null", ApiSource.Prod);
+			}
 
-            var apiResponse = new ApiResponse(apiType, response.Content, ApiSource.Prod, DateTime.Now);
-            return apiResponse;
+            if (response.StatusCode != System.Net.HttpStatusCode.OK || string.IsNullOrWhiteSpace(response?.Content))
+			{
+				return ApiResponse.Error(apiType, response.StatusDescription, ApiSource.Prod);
+			}
+
+			return ApiResponse.Success(apiType, response.Content, ApiSource.Prod, DateTime.Now);
         }
 
-        public async Task<ApiResponse> Fetch(ApiType apiType)
+		private void DeleteInstanceSecrets(List<ApiSecretType> instanceSecrets)
+		{
+			if (instanceSecrets?.Any() == true)
+            {
+                foreach(var secret in instanceSecrets)
+                {
+                    this.InstanceSecrets.Remove(secret);
+                }
+				UpdateInstanceSecretsCache();
+			}
+		}
+
+		public async Task<ApiResponse> Fetch(ApiType apiType, params string[] queryParameters)
         {
             var apiInfo = apiType.Info();
             if (apiInfo is null)
@@ -255,51 +367,49 @@ namespace Blinkenlights.Models.Api.ApiHandler
             return apiInfo.ServerType switch
             {
                 ApiServerType.Local => GetLocalData(apiType, apiInfo),
-                ApiServerType.Remote => await GetRemoteData(apiType, apiInfo),
+                ApiServerType.Remote => await GetRemoteData(apiType, apiInfo, queryParameters),
                 _ => null
             };
         }
 
-        private string GetSecret(ApiSecretType key)
-        {
-            if (TryGetSecret(key, out var secret))
-            {
-                return secret;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
-        private string BuildString(StringSecretsPair stringSecretsPair)
+        private bool TryBuildString(StringSecretsPair stringSecretsPair, out string formattedString)
         {
             if (stringSecretsPair == null)
             {
-                return null;
+                formattedString = null;
+				return false;
             }
 
             if (stringSecretsPair.SecretKeys?.Any() != true)
             {
                 if (string.IsNullOrWhiteSpace(stringSecretsPair.StringFormat))
-                {
-                    return null;
-                }
+				{
+					formattedString = null;
+					return false;
+				}
                 else
                 {
-                    return stringSecretsPair.StringFormat;
+					formattedString = stringSecretsPair.StringFormat;
+                    return true;
                 }
             }
 
-            // TODO Return log message when secret fetch fails
-            var secretValues = stringSecretsPair.SecretKeys.Select(s => GetSecret(s))?.ToArray();
-            if (secretValues?.Any(s => string.IsNullOrWhiteSpace(s)) == true)
+            var secretValues = new List<string>();
+            foreach(var secretKey in stringSecretsPair.SecretKeys)
             {
-                return null;
+                if (TryGetSecret(secretKey, out var secretValue) && !string.IsNullOrWhiteSpace(secretValue))
+                {
+					secretValues.Add(secretValue);
+				}
+                else
+				{
+					formattedString = null;
+					return false;
+                }
             }
 
-            // TODO Catch if number of secrets doesn't match the format
-            return string.Format(stringSecretsPair.StringFormat, secretValues);
+			formattedString = string.Format(stringSecretsPair.StringFormat, secretValues.ToArray());
+            return true;
         }
     }
 }

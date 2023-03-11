@@ -76,7 +76,7 @@
 		public long? InTransit { get; set; }
 		public object TripId { get; set; }
 		public object DriveSdkStatus { get; set; }
-		public long? Battery { get; set; }
+		//public long? Battery { get; set; }
 		public long? Charge { get; set; }
 		public long? WifiState { get; set; }
 		public double? Speed { get; set; }

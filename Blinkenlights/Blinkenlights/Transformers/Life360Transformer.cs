@@ -13,19 +13,24 @@ namespace Blinkenlights.Transformers
 		{
 		}
 
-		public async override Task<IModuleViewModel> Transform()
+		public override IModuleViewModel Transform()
 		{
-			var apiResponse = await this.ApiHandler.Fetch(ApiType.Life360);
-			if (apiResponse == null)
+			var response = this.ApiHandler.Fetch(ApiType.Life360).Result;
+			if (response == null)
             {
                 var status = ApiStatus.Failed(ApiType.Life360, null, "Api response is null");
                 return new Life360ViewModel(null, status);
+			}
+            else if (response.ResultStatus != ApiResultStatus.Success)
+            {
+				var status = ApiStatus.Failed(ApiType.Life360, response, response.StatusMessage);
+				return new Life360ViewModel(null, status);
 			}
 
             Life360JsonModel serverModel;
             try
             {
-                serverModel = JsonConvert.DeserializeObject<Life360JsonModel>(apiResponse.Data);
+                serverModel = JsonConvert.DeserializeObject<Life360JsonModel>(response.Data);
             }
             catch (JsonException)
             {
@@ -36,13 +41,13 @@ namespace Blinkenlights.Transformers
             var models = serverModel?.Members?.Select(m => Life360Model.Parse(m))?.Where(m => m != null)?.ToList();
             if (models?.Any() == true)
             {
-                var status = ApiStatus.Success(ApiType.Life360, apiResponse);
-                this.ApiHandler.TryUpdateCache(apiResponse);
+                var status = ApiStatus.Success(ApiType.Life360, response);
+                this.ApiHandler.TryUpdateCache(response);
 				return new Life360ViewModel(models, status);
             }
             else
             {
-                var status = ApiStatus.Failed(ApiType.Life360, apiResponse, "Models list was empty");
+                var status = ApiStatus.Failed(ApiType.Life360, response, "Models list was empty");
 				return new Life360ViewModel(null, status);
             }
         }

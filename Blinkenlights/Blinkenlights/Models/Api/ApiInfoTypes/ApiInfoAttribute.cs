@@ -4,9 +4,9 @@
     {
         public IApiInfo ApiInfo { get; init; }
 
-        public ApiInfoAttribute(Type type)
+        public ApiInfoAttribute(Type infoType)
         {
-            ApiInfo = Activator.CreateInstance(type) as IApiInfo;
+            ApiInfo = Activator.CreateInstance(infoType) as IApiInfo;
         }
     }
 }

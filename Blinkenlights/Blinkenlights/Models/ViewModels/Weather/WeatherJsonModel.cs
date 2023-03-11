@@ -58,7 +58,7 @@ namespace Blinkenlights.Models.ViewModels.Weather
 	public partial class CurrentConditions
 	{
 		[JsonProperty("datetime")]
-		public DateTimeOffset Datetime { get; set; }
+		public DateTime Datetime { get; set; }
 
 		[JsonProperty("datetimeEpoch")]
 		public long DatetimeEpoch { get; set; }

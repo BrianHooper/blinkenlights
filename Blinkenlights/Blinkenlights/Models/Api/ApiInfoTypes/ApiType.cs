@@ -8,10 +8,10 @@
         TimeZone = 1,
 
         [ApiInfo(typeof(MehApiInfo))]
-        Meh = 2,
+		Meh = 2,
 
         [ApiInfo(typeof(Life360ApiInfo))]
-        Life360 = 3,
+		Life360 = 3,
 
         [ApiInfo(typeof(WWIIApiInfo))]
         WWII = 4,
@@ -35,6 +35,12 @@
 		RocketLaunches = 10,
 
 		[ApiInfo(typeof(AstronomyApiInfo))]
-		Astronomy = 11
+		Astronomy = 11,
+
+		[ApiInfo(typeof(UpsPackageTrackingApiInfo))]
+		UpsPackageTracking = 12,
+
+		[ApiInfo(typeof(UpsOAuthApiInfo))]
+		UpsOath = 13
 	}
 }

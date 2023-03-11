@@ -5,17 +5,16 @@
 <div id="status-root">
 
 
-	@foreach (ApiType apiType in Enum.GetValues(typeof(ApiType)))
+@foreach (ApiType apiType in Enum.GetValues(typeof(ApiType)))
 	{
-		@if (apiType == ApiType.Unknown)
+		var apiInfo = apiType.Info();
+		@if (apiInfo?.ReportedInModule == true)
 		{
-			continue;
+			<div class="status-row status-notloaded" data-status-key="@apiType">
+				<div class="status-source"></div>
+				<div class="status-name">@apiType</div>
+				<div class="status-status">NotLoaded</div>
+			</div>
 		}
-
-		<div class="status-row status-notloaded" data-status-key="@apiType">
-			<div class="status-source"></div>
-			<div class="status-name">@apiType</div>
-			<div class="status-status">NotLoaded</div>
-		</div>
 	}
 </div>
