@@ -11,3 +11,4 @@ __pycache__/
 ApiCache.json
 WikipediaCache.json
 InstanceSecretsApiCache.json
+js-lib/

@@ -3,7 +3,7 @@
   "name": "asp.net",
   "private": true,
   "dependencies": {
-    "copyfiles": "2.4.1",
+    "rimraf": "4.4.0",
     "jquery": "3.6.3",
     "leaflet": "1.9.3",
     "d3": "7.8.2"
@@ -11,9 +11,10 @@
   "devDependencies": {
     "@types/jquery": "3.3.33",
     "@types/leaflet": "1.9.0",
-    "@types/d3": "7.8.2"
+    "@types/d3": "7.4.0"
   },
   "scripts": {
-    "build": "node soldair.js"
+    "clean": "rimraf ./wwwroot/js-lib",
+    "build": "node copy_js_dependencies.js"
   }
 }
