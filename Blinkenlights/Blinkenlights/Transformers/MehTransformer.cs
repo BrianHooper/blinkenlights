@@ -14,28 +14,28 @@ namespace Blinkenlights.Transformers
 		{
 		}
 
-		public async override Task<IModuleViewModel> Transform()
+		public override IModuleViewModel Transform()
 		{
-			var apiResponse = await this.ApiHandler.Fetch(ApiType.Meh);
-			if (apiResponse is null)
+			var response = this.ApiHandler.Fetch(ApiType.Meh).Result;
+			if (response is null)
             {
                 var errorStatus = ApiStatus.Failed(ApiType.Meh, null, "Api response is null");
                 return new MehViewModel(errorStatus);
             }
-            else if (string.IsNullOrWhiteSpace(apiResponse.Data))
+            else if (string.IsNullOrWhiteSpace(response.Data))
             {
-                var errorStatus = ApiStatus.Failed(ApiType.Meh, apiResponse, "Api response is empty");
+                var errorStatus = ApiStatus.Failed(ApiType.Meh, response, "Api response is empty");
                 return new MehViewModel(errorStatus);
             }
 
             MehJsonModel model;
             try
             {
-                model = JsonConvert.DeserializeObject<MehJsonModel>(apiResponse.Data);
+                model = JsonConvert.DeserializeObject<MehJsonModel>(response.Data);
             }
             catch(JsonException)
             {
-                var errorStatus = ApiStatus.Failed(ApiType.Meh, apiResponse, "Error deserializing api response");
+                var errorStatus = ApiStatus.Failed(ApiType.Meh, response, "Error deserializing api response");
                 return new MehViewModel(errorStatus);
             }
 
@@ -43,18 +43,18 @@ namespace Blinkenlights.Transformers
             var item = model?.Deal?.Items?.FirstOrDefault();
             var url = model?.Deal?.Url;
             var imageUrl = model?.Deal?.Photos?.FirstOrDefault(i => Path.GetExtension(i)?.ToLower()?.Equals(".gif") != true);
-            var price = item != null ? item.Price.ToString() : null;
+            var price = item?.Price.ToString();
             if (string.IsNullOrWhiteSpace(title) 
                 || string.IsNullOrWhiteSpace(url)
                 || string.IsNullOrWhiteSpace(imageUrl)
                 || string.IsNullOrWhiteSpace(price))
             {
-                var errorStatus = ApiStatus.Failed(ApiType.Meh, apiResponse, "Required data missing in api response");
+                var errorStatus = ApiStatus.Failed(ApiType.Meh, response, "Required data missing in api response");
                 return new MehViewModel(errorStatus);
             }
 
-            var status = ApiStatus.Success(ApiType.Meh, apiResponse);
-            this.ApiHandler.TryUpdateCache(apiResponse);
+            var status = ApiStatus.Success(ApiType.Meh, response);
+            this.ApiHandler.TryUpdateCache(response);
             return new MehViewModel(status, $"${price} - {title}", url, imageUrl);
         }
     }

@@ -2,11 +2,8 @@
 using Blinkenlights.Models.Api.ApiInfoTypes;
 using Blinkenlights.Models.Api.ApiResult;
 using Blinkenlights.Models.ViewModels;
-using Blinkenlights.Models.ViewModels.Calendar;
 using Blinkenlights.Models.ViewModels.Weather;
 using Blinkenlights.Utilities;
-using Google.Apis.Calendar.v3.Data;
-using System.Collections.Generic;
 
 namespace Blinkenlights.Transformers
 {
@@ -16,40 +13,40 @@ namespace Blinkenlights.Transformers
 		{
 		}
 
-		public async override Task<IModuleViewModel> Transform()
+		public override IModuleViewModel Transform()
 		{
-			var apiResponse = await this.ApiHandler.Fetch(ApiType.VisualCrossingWeather);
+			var response = this.ApiHandler.Fetch(ApiType.VisualCrossingWeather).Result;
 
-			if (apiResponse is null)
+			if (response is null)
 			{
 				var errorStatus = ApiStatus.Failed(ApiType.VisualCrossingWeather, null, "API Response is null");
 				return new WeatherViewModel(errorStatus);
 			}
 
-			if (string.IsNullOrWhiteSpace(apiResponse.Data))
+			if (string.IsNullOrWhiteSpace(response.Data))
 			{
-				var errorStatus = ApiStatus.Failed(ApiType.VisualCrossingWeather, apiResponse, "API Response data is empty");
+				var errorStatus = ApiStatus.Failed(ApiType.VisualCrossingWeather, response, "API Response data is empty");
 				return new WeatherViewModel(errorStatus);
 			}
 
 			WeatherJsonModel weatherJsonModel;
 			try
 			{
-				weatherJsonModel = WeatherJsonModel.FromJson(apiResponse.Data);
+				weatherJsonModel = WeatherJsonModel.FromJson(response.Data);
 			}
 			catch (Exception)
 			{
-				var errorStatus = ApiStatus.Failed(ApiType.VisualCrossingWeather, apiResponse, "Deserialization error");
+				var errorStatus = ApiStatus.Failed(ApiType.VisualCrossingWeather, response, "Deserialization error");
 				return new WeatherViewModel(errorStatus);
 			}
 
 			if (weatherJsonModel?.Days?.Any() != true)
 			{
-				var errorStatus = ApiStatus.Failed(ApiType.VisualCrossingWeather, apiResponse, "Deserialized response is empty");
+				var errorStatus = ApiStatus.Failed(ApiType.VisualCrossingWeather, response, "Deserialized response is empty");
 				return new WeatherViewModel(errorStatus);
 			}
 
-			var jsonDaysModel = weatherJsonModel.Days.Take(5);
+			var jsonDaysModel = weatherJsonModel.Days.Where(d => Helpers.FromEpoch(d.DatetimeEpoch, true, true, d.Tzoffset).Date >= DateTime.Now.Date).Take(5);
 
 			var hoursFlattened = jsonDaysModel.SelectMany(d => d.Hours);
 			var temperatureMin = hoursFlattened.Min(h => h.Temp);
@@ -58,7 +55,7 @@ namespace Blinkenlights.Transformers
 			var yAxisMax = temperatureMin >= 100 ? (int)temperatureMin + 10 : 100;
 			var graphModel = new WeatherGraphModel(yAxisMin, yAxisMax);
 
-			var dayModels = new List<WeatherDayModel>();
+			var weatherDayModels = new List<KeyValuePair<string, WeatherDayModel>>();
 			foreach(var day in jsonDaysModel)
 			{
 				if (day?.Hours?.Any() != true)
@@ -66,27 +63,30 @@ namespace Blinkenlights.Transformers
 					continue;
 				}
 
-				var points = new List<WeatherData>();
+				var dayOfWeek = Helpers.FromEpoch(day.DatetimeEpoch, true, true, day.Tzoffset).DayOfWeek.ToString();
+				WeatherDayModel dayModel = weatherDayModels.FirstOrDefault(d => d.Key == dayOfWeek).Value;
+				if (dayModel == null)
+				{
+					dayModel = new WeatherDayModel(dayOfWeek, day.Icon, day.Description);
+					weatherDayModels.Add(new KeyValuePair<string, WeatherDayModel>(dayOfWeek, dayModel));
+				}
+
 				foreach (var hourModel in day.Hours)
 				{
 					if (hourModel == null)
 					{
 						continue;
 					}
-					var dateTimePoint = Helpers.FromEpoch(hourModel.DatetimeEpoch, true, true);
+					var dateTimePoint = Helpers.FromEpoch(hourModel.DatetimeEpoch, true, true, hourModel.Tzoffset);
 					var xHour = dateTimePoint.Hour;
-
 					var precipProb = (dateTimePoint >= DateTime.Now && hourModel.Precipprob > 0) ? hourModel.Precipprob : -1;
 					var weatherDataPoint = new WeatherData(xHour, hourModel.Temp, precipProb, hourModel.Humidity);
-					points.Add(weatherDataPoint);
+					dayModel.WeatherData[xHour] = weatherDataPoint;
 				}
-				var dayOfWeek = Helpers.FromEpoch(day.DatetimeEpoch, true, true).DayOfWeek.ToString();
-				var dayModel = new WeatherDayModel(dayOfWeek, day.Icon.ToString(), day.Description, points);
-				dayModels.Add(dayModel);
 			}
 
-			var lowTemp = dayModels.FirstOrDefault().WeatherDataPoints.Points.Min(p => p.temperature);
-			var highTemp = dayModels.FirstOrDefault().WeatherDataPoints.Points.Max(p => p.temperature);
+			var lowTemp = weatherDayModels.FirstOrDefault().Value.WeatherData.Min(p => p.temperature);
+			var highTemp = weatherDayModels.FirstOrDefault().Value.WeatherData.Max(p => p.temperature);
 
 			var currentConditions = new List<CurrentCondition>
 			{
@@ -109,9 +109,9 @@ namespace Blinkenlights.Transformers
 				new CurrentCondition("Wind Direction", AsDirection(weatherJsonModel.CurrentConditions.Winddir), "windsock.png", $"Wind Direction: {weatherJsonModel.CurrentConditions.Winddir} degrees"),
 			};
 
-			var status = ApiStatus.Success(ApiType.VisualCrossingWeather, apiResponse);
-			this.ApiHandler.TryUpdateCache(apiResponse);
-			var viewModel = new WeatherViewModel(weatherJsonModel.Description, dayModels, graphModel, currentConditions, status);
+			var status = ApiStatus.Success(ApiType.VisualCrossingWeather, response);
+			this.ApiHandler.TryUpdateCache(response);
+			var viewModel = new WeatherViewModel(weatherJsonModel.Description, weatherDayModels, graphModel, currentConditions, status);
 			return viewModel;
 		}
 

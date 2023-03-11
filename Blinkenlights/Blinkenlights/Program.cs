@@ -15,14 +15,6 @@ namespace Blinkenlights
             var services = builder.Services;
             var configuration = builder.Configuration;
 
-            /* FOR AUTHENTICATION, NOT NEEDED NOW
-            services.AddAuthentication().AddGoogle(googleOptions =>
-            {
-                googleOptions.ClientId = configuration["Authentication:Google:ClientId"];
-                googleOptions.ClientSecret = configuration["Authentication:Google:ClientSecret"];
-            });
-            
-            */
             // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options =>

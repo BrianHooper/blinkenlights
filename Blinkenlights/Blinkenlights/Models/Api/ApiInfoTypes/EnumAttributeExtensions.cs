@@ -2,15 +2,21 @@
 
 namespace Blinkenlights.Models.Api.ApiInfoTypes
 {
-    public static class ApiEnumExtensions
-    {
-        public static string ToSecretString(this ApiSecretType val)
-        {
-            var attribute = val.GetAttribute<DescriptionAttribute>();
-            return attribute is null ? string.Empty : attribute.Description;
-        }
+    public static class EnumAttributeExtensions
+	{
+		public static string GetSecretString(this ApiSecretType val)
+		{
+			var attribute = val.GetAttribute<SecretKeyAttribute>();
+			return attribute is null ? string.Empty : attribute.SecretKey;
+		}
 
-        public static IApiInfo Info(this ApiType val)
+		public static ApiType GetSecretSource(this ApiSecretType val)
+		{
+			var attribute = val.GetAttribute<SecretKeyAttribute>();
+			return attribute is null ? ApiType.Unknown : attribute.SecretSource;
+		}
+
+		public static IApiInfo Info(this ApiType val)
         {
             return val.GetAttribute<ApiInfoAttribute>()?.ApiInfo;
         }

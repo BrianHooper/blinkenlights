@@ -16,10 +16,10 @@ namespace Blinkenlights.Transformers
 
 		}
 
-		public async override Task<IModuleViewModel> Transform()
+		public override IModuleViewModel Transform()
 		{
-            var apiResponse = await this.ApiHandler.Fetch(ApiType.WWII);
-            if (string.IsNullOrWhiteSpace(apiResponse?.Data))
+            var response = this.ApiHandler.Fetch(ApiType.WWII).Result;
+            if (string.IsNullOrWhiteSpace(response?.Data))
 			{
 				var status = ApiStatus.Failed(ApiType.WWII, null, "Failed to get local data");
 				return new WWIIDayModel(null, null, null, status);
@@ -28,7 +28,7 @@ namespace Blinkenlights.Transformers
             WWIIJsonModel wWIIViewModel = null;
             try
             {
-                wWIIViewModel = JsonConvert.DeserializeObject<WWIIJsonModel>(apiResponse.Data);
+                wWIIViewModel = JsonConvert.DeserializeObject<WWIIJsonModel>(response.Data);
             }
             catch (JsonException)
             {
@@ -46,8 +46,8 @@ namespace Blinkenlights.Transformers
                 var regionalEvents = wWIIDayJsonModel.Events.Where(kv => !string.Equals(kv.Key, "Global", StringComparison.OrdinalIgnoreCase)).ToList();
 
 
-				var status = ApiStatus.Success(ApiType.WWII, apiResponse);
-				this.ApiHandler.TryUpdateCache(apiResponse);
+				var status = ApiStatus.Success(ApiType.WWII, response);
+				this.ApiHandler.TryUpdateCache(response);
                 return new WWIIDayModel(dateFormatted, globalEvents, regionalEvents, status);
             }
             else

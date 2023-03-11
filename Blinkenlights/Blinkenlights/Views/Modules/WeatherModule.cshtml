@@ -14,9 +14,9 @@
 		@foreach(var dayModel in Model.DayModels)
 		{
 			<div class="weather-day-container">
-				<div class="weather-day-graph" data-weather-day="@dayModel.WeatherDataPointsModel"></div>
-				<div class="weather-day-title">@dayModel.DayName</div>
-				<div class="weather-day-icon"><img src="~/images/weather/@(dayModel.Icon).svg" title="@dayModel.Report" /></div>
+				<div class="weather-day-graph" data-weather-day="@dayModel.Value.SerializePoints()"></div>
+				<div class="weather-day-title">@dayModel.Key</div>
+				<div class="weather-day-icon"><img src="~/images/weather/@(dayModel.Value.Icon).svg" title="@dayModel.Value.Report" /></div>
 			</div>
 		}
 	}

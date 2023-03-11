@@ -14,32 +14,33 @@ namespace Blinkenlights.Transformers
 		{
 		}
 
-		public async override Task<IModuleViewModel> Transform()
+		public override IModuleViewModel Transform()
 		{
-			var apiResponse = await this.ApiHandler.Fetch(ApiType.TimeZone);
-			if (apiResponse is null)
+			var response = this.ApiHandler.Fetch(ApiType.TimeZone).Result;
+			if (response is null)
 			{
 				var errorStatus = ApiStatus.Failed(ApiType.TimeZone, null, "Failed to get local data");
 				return new TimeViewModel(errorStatus);
 			}
 
-			if (!Helpers.TryDeserialize<TimeViewModel>(apiResponse.Data, out var serverModel))
+			if (!Helpers.TryDeserialize<TimeViewModel>(response.Data, out var serverModel))
             {
 				var errorStatus = ApiStatus.Failed(ApiType.TimeZone, null, "Failed to read data");
 				return new TimeViewModel(errorStatus);
             }
 
-			var status = ApiStatus.Success(ApiType.TimeZone, apiResponse);
-			this.ApiHandler.TryUpdateCache(apiResponse);
-			var viewModel = new TimeViewModel(status);
-
-            viewModel.TimeZoneInfos = serverModel.TimeZoneInfos;
-			viewModel.CountdownInfos = new SortedDictionary<string, string>()
+			var status = ApiStatus.Success(ApiType.TimeZone, response);
+			this.ApiHandler.TryUpdateCache(response);
+			var viewModel = new TimeViewModel(status)
+			{
+				TimeZoneInfos = serverModel.TimeZoneInfos,
+				CountdownInfos = new SortedDictionary<string, string>()
 			{
 				{ "2023-03-22", "Ecuador" },
 				{ "2023-06-10", "Wedding" },
 				{ "2023-07-03", "Portugal" },
 				{ "2023-08-27", "Burning Man" },
+			}
 			};
 
 			return viewModel;
