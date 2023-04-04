@@ -41,6 +41,9 @@
 		UpsPackageTracking = 12,
 
 		[ApiInfo(typeof(UpsOAuthApiInfo))]
-		UpsOath = 13
+		UpsOath = 13,
+
+		[ApiInfo(typeof(PackageTrackingApiInfo))]
+		PackageTracking = 14
 	}
 }

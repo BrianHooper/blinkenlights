@@ -1,4 +1,4 @@
-﻿namespace Blinkenlights.Models.ViewModels.Meh
+﻿namespace Blinkenlights.Models.ViewModels.Utility
 {
     public partial class MehJsonModel
     {

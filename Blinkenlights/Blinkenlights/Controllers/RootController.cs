@@ -1,19 +1,16 @@
 ﻿using Blinkenlights.Models;
 using Blinkenlights.Models.Api.ApiHandler;
+using Blinkenlights.Transformers;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 namespace Blinkenlights.Controllers
 {
-    public class RootController : Controller
+    public class RootController : BlinkenController
     {
-        private readonly ILogger<RootController> _logger;
-		private readonly IConfiguration config;
 		private readonly IApiHandler apiHandler;
 
-		public RootController(IApiHandler apiHandler, ILogger<RootController> logger, IConfiguration config)
-        {
-            _logger = logger;
-			this.config = config;
+		public RootController(IApiHandler apiHandler, IServiceProvider serviceProvider) : base(serviceProvider)
+		{
 			this.apiHandler = apiHandler;
 		}
 
@@ -29,7 +26,7 @@ namespace Blinkenlights.Controllers
                 return View("Error", errorModel);
             }
 
-            return View(new IndexViewModel());
+            return GetView<IndexTransformer>("Index");
         }
 
         public IActionResult Privacy()

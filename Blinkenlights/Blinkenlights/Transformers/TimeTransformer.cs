@@ -1,16 +1,19 @@
-﻿using Blinkenlights.Models.Api.ApiHandler;
+﻿using Blinkenlights.Data.LiteDb;
+using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.Api.ApiInfoTypes;
 using Blinkenlights.Models.Api.ApiResult;
 using Blinkenlights.Models.ViewModels;
 using Blinkenlights.Models.ViewModels.Time;
 using Blinkenlights.Utilities;
+using LiteDbLibrary;
+using LiteDbLibrary.Schemas;
 
 namespace Blinkenlights.Transformers
 {
     public class TimeTransformer : TransformerBase
 	{
 
-		public TimeTransformer(IApiHandler apiHandler) : base(apiHandler)
+		public TimeTransformer(IApiHandler apiHandler, ILiteDbHandler liteDbHandler) : base(apiHandler, liteDbHandler)
 		{
 		}
 
@@ -31,16 +34,15 @@ namespace Blinkenlights.Transformers
 
 			var status = ApiStatus.Success(ApiType.TimeZone, response);
 			this.ApiHandler.TryUpdateCache(response);
+
+			var countdownInfos = new SortedDictionary<string, string>();
+			this.LiteDb.Read<CountdownItem>()
+				.ForEach(item => countdownInfos.Add(item.Date.ToString("yyyy-MM-dd"), item.Name));
+
 			var viewModel = new TimeViewModel(status)
 			{
 				TimeZoneInfos = serverModel.TimeZoneInfos,
-				CountdownInfos = new SortedDictionary<string, string>()
-			{
-				{ "2023-03-22", "Ecuador" },
-				{ "2023-06-10", "Wedding" },
-				{ "2023-07-03", "Portugal" },
-				{ "2023-08-27", "Burning Man" },
-			}
+				CountdownInfos = countdownInfos
 			};
 
 			return viewModel;

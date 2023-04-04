@@ -262,7 +262,7 @@ namespace Blinkenlights.Models.Api.ApiHandler
 			}
 		}
 
-        private async Task<ApiResponse> GetRemoteData(ApiType apiType, IApiInfo apiInfo, params string[] queryParameters)
+        private async Task<ApiResponse> GetRemoteData(ApiType apiType, IApiInfo apiInfo, string body = null, params string[] queryParameters)
         {
 			if (!TryBuildString(apiInfo?.Endpoint(queryParameters), out var endpointUrl))
 			{
@@ -310,6 +310,10 @@ namespace Blinkenlights.Models.Api.ApiHandler
                 }
             }
 
+            if (body!= null)
+            {
+                request.AddBody(obj: body, contentType: "application/json");
+            }
 
             RestResponse response;
             try
@@ -350,7 +354,7 @@ namespace Blinkenlights.Models.Api.ApiHandler
 			}
 		}
 
-		public async Task<ApiResponse> Fetch(ApiType apiType, params string[] queryParameters)
+		public async Task<ApiResponse> Fetch(ApiType apiType, string body = null, params string[] queryParameters)
         {
             var apiInfo = apiType.Info();
             if (apiInfo is null)
@@ -367,7 +371,7 @@ namespace Blinkenlights.Models.Api.ApiHandler
             return apiInfo.ServerType switch
             {
                 ApiServerType.Local => GetLocalData(apiType, apiInfo),
-                ApiServerType.Remote => await GetRemoteData(apiType, apiInfo, queryParameters),
+                ApiServerType.Remote => await GetRemoteData(apiType, apiInfo, body, queryParameters),
                 _ => null
             };
         }

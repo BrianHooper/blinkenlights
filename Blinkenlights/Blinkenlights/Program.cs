@@ -1,11 +1,22 @@
 using Blinkenlights.Data;
+using Blinkenlights.Data.LiteDb;
 using Blinkenlights.Models.Api.ApiHandler;
+using Blinkenlights.Transformers;
+using LiteDbLibrary;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Blinkenlights
 {
+    public static class BuilderServicesExtensions
+    {
+        public static T Get<T>(this IServiceCollection services) where T : class
+        {
+			return services.FirstOrDefault(s => s.ServiceType == typeof(T))?.ImplementationInstance as T;
+		}
+    }
+
     public class Program
     {
         public static void Main(string[] args)
@@ -26,8 +37,12 @@ namespace Blinkenlights
             builder.Services.AddControllersWithViews();
 
 			builder.Services.AddSingleton<IApiHandler, ApiHandler>();
+            builder.Services.AddSingleton<ILiteDbHandler, LiteDbHandler>(x =>
+            {
+				return LiteDbFactory.Build(services.Get<IWebHostEnvironment>());
+			});
 
-			var app = builder.Build();
+            var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

@@ -1,11 +1,12 @@
 import uvicorn
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Body
 from BrianTools import Engine, ApiError
 from GoogleCalendarApi import GetCalendar
 from WikipediaApi import GetWikipedia
 from YCombinatorApi import GetYCombinatorData
 from RocketLaunchApi import GetRocketData
 from AstronomyApi import GetPicOfTheDay
+from PackageTrackingApi import GetTrackingInfo
 
 app = FastAPI()
 
@@ -46,6 +47,10 @@ async def GoogleCalendar(request: Request):
 @app.get("/astronomypotd")
 def astronomy():
     return GetPicOfTheDay()
+
+@app.post("/packagetracking")
+async def PackageTracking(requests: Request, Items = Body(...)):
+    return GetTrackingInfo(requests.headers, Items)
 
 if __name__ == "__main__":
     uvicorn.run("PageParseApi:app", host="127.0.0.1", port=5001, log_level="info")

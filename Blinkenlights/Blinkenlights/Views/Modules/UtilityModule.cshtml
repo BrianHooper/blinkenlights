@@ -1,0 +1,21 @@
+﻿@using Blinkenlights.Models.ViewModels.Utility;
+@model UtilityViewModel
+
+@if (!string.IsNullOrWhiteSpace(Model?.MehData?.Status)) {
+	<div id="meh-status" data-api-status="@Model.MehData.Status" hidden>
+	</div>
+}
+
+@if (Model.MehData != null) {
+	@if (!string.IsNullOrWhiteSpace(Model.MehData.Title))
+	{
+		<div id="meh-block">
+			<div id="meh-title-block">
+				<div id="meh-title">@Model.MehData.Title</div>
+			</div>
+			<a id="meh-url" href="@Model.MehData.Url" target="_blank"></a>
+		</div>
+	}
+}
+
+<script type="module" src="~/ts-dist/UtilityModule.js"></script>
