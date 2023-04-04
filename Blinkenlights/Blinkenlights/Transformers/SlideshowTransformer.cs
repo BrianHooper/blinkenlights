@@ -3,13 +3,14 @@ using Blinkenlights.Models.Api.ApiInfoTypes;
 using Blinkenlights.Models.Api.ApiResult;
 using Blinkenlights.Models.ViewModels;
 using Blinkenlights.Models.ViewModels.Slideshow;
+using LiteDbLibrary;
 using Newtonsoft.Json;
 
 namespace Blinkenlights.Transformers
 {
 	public class SlideshowTransformer : TransformerBase
 	{
-		public SlideshowTransformer(IApiHandler apiHandler) : base(apiHandler)
+		public SlideshowTransformer(IApiHandler apiHandler, ILiteDbHandler liteDbHandler) : base(apiHandler, liteDbHandler)
 		{
 		}
 

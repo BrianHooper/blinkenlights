@@ -12,3 +12,6 @@ ApiCache.json
 WikipediaCache.json
 InstanceSecretsApiCache.json
 js-lib/
+UpsAuthenticationCache.json
+*.db
+packagetrackingsampledata.json

@@ -232,8 +232,6 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 
 	public class UpsPackageTrackingApiInfo : ApiInfoBase
 	{
-		public override bool ReportedInModule { get; } = true;
-
 		public override int? CacheTimeout { get; } = 120;
 
 		public override ApiServerType ServerType { get; } = ApiServerType.Remote;
@@ -322,6 +320,30 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 			{
 				return null;
 			}
+		}
+	}
+
+	public class PackageTrackingApiInfo : ApiInfoBase
+	{
+		public override bool ReportedInModule { get; } = true;
+
+		public override ApiServerType ServerType { get; } = ApiServerType.Remote;
+
+		public override ApiRestType ApiRestType { get; } = ApiRestType.Post;
+
+		public override StringSecretsPair Endpoint(params string[] queryParameters)
+		{
+			var endpoint = "http://127.0.0.1:5001/packagetracking";
+			return new StringSecretsPair(endpoint);
+		}
+
+		public override Dictionary<string, StringSecretsPair> Headers()
+		{
+			return new Dictionary<string, StringSecretsPair>()
+			{
+				{ "X-ups-client-id", new StringSecretsPair(ApiSecretType.UpsPackageTrackingOAuthClientId) },
+				{ "X-ups-client-secret", new StringSecretsPair(ApiSecretType.UpsPackageTrackingOAuthSecretId) },
+			};
 		}
 	}
 }

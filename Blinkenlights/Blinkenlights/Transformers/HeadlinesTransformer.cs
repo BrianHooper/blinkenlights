@@ -1,17 +1,17 @@
-﻿using Blinkenlights.Transformers;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.Api.ApiInfoTypes;
 using Blinkenlights.Models.Api.ApiResult;
 using Blinkenlights.Models.ViewModels.Headlines;
 using Blinkenlights.Models.ViewModels;
+using LiteDbLibrary;
 
 namespace Blinkenlights.Transformers
 {
 
     public class HeadlinesTransformer : TransformerBase
 	{
-		public HeadlinesTransformer(IApiHandler apiHandler) : base(apiHandler)
+		public HeadlinesTransformer(IApiHandler apiHandler, ILiteDbHandler liteDbHandler) : base(apiHandler, liteDbHandler)
 		{
 		}
         

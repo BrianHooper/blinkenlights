@@ -10,6 +10,6 @@ namespace Blinkenlights.Models.Api.ApiHandler
 
         public bool CheckForInvalidSecrets(out List<string> invalidSecretsOut);
 
-        public Task<ApiResponse> Fetch(ApiType apiType, params string[] queryParameters);
+        public Task<ApiResponse> Fetch(ApiType apiType, string body = null, params string[] queryParameters);
     }
 }

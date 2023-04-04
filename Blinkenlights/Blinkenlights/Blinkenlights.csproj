@@ -10,6 +10,7 @@
         <PackageReference Include="Google.Apis.Calendar.v3" Version="1.59.0.2759" />
         <PackageReference Include="Google.Apis.Discovery.v1" Version="1.59.0" />
         <PackageReference Include="Humanizer" Version="2.14.1" />
+        <PackageReference Include="LiteDB" Version="5.0.16" />
         <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.9.4">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -35,6 +36,9 @@
 	<Target Name="NpmRunBuild" DependsOnTargets="NpmInstall" BeforeTargets="BeforeBuild">
 		<Exec Command="npm run build" />
 	</Target>
+	<ItemGroup>
+	  <ProjectReference Include="..\LiteDbLibrary\LiteDbLibrary.csproj" />
+	</ItemGroup>
     <ItemGroup>
         <Content Update="DataSources\WWII_DayByDay.json">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>

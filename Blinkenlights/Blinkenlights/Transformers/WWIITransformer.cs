@@ -1,17 +1,19 @@
-﻿using Blinkenlights.Models.Api.ApiHandler;
+﻿using Blinkenlights.Data.LiteDb;
+using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.Api.ApiInfoTypes;
 using Blinkenlights.Models.Api.ApiResult;
 using Blinkenlights.Models.ViewModels;
 using Blinkenlights.Models.ViewModels.Time;
 using Blinkenlights.Models.ViewModels.WWII;
 using Humanizer;
+using LiteDbLibrary;
 using Newtonsoft.Json;
 
 namespace Blinkenlights.Transformers
 {
     public class WWIITransformer : TransformerBase
 	{
-		public WWIITransformer(IApiHandler apiHandler) : base(apiHandler)
+		public WWIITransformer(IApiHandler apiHandler, ILiteDbHandler liteDbHandler) : base(apiHandler, liteDbHandler)
 		{
 
 		}

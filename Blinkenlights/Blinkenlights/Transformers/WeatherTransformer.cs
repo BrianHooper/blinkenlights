@@ -1,15 +1,17 @@
-﻿using Blinkenlights.Models.Api.ApiHandler;
+﻿using Blinkenlights.Data.LiteDb;
+using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.Api.ApiInfoTypes;
 using Blinkenlights.Models.Api.ApiResult;
 using Blinkenlights.Models.ViewModels;
 using Blinkenlights.Models.ViewModels.Weather;
 using Blinkenlights.Utilities;
+using LiteDbLibrary;
 
 namespace Blinkenlights.Transformers
 {
 	public class WeatherTransformer : TransformerBase
 	{
-		public WeatherTransformer(IApiHandler apiHandler) : base(apiHandler)
+		public WeatherTransformer(IApiHandler apiHandler, ILiteDbHandler liteDbHandler) : base(apiHandler, liteDbHandler)
 		{
 		}
 

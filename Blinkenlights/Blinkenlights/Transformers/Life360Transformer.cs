@@ -1,15 +1,17 @@
-﻿using Blinkenlights.Models.Api.ApiHandler;
+﻿using Blinkenlights.Data.LiteDb;
+using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.Api.ApiInfoTypes;
 using Blinkenlights.Models.Api.ApiResult;
 using Blinkenlights.Models.ViewModels;
 using Blinkenlights.Models.ViewModels.Life360;
+using LiteDbLibrary;
 using Newtonsoft.Json;
 
 namespace Blinkenlights.Transformers
 {
     public class Life360Transformer : TransformerBase
 	{
-		public Life360Transformer(IApiHandler apiHandler) : base(apiHandler)
+		public Life360Transformer(IApiHandler apiHandler, ILiteDbHandler liteDbHandler) : base(apiHandler, liteDbHandler)
 		{
 		}
 

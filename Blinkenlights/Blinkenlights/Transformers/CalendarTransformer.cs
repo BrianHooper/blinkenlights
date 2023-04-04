@@ -1,16 +1,18 @@
-﻿using Blinkenlights.Models.Api.ApiHandler;
+﻿using Blinkenlights.Data.LiteDb;
+using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.Api.ApiInfoTypes;
 using Blinkenlights.Models.Api.ApiResult;
 using Blinkenlights.Models.ViewModels;
 using Blinkenlights.Models.ViewModels.Calendar;
 using Blinkenlights.Transformers;
+using LiteDbLibrary;
 using Newtonsoft.Json;
 
 namespace Blinkenlights.Transformers
 {
     public class CalendarTransformer : TransformerBase
     {
-		public CalendarTransformer(IApiHandler apiHandler) : base(apiHandler)
+		public CalendarTransformer(IApiHandler apiHandler, ILiteDbHandler liteDbHandler) : base(apiHandler, liteDbHandler)
 		{
 		}
 

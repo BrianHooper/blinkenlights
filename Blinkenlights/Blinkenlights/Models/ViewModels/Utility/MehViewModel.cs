@@ -1,6 +1,6 @@
 ﻿using Blinkenlights.Models.Api.ApiResult;
 
-namespace Blinkenlights.Models.ViewModels.Meh
+namespace Blinkenlights.Models.ViewModels.Utility
 {
     public class MehViewModel : ApiResultBase
     {
