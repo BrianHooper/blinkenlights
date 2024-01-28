@@ -17,24 +17,35 @@ namespace Blinkenlights.Transformers
 
 		public override IModuleViewModel Transform()
 		{
-			var packageTrackingData = GetPackageTrackingData();
-			var mehData = GetMehData();
 			return new UtilityViewModel() 
 			{ 
-				MehData = mehData
+				MehData = GetMehData(),
+				PackageTrackingData = GetPackageTrackingData()
 			};
         }
 
-		private string GetPackageTrackingData()
+		private PackageTrackingViewModel GetPackageTrackingData()
 		{
-			var data = this.LiteDb.Read<PackageTrackingItem>();
-			var requestBody = new Dictionary<string, List<PackageTrackingItem>>()
+			var requests = this.LiteDb.Read<PackageTrackingItem>()
+				?.Where(t => !string.IsNullOrWhiteSpace(t?.TrackingNumber))
+				?.Select(t => new Ship24Request(t.TrackingNumber))
+				?.Select(t => JsonConvert.SerializeObject(t));
+
+			if (requests?.Any() != true)
 			{
-				{ "Items", data }
-			};
-			var requestBodyStr = JsonConvert.SerializeObject(requestBody);
-			var response = this.ApiHandler.Fetch(ApiType.PackageTracking, requestBodyStr).Result;
-			return null;
+				return null;
+			}
+
+			var responses = requests.Select(async r => await this.ApiHandler.Fetch(ApiType.Ship24, r)).ToList();
+			var results = responses.Select(r => Ship24Response.Deserialize(r.Result?.Data))
+				?.Select(r => r?.Data?.Trackings?.FirstOrDefault()?.Shipment?.StatusMilestone)
+				?.Where(r => !string.IsNullOrWhiteSpace(r))
+				?.Select(r => new Package()
+				{
+					Status = r
+				})?.ToList();
+
+			return new PackageTrackingViewModel(results);
 		}
 
         private MehViewModel GetMehData()

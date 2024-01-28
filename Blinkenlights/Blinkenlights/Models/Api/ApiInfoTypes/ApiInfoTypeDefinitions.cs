@@ -1,6 +1,7 @@
 ﻿using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.ViewModels.Authentication;
 using Newtonsoft.Json;
+using NuGet.DependencyResolver;
 
 namespace Blinkenlights.Models.Api.ApiInfoTypes
 {
@@ -325,7 +326,7 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 
 	public class PackageTrackingApiInfo : ApiInfoBase
 	{
-		public override bool ReportedInModule { get; } = true;
+		public override bool ReportedInModule { get; } = false;
 
 		public override ApiServerType ServerType { get; } = ApiServerType.Remote;
 
@@ -343,6 +344,32 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 			{
 				{ "X-ups-client-id", new StringSecretsPair(ApiSecretType.UpsPackageTrackingOAuthClientId) },
 				{ "X-ups-client-secret", new StringSecretsPair(ApiSecretType.UpsPackageTrackingOAuthSecretId) },
+				{ "X-fedex-client-id", new StringSecretsPair(ApiSecretType.FedexPackageTrackingOAuthClientId) },
+				{ "X-fedex-client-secret", new StringSecretsPair(ApiSecretType.FedexPackageTrackingOAuthSecretId) },
+			};
+		}
+	}
+
+	public class Ship24ApiInfo : ApiInfoBase
+	{
+		public override bool ReportedInModule { get; } = false;
+
+		public override ApiServerType ServerType { get; } = ApiServerType.Remote;
+
+		public override ApiRestType ApiRestType { get; } = ApiRestType.Post;
+
+		public override StringSecretsPair Endpoint(params string[] queryParameters)
+		{
+			var endpoint = string.Format("https://api.ship24.com/public/v1/trackers/track");
+			return new StringSecretsPair(endpoint);
+		}
+
+		public override Dictionary<string, StringSecretsPair> Headers()
+		{
+			return new Dictionary<string, StringSecretsPair>()
+			{
+				{ "Content-Type", new StringSecretsPair("application/json") },
+				{ "Authorization", new StringSecretsPair(ApiSecretType.Ship24ApiKey) }
 			};
 		}
 	}

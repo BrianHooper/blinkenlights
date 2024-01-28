@@ -1,12 +1,9 @@
 ﻿@using Blinkenlights.Models.ViewModels.Utility;
 @model UtilityViewModel
 
-@if (!string.IsNullOrWhiteSpace(Model?.MehData?.Status)) {
+@if (Model.MehData != null) {
 	<div id="meh-status" data-api-status="@Model.MehData.Status" hidden>
 	</div>
-}
-
-@if (Model.MehData != null) {
 	@if (!string.IsNullOrWhiteSpace(Model.MehData.Title))
 	{
 		<div id="meh-block">
@@ -15,6 +12,27 @@
 			</div>
 			<a id="meh-url" href="@Model.MehData.Url" target="_blank"></a>
 		</div>
+	}
+}
+
+@if (Model.PackageTrackingData != null)
+{
+	<div id="pkgtrack-status" data-api-status="@Model.PackageTrackingData.Status" hidden>
+	</div>
+	@if (Model.PackageTrackingData.Packages?.Any() == true)
+	{
+		foreach(var package in Model.PackageTrackingData.Packages)
+		{
+			<div id="pkgtrack-block">
+				<div id="pkgtrack-row">
+					<div id="pkgtrack-title">@package.Status</div>
+				</div>
+				@if(!string.IsNullOrEmpty(package.Url))
+				{
+				<a id="pkgtrack-url" href="@package.Url" target="_blank"></a>
+				}
+			</div>
+		}
 	}
 }
 

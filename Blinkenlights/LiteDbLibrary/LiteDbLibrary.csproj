@@ -1,14 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-	  <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-	  <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-  </PropertyGroup>
+	<Import Project="..\..\Blinkenlights.common.props"/>
+	<PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="LiteDB" Version="5.0.16" />
-  </ItemGroup>
+	</PropertyGroup>
+	<PropertyGroup>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageId>Blinkenlights.LiteDbLibrary</PackageId>
+		<Version>1.0.0</Version>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="LiteDB" Version="$(LiteDbVersion)" />
+	</ItemGroup>
 
 </Project>

@@ -48,7 +48,7 @@ namespace Blinkenlights.Transformers
 				return new WeatherViewModel(errorStatus);
 			}
 
-			var jsonDaysModel = weatherJsonModel.Days.Where(d => Helpers.FromEpoch(d.DatetimeEpoch, true, true, d.Tzoffset).Date >= DateTime.Now.Date).Take(5);
+			var jsonDaysModel = weatherJsonModel.Days.Where(d => d?.DatetimeEpoch != null && Helpers.FromEpoch(d.DatetimeEpoch.Value, true, true, d.Tzoffset).Date >= DateTime.Now.Date).Take(5);
 
 			var hoursFlattened = jsonDaysModel.SelectMany(d => d.Hours);
 			var temperatureMin = hoursFlattened.Min(h => h.Temp);
@@ -65,7 +65,7 @@ namespace Blinkenlights.Transformers
 					continue;
 				}
 
-				var dayOfWeek = Helpers.FromEpoch(day.DatetimeEpoch, true, true, day.Tzoffset).DayOfWeek.ToString();
+				var dayOfWeek = Helpers.FromEpoch(day.DatetimeEpoch.Value, true, true, day.Tzoffset).DayOfWeek.ToString();
 				WeatherDayModel dayModel = weatherDayModels.FirstOrDefault(d => d.Key == dayOfWeek).Value;
 				if (dayModel == null)
 				{
@@ -79,10 +79,10 @@ namespace Blinkenlights.Transformers
 					{
 						continue;
 					}
-					var dateTimePoint = Helpers.FromEpoch(hourModel.DatetimeEpoch, true, true, hourModel.Tzoffset);
+					var dateTimePoint = Helpers.FromEpoch(hourModel.DatetimeEpoch.Value, true, true, hourModel.Tzoffset);
 					var xHour = dateTimePoint.Hour;
 					var precipProb = (dateTimePoint >= DateTime.Now && hourModel.Precipprob > 0) ? hourModel.Precipprob : -1;
-					var weatherDataPoint = new WeatherData(xHour, hourModel.Temp, precipProb, hourModel.Humidity);
+					var weatherDataPoint = new WeatherData(xHour, hourModel.Temp ?? 0.0, precipProb ?? 0.0, hourModel.Humidity ?? 0.0);
 					dayModel.WeatherData[xHour] = weatherDataPoint;
 				}
 			}
@@ -93,9 +93,9 @@ namespace Blinkenlights.Transformers
 			var currentConditions = new List<CurrentCondition>
 			{
 				new CurrentCondition("Chance Rain", AsPercent(weatherJsonModel.CurrentConditions.Precipprob), "chance_rain.png", "Percent chance of rain"),
-				new CurrentCondition("Precipitation", AsPrecipitation(weatherJsonModel.CurrentConditions.Precip), "icons8-rainwater-catchment-48.png", "Expected rainfall in inches"),
+				new CurrentCondition("Precipitation", AsPrecipitation(weatherJsonModel.CurrentConditions.Precip ?? 0.0), "icons8-rainwater-catchment-48.png", "Expected rainfall in inches"),
 
-				new CurrentCondition("Temperature", AsTemperature(weatherJsonModel.CurrentConditions.Temp), "hot.png", "Current temperature (F)"),
+				new CurrentCondition("Temperature", AsTemperature(weatherJsonModel.CurrentConditions.Temp ?? 0.0), "hot.png", "Current temperature (F)"),
 				new CurrentCondition("UV Index", weatherJsonModel.CurrentConditions.Uvindex.ToString(), "icons8-sunlight-100.png", "Current UV index - 0-2 (low), 3-5 (moderate), 6-7 (high), 8+ (severe)"),
 
 				new CurrentCondition("Low Temp", AsTemperature(lowTemp), "low-temperature.png", "Today's low temperature (F)"),
@@ -107,8 +107,8 @@ namespace Blinkenlights.Transformers
 				new CurrentCondition("Moon Phase", AsPercent(weatherJsonModel.CurrentConditions.Moonphase, true), "moon-phase.png", "Moon Phase Percent"),
 				new CurrentCondition("Sunset", AsTime(weatherJsonModel.CurrentConditions.SunsetEpoch), "sunset.png", "Sunset Time"),
 
-				new CurrentCondition("Wind Speed", AsSpeed(weatherJsonModel.CurrentConditions.Windspeed), "windy.png", "Wind Speed"),
-				new CurrentCondition("Wind Direction", AsDirection(weatherJsonModel.CurrentConditions.Winddir), "windsock.png", $"Wind Direction: {weatherJsonModel.CurrentConditions.Winddir} degrees"),
+				new CurrentCondition("Wind Speed", AsSpeed(weatherJsonModel.CurrentConditions.Windspeed ?? 0.0), "windy.png", "Wind Speed"),
+				new CurrentCondition("Wind Direction", AsDirection(weatherJsonModel.CurrentConditions.Winddir ?? 0.0), "windsock.png", $"Wind Direction: {weatherJsonModel.CurrentConditions.Winddir} degrees"),
 			};
 
 			var status = ApiStatus.Success(ApiType.VisualCrossingWeather, response);

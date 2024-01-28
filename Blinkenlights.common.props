@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+    <PropertyGroup>
+        <RootDirectory>C:\Users\brian\Documents\code\blinkenlights</RootDirectory>
+        <LiteDbVersion>5.0.16</LiteDbVersion>
+    </PropertyGroup>
+    <PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    </PropertyGroup>
+    <PropertyGroup>
+		<Authors>brianhooper</Authors>
+		<Company>blinkenlights</Company>
+		<PackageOutputPath>$(RootDirectory)\Packages</PackageOutputPath>
+    </PropertyGroup>
+</Project>

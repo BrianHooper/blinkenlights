@@ -1,4 +1,6 @@
-﻿namespace LiteDbLibrary.Schemas
+﻿using System.Text.Json.Serialization;
+
+namespace LiteDbLibrary.Schemas
 {
 	public class PackageTrackingItem : ILiteDbObject
 	{
@@ -7,10 +9,6 @@
 		public string TrackingNumber { get; set; }
 
 		public string Name { get; set; }
-
-		public string Provider { get; set; }
-
-		public string Url { get; set; }
 
 		public bool SameIndex(ILiteDbObject other)
 		{
