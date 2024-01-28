@@ -4,7 +4,8 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 {
     public enum ApiSecretType
     {
-        Default = 0,
+		// dotnet user-secrets set "<SecretKey>" "<Secret>"
+		Default = 0,
 
         [SecretKey("Life360:AuthorizationToken")]
         Life360AuthorizationToken = 1,
@@ -35,5 +36,14 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 
 		[SecretKey("UpsPackageTracking:OAuthSecretId")]
 		UpsPackageTrackingOAuthSecretId = 10,
+
+		[SecretKey("FedexPackageTracking:OAuthClientId")]
+		FedexPackageTrackingOAuthClientId = 11,
+
+		[SecretKey("FedexPackageTracking:OAuthSecretId")]
+		FedexPackageTrackingOAuthSecretId = 12,
+
+		[SecretKey("Ship24:ApiKey")]
+		Ship24ApiKey = 13,
 	}
 }

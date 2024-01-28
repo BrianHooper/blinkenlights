@@ -61,31 +61,31 @@ namespace Blinkenlights.Models.ViewModels.Weather
 		public DateTime Datetime { get; set; }
 
 		[JsonProperty("datetimeEpoch")]
-		public long DatetimeEpoch { get; set; }
+		public long? DatetimeEpoch { get; set; }
 
 		[JsonProperty("temp")]
-		public double Temp { get; set; }
+		public double? Temp { get; set; }
 
 		[JsonProperty("feelslike")]
-		public double Feelslike { get; set; }
+		public double? Feelslike { get; set; }
 
 		[JsonProperty("humidity")]
-		public double Humidity { get; set; }
+		public double? Humidity { get; set; }
 
 		[JsonProperty("dew")]
-		public double Dew { get; set; }
+		public double? Dew { get; set; }
 
 		[JsonProperty("precip")]
-		public double Precip { get; set; }
+		public double? Precip { get; set; }
 
 		[JsonProperty("precipprob")]
-		public double Precipprob { get; set; }
+		public double? Precipprob { get; set; }
 
 		[JsonProperty("snow")]
-		public long Snow { get; set; }
+		public long? Snow { get; set; }
 
 		[JsonProperty("snowdepth")]
-		public double Snowdepth { get; set; }
+		public double? Snowdepth { get; set; }
 
 		[JsonProperty("preciptype")]
 		public List<string> Preciptype { get; set; }
@@ -94,40 +94,40 @@ namespace Blinkenlights.Models.ViewModels.Weather
 		public double? Windgust { get; set; }
 
 		[JsonProperty("windspeed")]
-		public double Windspeed { get; set; }
+		public double? Windspeed { get; set; }
 
 		[JsonProperty("winddir")]
-		public double Winddir { get; set; }
+		public double? Winddir { get; set; }
 
 		[JsonProperty("pressure")]
-		public double Pressure { get; set; }
+		public double? Pressure { get; set; }
 
 		[JsonProperty("visibility")]
-		public double Visibility { get; set; }
+		public double? Visibility { get; set; }
 
 		[JsonProperty("cloudcover")]
-		public double Cloudcover { get; set; }
+		public double? Cloudcover { get; set; }
 
 		[JsonProperty("solarradiation")]
-		public double Solarradiation { get; set; }
+		public double? Solarradiation { get; set; }
 
 		[JsonProperty("solarenergy")]
 		public double? Solarenergy { get; set; }
 
 		[JsonProperty("uvindex")]
-		public long Uvindex { get; set; }
+		public long? Uvindex { get; set; }
 
 		[JsonProperty("conditions")]
-		public string Conditions { get; set; }
+		public string? Conditions { get; set; }
 
 		[JsonProperty("icon")]
-		public string Icon { get; set; }
+		public string? Icon { get; set; }
 
 		[JsonProperty("stations")]
 		public List<string> Stations { get; set; }
 
 		[JsonProperty("source")]
-		public string Source { get; set; }
+		public string? Source { get; set; }
 
 		[JsonProperty("sunrise", NullValueHandling = NullValueHandling.Ignore)]
 		public DateTimeOffset? Sunrise { get; set; }
@@ -163,7 +163,7 @@ namespace Blinkenlights.Models.ViewModels.Weather
 		public long? Severerisk { get; set; }
 
 		[JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
-		public string Description { get; set; }
+		public string? Description { get; set; }
 
 		[JsonProperty("hours", NullValueHandling = NullValueHandling.Ignore)]
 		public List<CurrentConditions> Hours { get; set; }
@@ -175,28 +175,28 @@ namespace Blinkenlights.Models.ViewModels.Weather
 	public partial class Station
 	{
 		[JsonProperty("distance")]
-		public long Distance { get; set; }
+		public long? Distance { get; set; }
 
 		[JsonProperty("latitude")]
-		public double Latitude { get; set; }
+		public double? Latitude { get; set; }
 
 		[JsonProperty("longitude")]
-		public double Longitude { get; set; }
+		public double? Longitude { get; set; }
 
 		[JsonProperty("useCount")]
-		public long UseCount { get; set; }
+		public long? UseCount { get; set; }
 
 		[JsonProperty("id")]
-		public string Id { get; set; }
+		public string? Id { get; set; }
 
 		[JsonProperty("name")]
-		public string Name { get; set; }
+		public string? Name { get; set; }
 
 		[JsonProperty("quality")]
-		public long Quality { get; set; }
+		public long? Quality { get; set; }
 
 		[JsonProperty("contribution")]
-		public long Contribution { get; set; }
+		public long? Contribution { get; set; }
 	}
 
 	public partial class WeatherJsonModel

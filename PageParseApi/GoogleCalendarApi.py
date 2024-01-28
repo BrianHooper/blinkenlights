@@ -1,7 +1,7 @@
 import requests
 from icalendar import Calendar, prop
 from datetime import datetime
-from BrianTools import ApiError, IsNullOrEmpty
+from BrianTools.Tools import ApiError, IsNullOrEmpty
 
 class Event:
     def __init__(self, name, date):

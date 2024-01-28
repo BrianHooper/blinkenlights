@@ -334,7 +334,7 @@ namespace Blinkenlights.Models.Api.ApiHandler
 				return ApiResponse.Error(apiType, "Api call returned null", ApiSource.Prod);
 			}
 
-            if (response.StatusCode != System.Net.HttpStatusCode.OK || string.IsNullOrWhiteSpace(response?.Content))
+            if (!response.IsSuccessful || string.IsNullOrWhiteSpace(response?.Content))
 			{
 				return ApiResponse.Error(apiType, response.StatusDescription, ApiSource.Prod);
 			}

@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 from datetime import date
-from BrianTools import Engine, ApiError
+from BrianTools.Tools import Engine, ApiError
 import json
 
 filename = "WikipediaCache.json"

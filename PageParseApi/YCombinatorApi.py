@@ -1,5 +1,5 @@
 import requests
-from BrianTools import ApiError, IsNullOrEmpty
+from BrianTools.Tools import ApiError, IsNullOrEmpty
 import json
 
 TOP_STORIES_URL = "https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty"

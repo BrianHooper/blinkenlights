@@ -13,6 +13,11 @@ namespace Blinkenlights.Models.Api.ApiResult
 
         public static string Serialize(params ApiStatus[] statusItems)
         {
+            if (statusItems?.Any() != true)
+            {
+                return string.Empty;
+            }
+
             var apiStatusList = new ApiStatusList(statusItems.ToList());
             return JsonConvert.SerializeObject(apiStatusList);
         }
