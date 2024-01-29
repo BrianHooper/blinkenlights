@@ -19,12 +19,7 @@ namespace Blinkenlights.Models.ViewModels.Utility
 	{
 		public List<Package> Packages { get; set; }
 
-		public PackageTrackingViewModel() : base(null)
-		{
-
-		}
-
-		public PackageTrackingViewModel(List<Package> packages) : base(null)
+		public PackageTrackingViewModel(ApiStatus status, List<Package> packages = null) : base(status)
 		{
 			this.Packages = packages;
 		}

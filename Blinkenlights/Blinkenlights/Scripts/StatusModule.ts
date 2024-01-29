@@ -153,11 +153,12 @@ export function SetModuleStatusByElement(module: JQuery<HTMLElement>): void {
     }
 
     const data = module.attr("data-api-status");
-    if (data.length === 0) {
+    if (data === undefined || data.length === 0) {
         const elementId = module.attr("id");
         console.log(elementId);
+    } else {
+        SetModuleStatusByStr(data);
     }
-    SetModuleStatusByStr(data);
 };
 
 export function SetModuleError(Name: string, Status: string): void {

@@ -1,9 +1,18 @@
 ﻿@using Blinkenlights.Models.ViewModels.Utility;
 @model UtilityViewModel
 
+@{
+	var mehStatus = string.IsNullOrWhiteSpace(Model?.MehData?.Status) ? "Failed to get API status" : Model.MehData.Status;
+	var pkgStatus = string.IsNullOrWhiteSpace(Model?.PackageTrackingData?.Status) ? "Failed to get API status" : Model.PackageTrackingData.Status;
+}
+
+<div id="meh-status" data-api-status="@mehStatus" hidden>
+</div>
+<div id="pkgtrack-status" data-api-status="@pkgStatus" hidden>
+</div>
+
 @if (Model.MehData != null) {
-	<div id="meh-status" data-api-status="@Model.MehData.Status" hidden>
-	</div>
+
 	@if (!string.IsNullOrWhiteSpace(Model.MehData.Title))
 	{
 		<div id="meh-block">
@@ -17,8 +26,6 @@
 
 @if (Model.PackageTrackingData != null)
 {
-	<div id="pkgtrack-status" data-api-status="@Model.PackageTrackingData.Status" hidden>
-	</div>
 	@if (Model.PackageTrackingData.Packages?.Any() == true)
 	{
 		foreach(var package in Model.PackageTrackingData.Packages)

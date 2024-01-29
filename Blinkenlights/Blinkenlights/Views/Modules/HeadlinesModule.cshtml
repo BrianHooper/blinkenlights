@@ -1,41 +1,46 @@
 ﻿@using Blinkenlights.Models.ViewModels.Headlines;
 @model HeadlinesViewModel
 
-<div id="headlines-body">
-	@if (Model.Headlines?.Any() == true)
+@if (Model.Headlines?.Any() == true)
+{
+	@foreach (var headlinesContainer in Model.Headlines)
 	{
+		<div class="headlines-status" data-api-status="@headlinesContainer.Status" hidden>
+		</div>
+	}
+
+	<div id="headlines-body">
 		@foreach (var headlinesContainer in Model.Headlines)
 		{
-			<div class="headlines-status" data-api-status="@headlinesContainer.Status" hidden>
-			</div>
-
 			@if (headlinesContainer.Categories?.Any() == true)
 			{
-				@foreach (var headlinesCategory in headlinesContainer.Categories)
-				{
-					@if (headlinesCategory?.Articles?.Any() == true)
+				<div class="headlines-block">
+					@foreach (var headlinesCategory in headlinesContainer.Categories)
 					{
-						<div class="headlines-header">@headlinesCategory.Title</div>
-						<ul class="headlines-articles">
-							@foreach (var headline in headlinesCategory.Articles)
-							{
-								<li class="headlines-article">
-									@if (!string.IsNullOrWhiteSpace(headline.Url))
-									{
-										<a href="@headline.Url" target="_blank" title="@headline.Title">@headline.Title</a>
-									}
-									else
-									{
-										@headline.Title
-									}
-								</li>
-							}
-						</ul>
+						@if (headlinesCategory?.Articles?.Any() == true)
+						{
+							<div class="headlines-header">@headlinesCategory.Title</div>
+							<ul class="headlines-articles">
+								@foreach (var headline in headlinesCategory.Articles)
+								{
+									<li class="headlines-article">
+										@if (!string.IsNullOrWhiteSpace(headline.Url))
+										{
+											<a href="@headline.Url" target="_blank" title="@headline.Title">@headline.Title</a>
+										}
+										else
+										{
+											@headline.Title
+										}
+									</li>
+								}
+							</ul>
+						}
 					}
-				}
+				</div>
 			}
 		}
-	}
-</div>
+	</div>
+}
 
 <script type="module" src="~/ts-dist/HeadlinesModule.js"></script>
