@@ -1,20 +1,2 @@
-﻿@using Blinkenlights.Models.Api.ApiInfoTypes;
+﻿<div id="status-root"></div>
 <script type="module" src="~/ts-dist/Status.js"></script>
-<link rel="stylesheet" href="~/css/status.css" />
-
-<div id="status-root">
-
-
-@foreach (ApiType apiType in Enum.GetValues(typeof(ApiType)))
-	{
-		var apiInfo = apiType.Info();
-		@if (apiInfo?.ReportedInModule == true)
-		{
-			<div class="status-row status-notloaded" data-status-key="@apiType">
-				<div class="status-source"></div>
-				<div class="status-name">@apiType</div>
-				<div class="status-status">NotLoaded</div>
-			</div>
-		}
-	}
-</div>

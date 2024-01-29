@@ -1,4 +1,4 @@
-﻿import { SetModuleStatusByElement } from "./Status.js";
+﻿import { SetModuleStatusByElement } from "./StatusModule.js";
 
 var currentIndex = 0;
 SetModuleStatusByElement($("#slideshow-status"));

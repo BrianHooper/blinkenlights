@@ -1,0 +1,17 @@
+﻿@using Blinkenlights.Models.ViewModels.Status;
+@model StatusViewModel
+
+@if (Model?.ModulesToLoad?.Any() == true)
+{
+	foreach (var apiType in Model.ModulesToLoad)
+	{
+		<div class="status-row status-notloaded" data-status-key="@apiType">
+			<div class="status-source"></div>
+			<div class="status-name">@apiType</div>
+			<div class="status-status">NotLoaded</div>
+		</div>
+	}
+}
+
+<link rel="stylesheet" href="~/css/status.css" />
+<script type="module" src="~/ts-dist/StatusModule.js"></script>
