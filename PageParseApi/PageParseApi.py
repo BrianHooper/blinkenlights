@@ -7,6 +7,7 @@ from YCombinatorApi import GetYCombinatorData
 from RocketLaunchApi import GetRocketData
 from AstronomyApi import GetPicOfTheDay
 from PackageTrackingApi import GetTrackingInfo
+from IssTrackerApi import GetIssLocationImage
 
 app = FastAPI()
 
@@ -51,6 +52,10 @@ def astronomy():
 @app.post("/packagetracking")
 async def PackageTracking(requests: Request, Items = Body(...)):
     return GetTrackingInfo(requests.headers, Items)
+
+@app.get("/isstracker")
+def isstracker():
+    return GetIssLocationImage()
 
 if __name__ == "__main__":
     uvicorn.run("PageParseApi:app", host="127.0.0.1", port=5001, log_level="info")

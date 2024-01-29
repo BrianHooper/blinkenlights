@@ -47,6 +47,9 @@
 		PackageTracking = 14,
 
 		[ApiInfo(typeof(Ship24ApiInfo))]
-		Ship24 = 15
+		Ship24 = 15,
+
+		[ApiInfo(typeof(IssTrackerApiInfo))]
+		IssTracker = 16
 	}
 }

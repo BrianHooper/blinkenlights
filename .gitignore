@@ -16,3 +16,7 @@ UpsAuthenticationCache.json
 *.db
 packagetrackingsampledata.json
 *.nupkg
+FedexAuthenticationCache.json
+logfile.tsv
+iss_location.png
+secrets.json

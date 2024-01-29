@@ -1,0 +1,16 @@
+#iss-root {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.iss-content {
+    display: flex;
+    min-height: 0;
+    justify-content: center;
+}
+
+.iss-content > img {
+    object-fit: contain;
+}

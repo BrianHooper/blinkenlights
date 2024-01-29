@@ -373,5 +373,20 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 			};
 		}
 	}
+
+	public class IssTrackerApiInfo : ApiInfoBase
+	{
+		public override bool ReportedInModule { get; } = true;
+
+		public override int? CacheTimeout { get; } = 120;
+
+		public override ApiServerType ServerType { get; } = ApiServerType.Remote;
+
+		public override StringSecretsPair Endpoint(params string[] queryParameters)
+		{
+			var endpoint = "http://127.0.0.1:5001/isstracker";
+			return new StringSecretsPair(endpoint);
+		}
+	}
 }
 

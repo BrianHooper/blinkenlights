@@ -1,1 +1,1 @@
-uvicorn PageParseApi:app --port 5001 --app-dir "C:\Users\brian\Documents\code\blinkenlights\PageParseApi\"
+python -m uvicorn PageParseApi:app --port 5001 --app-dir "C:\Users\brian\Documents\code\blinkenlights\PageParseApi\" --reload

@@ -11,34 +11,34 @@ namespace LiteDbOperator
 		{
 			return new List<PackageTrackingItem>()
 			{
-				new PackageTrackingItem()
-				{
-					Name = "Item",
-					TrackingNumber = "1ZY549V70290264835",
-					Provider = "USPS",
-					Url = ""
-				},
-				new PackageTrackingItem()
-				{
-					Name = "Item",
-					TrackingNumber = "1ZY549V70290264836",
-					Provider = "UPS",
-					Url = ""
-				},
-				new PackageTrackingItem()
-				{
-					Name = "Item",
-					TrackingNumber = "638012418280",
-					Provider = "Fedex",
-					Url = ""
-				},
-				new PackageTrackingItem()
-				{
-					Name = "Item",
-					TrackingNumber = "1Z023E2X0214323462",
-					Provider = "Amazon",
-					Url = ""
-				},
+				//new PackageTrackingItem()
+				//{
+				//	Name = "Item",
+				//	TrackingNumber = "1ZY549V70290264835",
+				//	Provider = "USPS",
+				//	Url = ""
+				//},
+				//new PackageTrackingItem()
+				//{
+				//	Name = "Item",
+				//	TrackingNumber = "1ZY549V70290264836",
+				//	Provider = "UPS",
+				//	Url = ""
+				//},
+				//new PackageTrackingItem()
+				//{
+				//	Name = "Item",
+				//	TrackingNumber = "638012418280",
+				//	Provider = "Fedex",
+				//	Url = ""
+				//},
+				//new PackageTrackingItem()
+				//{
+				//	Name = "Item",
+				//	TrackingNumber = "1Z023E2X0214323462",
+				//	Provider = "Amazon",
+				//	Url = ""
+				//},
 			};
 		}
 
@@ -46,21 +46,22 @@ namespace LiteDbOperator
 		{
 			return new List<ModuleItem>()
 			{
-				new ModuleItem(name: "StatusRoot", row: 3, col: 3),
 
                 // Row 1
                 new ModuleItem(name: "TimeRoot", row: 1, col: 1),
-				new ModuleItem(name: "WeatherRoot", row: 1, col: 2, colSpan: 2),
-				new ModuleItem(name: "Life360Root", row: 1, col: 4),
+				new ModuleItem(name: "WeatherRoot", row: 1, col: 2, colSpan: 5),
+				new ModuleItem(name: "IssTrackerRoot", row: 1, col: 7, colSpan: 2),
+				//new ModuleItem(name: "Life360Root", row: 1, col: 4),
 
                 // Row 2
                 new ModuleItem(name: "WWIIRoot", row: 2, col: 1, colSpan: 2),
-				new ModuleItem(name: "HeadlinesRoot", row: 2, col: 3, colSpan: 2),
+				new ModuleItem(name: "HeadlinesRoot", row: 2, col: 3, colSpan: 6),
 
                 // Row 3
-                new ModuleItem(name: "CalendarRoot", row: 3, col: 1),
-				new ModuleItem(name: "UtilityRoot", row: 3, col: 2),
-				new ModuleItem(name: "SlideshowRoot", row: 3, col: 4),
+                new ModuleItem(name: "CalendarRoot", row: 3, col: 1, colSpan: 2),
+				new ModuleItem(name: "UtilityRoot", row: 3, col: 3, colSpan: 2),
+				new ModuleItem(name: "StatusRoot", row: 3, col: 5, colSpan: 2),
+				new ModuleItem(name: "SlideshowRoot", row: 3, col: 7, colSpan: 2),
 			};
 		}
 
@@ -70,22 +71,22 @@ namespace LiteDbOperator
 			{
 				new CountdownItem()
 				{
-					Date = new DateTime(2023, 6, 10),
-					Name = "Wedding"
+					Date = new DateTime(2024, 5, 16),
+					Name = "Naynay's party"
 				},
 				new CountdownItem()
 				{
-					Date = new DateTime(2023, 7, 3),
-					Name = "Portugal"
+					Date = new DateTime(2024, 8, 10),
+					Name = "Camran Wedding"
 				},
 				new CountdownItem()
 				{
-					Date = new DateTime(2023, 8, 27),
+					Date = new DateTime(2024, 8, 27),
 					Name = "Burning Man"
 				},
 				new CountdownItem()
 				{
-					Date = new DateTime(2023, 12, 24),
+					Date = new DateTime(2024, 12, 24),
 					Name = "Christmas"
 				}
 			};
@@ -93,7 +94,7 @@ namespace LiteDbOperator
 
 		public void Run()
 		{
-			//dbHandler.Clear();
+			dbHandler.Clear();
 			dbHandler.Upsert(CountdownTimers());
 			dbHandler.Upsert(Modules());
 			dbHandler.Upsert(Packages());
