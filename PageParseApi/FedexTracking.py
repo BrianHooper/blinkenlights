@@ -3,8 +3,6 @@ import os
 import json
 from BrianTools.Tools import IsNullOrEmpty
 from datetime import datetime, timedelta
-from oauthlib.oauth2 import BackendApplicationClient
-from requests_oauthlib import OAuth2Session
 from TrackingResult import TrackingResult
 
 AuthenticationCacheFilename = "FedexAuthenticationCache.json"

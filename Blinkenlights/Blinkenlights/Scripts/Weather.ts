@@ -1,4 +1,4 @@
-﻿import { SetModuleError } from "./Status.js";
+﻿import { SetModuleError } from "./StatusModule.js";
 
 var WeatherHandler = {
     refresh: function (): void {

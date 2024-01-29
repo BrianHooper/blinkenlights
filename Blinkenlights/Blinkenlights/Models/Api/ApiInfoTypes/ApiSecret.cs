@@ -45,5 +45,8 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 
 		[SecretKey("Ship24:ApiKey")]
 		Ship24ApiKey = 13,
+
+		[SecretKey("FinanceAnswer:AlphaVantage")]
+		FinanceApiKey = 14,
 	}
 }

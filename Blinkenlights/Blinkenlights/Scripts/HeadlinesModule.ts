@@ -1,4 +1,4 @@
-﻿import { SetModuleStatusByElement } from "./Status.js";
+﻿import { SetModuleStatusByElement } from "./StatusModule.js";
 
 $(".headlines-status").each(function () {
     SetModuleStatusByElement($(this));

@@ -33,11 +33,19 @@ namespace Blinkenlights.Transformers
 
 			if (requests?.Any() != true)
 			{
-				return null;
+				var errorStatus = ApiStatus.Failed(ApiType.Ship24, null, "No requests in database");
+				return new PackageTrackingViewModel(errorStatus);
 			}
 
-			var responses = requests.Select(async r => await this.ApiHandler.Fetch(ApiType.Ship24, r)).ToList();
-			var results = responses.Select(r => Ship24Response.Deserialize(r.Result?.Data))
+			var responses = requests.Select(async r => await this.ApiHandler.Fetch(ApiType.Ship24, r))?.ToList();
+			var responseResults = responses.Select(r => r.Result)?.ToList();
+			if (responseResults?.Any() != true)
+			{
+				var errorStatus = ApiStatus.Failed(ApiType.Ship24, null, "No valid API responses");
+				return new PackageTrackingViewModel(errorStatus);
+			}
+
+			var results = responseResults.Select(r => Ship24Response.Deserialize(r?.Data))
 				?.Select(r => r?.Data?.Trackings?.FirstOrDefault()?.Shipment?.StatusMilestone)
 				?.Where(r => !string.IsNullOrWhiteSpace(r))
 				?.Select(r => new Package()
@@ -45,7 +53,9 @@ namespace Blinkenlights.Transformers
 					Status = r
 				})?.ToList();
 
-			return new PackageTrackingViewModel(results);
+			var numFailed = responseResults.Where(r => r.ResultStatus != ApiResultStatus.Success).Count();
+			var status = numFailed > 0 ? ApiStatus.Failed(ApiType.Ship24, null, $"{numFailed} of {requests.Count()} requests failed") : ApiStatus.Success(ApiType.Ship24, responseResults.First());
+			return new PackageTrackingViewModel(status, results);
 		}
 
         private MehViewModel GetMehData()

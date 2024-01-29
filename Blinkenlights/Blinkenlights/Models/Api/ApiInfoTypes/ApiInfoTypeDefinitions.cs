@@ -15,6 +15,8 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 	{
 		public bool ReportedInModule { get; }
 
+		public string ModuleRootName { get; }
+
 		public ApiServerType ServerType { get; }
 
 		public ApiRestType ApiRestType { get; }
@@ -37,6 +39,8 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 	public abstract class ApiInfoBase : IApiInfo
 	{
 		public virtual bool ReportedInModule { get; } = false;
+
+		public virtual string ModuleRootName { get; } = null;
 
 		public virtual ApiRestType ApiRestType { get; } = ApiRestType.Get;
 
@@ -61,6 +65,8 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 	{
 		public override ApiServerType ServerType { get; } = ApiServerType.Local;
 
+		public override string ModuleRootName { get; } = "TimeRoot";
+
 		public override StringSecretsPair Endpoint(params string[] queryParameters)
         {
             var endpoint = Path.Combine("DataSources", "TimeZoneInfo.json");
@@ -72,7 +78,9 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 	{
 		public override ApiServerType ServerType { get; } = ApiServerType.Local;
 
-        public override StringSecretsPair Endpoint(params string[] queryParameters)
+		public override string ModuleRootName { get; } = "WWIIRoot";
+
+		public override StringSecretsPair Endpoint(params string[] queryParameters)
         {
             var endpoint = Path.Combine("DataSources", "WWII_DayByDay.json");
             return new StringSecretsPair(endpoint);
@@ -82,6 +90,8 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
     public class NewYorkTimesApiInfo : ApiInfoBase
 	{
 		public override bool ReportedInModule { get; } = true;
+
+		public override string ModuleRootName { get; } = "HeadlinesRoot";
 
 		public override int? CacheTimeout { get; } = 120;
 
@@ -98,6 +108,8 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 	{
 		public override bool ReportedInModule { get; } = true;
 
+		public override string ModuleRootName { get; } = "WeatherRoot";
+
 		public override int? CacheTimeout { get; } = 60;
 
 		public override ApiServerType ServerType { get; } = ApiServerType.Remote;
@@ -112,6 +124,8 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
     public class MehApiInfo : ApiInfoBase
 	{
 		public override bool ReportedInModule { get; } = true;
+
+		public override string ModuleRootName { get; } = "UtilityRoot";
 
 		public override int? CacheTimeout { get; } = 60;
 
@@ -128,6 +142,8 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 	{
 		public override bool ReportedInModule { get; } = true;
 
+		public override string ModuleRootName { get; } = "HeadlinesRoot";
+
 		public override int? CacheTimeout { get; } = 120;
 
 		public override ApiServerType ServerType { get; } = ApiServerType.Remote;
@@ -142,6 +158,8 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
     public class GoogleCalendarApiInfo : ApiInfoBase
 	{
 		public override bool ReportedInModule { get; } = true;
+
+		public override string ModuleRootName { get; } = "CalendarRoot";
 
 		public override int? CacheTimeout { get; } = 120;
 
@@ -167,6 +185,8 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 	{
 		public override bool ReportedInModule { get; } = true;
 
+		public override string ModuleRootName { get; } = "HeadlinesRoot";
+
 		public override int? CacheTimeout { get; } = 120;
 
 		public override ApiServerType ServerType { get; } = ApiServerType.Remote;
@@ -182,6 +202,8 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 	{
 		public override bool ReportedInModule { get; } = true;
 
+		public override string ModuleRootName { get; } = "HeadlinesRoot";
+
 		public override int? CacheTimeout { get; } = 120;
 
 		public override ApiServerType ServerType { get; } = ApiServerType.Remote;
@@ -196,6 +218,8 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
     public class Life360ApiInfo : ApiInfoBase
 	{
 		public override bool ReportedInModule { get; } = true;
+
+		public override string ModuleRootName { get; } = "Life360Root";
 
 		public override int? CacheTimeout { get; } = 2;
 
@@ -220,6 +244,8 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 	{
 		public override bool ReportedInModule { get; } = true;
 
+		public override string ModuleRootName { get; } = "SlideshowRoot";
+
 		public override int? CacheTimeout { get; } = 120;
 
 		public override ApiServerType ServerType { get; } = ApiServerType.Remote;
@@ -234,6 +260,8 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 	public class UpsPackageTrackingApiInfo : ApiInfoBase
 	{
 		public override int? CacheTimeout { get; } = 120;
+
+		public override string ModuleRootName { get; } = "UtilityRoot";
 
 		public override ApiServerType ServerType { get; } = ApiServerType.Remote;
 
@@ -270,6 +298,8 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 	public class UpsOAuthApiInfo : ApiInfoBase
 	{
 		public override ApiServerType ServerType { get; } = ApiServerType.Remote;
+
+		public override string ModuleRootName { get; } = "UtilityRoot";
 
 		public override ApiRestType ApiRestType { get; } = ApiRestType.Post;
 
@@ -328,6 +358,8 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 	{
 		public override bool ReportedInModule { get; } = false;
 
+		public override string ModuleRootName { get; } = "UtilityRoot";
+
 		public override ApiServerType ServerType { get; } = ApiServerType.Remote;
 
 		public override ApiRestType ApiRestType { get; } = ApiRestType.Post;
@@ -354,6 +386,8 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 	{
 		public override bool ReportedInModule { get; } = false;
 
+		public override string ModuleRootName { get; } = "UtilityRoot";
+
 		public override ApiServerType ServerType { get; } = ApiServerType.Remote;
 
 		public override ApiRestType ApiRestType { get; } = ApiRestType.Post;
@@ -378,6 +412,8 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 	{
 		public override bool ReportedInModule { get; } = true;
 
+		public override string ModuleRootName { get; } = "IssTrackerRoot";
+
 		public override int? CacheTimeout { get; } = 120;
 
 		public override ApiServerType ServerType { get; } = ApiServerType.Remote;
@@ -386,6 +422,23 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 		{
 			var endpoint = "http://127.0.0.1:5001/isstracker";
 			return new StringSecretsPair(endpoint);
+		}
+	}
+
+	public class AlphaVantageApiInfo : ApiInfoBase
+	{
+		public override bool ReportedInModule { get; } = true;
+
+		public override string ModuleRootName { get; } = "FinanceAnswerRoot";
+
+		public override int? CacheTimeout { get; } = 120;
+
+		public override ApiServerType ServerType { get; } = ApiServerType.Remote;
+
+		public override StringSecretsPair Endpoint(params string[] queryParameters)
+		{
+			var endpoint = "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=MSFT&interval=60min&apikey={0}";
+			return new StringSecretsPair(endpoint, ApiSecretType.FinanceApiKey);
 		}
 	}
 }
