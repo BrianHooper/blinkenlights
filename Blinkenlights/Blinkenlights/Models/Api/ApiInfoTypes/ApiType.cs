@@ -50,6 +50,9 @@
 		Ship24 = 15,
 
 		[ApiInfo(typeof(IssTrackerApiInfo))]
-		IssTracker = 16
+		IssTracker = 16,
+
+		[ApiInfo(typeof(AlphaVantageApiInfo))]
+		AlphaVantage = 17
 	}
 }

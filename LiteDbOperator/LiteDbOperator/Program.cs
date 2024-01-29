@@ -55,7 +55,8 @@ namespace LiteDbOperator
 
                 // Row 2
                 new ModuleItem(name: "WWIIRoot", row: 2, col: 1, colSpan: 2),
-				new ModuleItem(name: "HeadlinesRoot", row: 2, col: 3, colSpan: 6),
+				new ModuleItem(name: "HeadlinesRoot", row: 2, col: 3, colSpan: 4),
+				new ModuleItem(name: "FinanceAnswerRoot", row: 2, col: 7, colSpan: 2),
 
                 // Row 3
                 new ModuleItem(name: "CalendarRoot", row: 3, col: 1, colSpan: 2),

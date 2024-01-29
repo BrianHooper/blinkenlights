@@ -1,0 +1,27 @@
+﻿@using Blinkenlights.Models.ViewModels.FinanceAnswer;
+@model FinanceAnswerViewModel
+
+@if (!string.IsNullOrWhiteSpace(Model?.Status))
+{
+	<div id="fin-status" data-api-status="@Model.Status" hidden>
+	</div>
+}
+
+@if (Model?.Data?.Any() == true)
+{
+	foreach(var dataRow in Model.Data)
+	{
+		<div class="fin-data">
+			<div class="fin-symbol">
+				@dataRow.Symbol
+			</div>
+			<div class="fin-price">
+				@dataRow.Price
+			</div>
+		</div>
+	}
+
+}
+
+<link rel="stylesheet" href="~/css/financeanswer.css" />
+<script type="module" src="~/ts-dist/FinanceAnswerModule.js"></script>

@@ -388,5 +388,20 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 			return new StringSecretsPair(endpoint);
 		}
 	}
+
+	public class AlphaVantageApiInfo : ApiInfoBase
+	{
+		public override bool ReportedInModule { get; } = true;
+
+		public override int? CacheTimeout { get; } = 120;
+
+		public override ApiServerType ServerType { get; } = ApiServerType.Remote;
+
+		public override StringSecretsPair Endpoint(params string[] queryParameters)
+		{
+			var endpoint = "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=MSFT&interval=60min&apikey={0}";
+			return new StringSecretsPair(endpoint, ApiSecretType.FinanceApiKey);
+		}
+	}
 }
 
