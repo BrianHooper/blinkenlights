@@ -23,14 +23,14 @@ namespace Blinkenlights.Transformers
 
 		public override IModuleViewModel Transform()
 		{
-			List<ModuleItem> modulesToLoad = this.LiteDb.Read<ModuleItem>();
+			List<ModuleItem> modules = this.LiteDb.Read<ModuleItem>();
 
-			var numColumns = modulesToLoad.Max(m => m.ColEnd) - 1;
-			var numRows = modulesToLoad.Max(m => m.RowEnd) - 1;
+			var numColumns = modules.Max(m => m.ColEnd) - 1;
+			var numRows = modules.Max(m => m.RowEnd) - 1;
 
 			var viewModel = new IndexViewModel()
 			{
-				ModulePlacementPairs = modulesToLoad.Select(m => new KeyValuePair<string, string>(m.Name, m.ToGridArea())).ToList(),
+				Modules = modules,
 				GridTemplateStyle = $"grid-template-columns: repeat({numColumns}, minmax(0, 1fr)); grid-template-rows: repeat({numRows}, minmax(0, 1fr));"
 			};
 

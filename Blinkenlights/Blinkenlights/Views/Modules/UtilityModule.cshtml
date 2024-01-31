@@ -1,50 +1,51 @@
 ﻿@using Blinkenlights.Models.ViewModels.Utility;
 @model UtilityViewModel
 
-@await Html.PartialAsync("ModuleStatus", Model?.MehData)
-@await Html.PartialAsync("ModuleStatus", Model?.PackageTrackingData)
+<link rel="stylesheet" href="~/css/utility.css" />
 
-<div class="util-body">
-	@if (Model.MehData != null) {
+<div id="utility-root">
+	<div class="util-body">
+		@if (Model.MehData != null) {
 
-		@if (!string.IsNullOrWhiteSpace(Model.MehData.Title))
-		{
-			<div class="util-block">
-				<div class="util-row meh-row">
-					<div class="util-col meh-title">@Model.MehData.Title</div>
-				</div>
-				<a class="util-url" href="@Model.MehData.Url" target="_blank"></a>
-			</div>
-		}
-	}
-
-	@if (Model.PackageTrackingData != null)
-	{
-		@if (Model.PackageTrackingData.Packages?.Any() == true)
-		{
-			foreach(var package in Model.PackageTrackingData.Packages)
+			@if (!string.IsNullOrWhiteSpace(Model.MehData.Title))
 			{
 				<div class="util-block">
-					<div class="util-row pkg-row">
-						<div class="util-col pkgtrack-icon">
-							@if(!string.IsNullOrWhiteSpace(package.Icon))
-							{
-								<img src="@package.Icon" class="pkg-icon" />
-							}
-						</div>
-						<div class="util-col pkgtrack-name">@package.Name</div>
-						<div class="util-col pkgtrack-status">@package.Status</div>
-						<div class="util-col pkgtrack-eta">@package.Eta</div>
-						<div class="util-col pkgtrack-location">@package.Location</div>
+					<div class="util-row meh-row">
+						<div class="util-col meh-title">@Model.MehData.Title</div>
 					</div>
-					@if(!string.IsNullOrEmpty(package.Url))
-					{
-					<a class="util-url" href="@package.Url" target="_blank"></a>
-					}
+					<a class="util-url" href="@Model.MehData.Url" target="_blank"></a>
 				</div>
 			}
 		}
-	}
+
+		@if (Model.PackageTrackingData != null)
+		{
+			@if (Model.PackageTrackingData.Packages?.Any() == true)
+			{
+				foreach(var package in Model.PackageTrackingData.Packages)
+				{
+					<div class="util-block">
+						<div class="util-row pkg-row">
+							<div class="util-col pkgtrack-icon">
+								@if(!string.IsNullOrWhiteSpace(package.Icon))
+								{
+									<img src="@package.Icon" class="pkg-icon" />
+								}
+							</div>
+							<div class="util-col pkgtrack-name">@package.Name</div>
+							<div class="util-col pkgtrack-status">@package.Status</div>
+							<div class="util-col pkgtrack-eta">@package.Eta</div>
+							<div class="util-col pkgtrack-location">@package.Location</div>
+						</div>
+						@if(!string.IsNullOrEmpty(package.Url))
+						{
+						<a class="util-url" href="@package.Url" target="_blank"></a>
+						}
+					</div>
+				}
+			}
+		}
+	</div>
 </div>
 
 <script type="module" src="~/ts-dist/UtilityModule.js"></script>

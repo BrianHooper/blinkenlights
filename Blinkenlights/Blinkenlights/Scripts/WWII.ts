@@ -1,14 +1,11 @@
-﻿var WWIIHandler = {
-    refresh: function (): void {
-        console.log("Refreshed WWII Module");
-        $.get("/Modules/GetWWIIModule", function (data) {
-            var root = $("#wwii-root");
-            if (!root) {
-                return;
-            }
+﻿import { RefreshModule } from "./ModuleStatusCommon.js";
 
-            root.html(data);
-        });
+const moduleKey = "WWIIRoot";
+const controllerEndpoint = "/Modules/GetWWIIModule";
+
+var WWIIHandler = {
+    refresh: function (): void {
+        RefreshModule(moduleKey, controllerEndpoint)
     }
 };
 

@@ -1,25 +1,28 @@
 ﻿@using Blinkenlights.Models.ViewModels.FinanceAnswer;
 @model FinanceAnswerViewModel
 
-@await Html.PartialAsync("ModuleStatus", Model)
+<partial name="ModuleStatus" model="@Model" />
 
-@if (Model?.Data?.Any() == true)
-{
-	foreach(var dataRow in Model.Data)
+<link rel="stylesheet" href="~/css/financeanswer.css" />
+<div id="fin-root">
+	@if (Model?.Data?.Any() == true)
 	{
-		<div class="fin-data">
-			<div class="fin-table">
-				<div class="fin-symbol">
-					@dataRow.Symbol
+		foreach(var dataRow in Model.Data)
+		{
+			<div class="fin-data">
+				<div class="fin-table">
+					<div class="fin-symbol">
+						@dataRow.Symbol
+					</div>
+					<div class="fin-price">
+						@dataRow.Price
+					</div>
 				</div>
-				<div class="fin-price">
-					@dataRow.Price
-				</div>
+				<div class="finance-block" data-finance-graph="@dataRow.SerializePoints()"></div>
 			</div>
-			<div class="finance-block" data-finance-graph="@dataRow.SerializePoints()"></div>
-		</div>
-	}
+		}
 
-}
+	}
+</div>
 
 <script type="module" src="~/ts-dist/FinanceAnswerModule.js"></script>

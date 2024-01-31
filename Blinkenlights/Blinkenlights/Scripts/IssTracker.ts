@@ -1,11 +1,3 @@
-﻿var IssTrackerHandler = {
-    refresh: function (): void {
-        console.log("Refreshed ISS Module");
-        $.get("/Modules/GetIssTrackerModule", function (data) {
-            $("#iss-root").html(data);
-        });
-    }
-};
+﻿import { StartModule } from "./ModuleStatusCommon.js";
 
-IssTrackerHandler.refresh();
-setInterval(IssTrackerHandler.refresh, 30 * 1000);
+StartModule("IssTrackerRoot", "/Modules/GetIssTrackerModule", 10 * 1000);

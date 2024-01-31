@@ -1,41 +1,41 @@
 ﻿@using Blinkenlights.Models.ViewModels.Headlines;
 @model HeadlinesViewModel
+<link rel="stylesheet" href="~/css/headlines.css" />
 
-<div id="headlines-body">
-	@if (Model.Headlines?.Any() == true)
-	{
-		@foreach (var headlinesContainer in Model.Headlines)
+<div id="headlines-root">
+	<div id="headlines-body">
+		@if (Model.Headlines?.Any() == true)
 		{
-
-			@await Html.PartialAsync("ModuleStatus", headlinesContainer)
-
-			@if (headlinesContainer.Categories?.Any() == true)
+			@foreach (var headlinesContainer in Model.Headlines)
 			{
-				@foreach (var headlinesCategory in headlinesContainer.Categories)
+				@if (headlinesContainer.Categories?.Any() == true)
 				{
-					@if (headlinesCategory?.Articles?.Any() == true)
+					@foreach (var headlinesCategory in headlinesContainer.Categories)
 					{
-						<div class="headlines-header">@headlinesCategory.Title</div>
-						<ul class="headlines-articles">
-							@foreach (var headline in headlinesCategory.Articles)
-							{
-								<li class="headlines-article">
-									@if (!string.IsNullOrWhiteSpace(headline.Url))
-									{
-										<a href="@headline.Url" target="_blank" title="@headline.Title">@headline.Title</a>
-									}
-									else
-									{
-										@headline.Title
-									}
-								</li>
-							}
-						</ul>
+						@if (headlinesCategory?.Articles?.Any() == true)
+						{
+							<div class="headlines-header">@headlinesCategory.Title</div>
+							<ul class="headlines-articles">
+								@foreach (var headline in headlinesCategory.Articles)
+								{
+									<li class="headlines-article">
+										@if (!string.IsNullOrWhiteSpace(headline.Url))
+										{
+											<a href="@headline.Url" target="_blank" title="@headline.Title">@headline.Title</a>
+										}
+										else
+										{
+											@headline.Title
+										}
+									</li>
+								}
+							</ul>
+						}
 					}
 				}
 			}
 		}
-	}
+	</div>
 </div>
 
 <script type="module" src="~/ts-dist/HeadlinesModule.js"></script>

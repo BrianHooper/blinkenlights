@@ -1,3 +1,5 @@
-﻿<link rel="stylesheet" href="~/css/calendar.css" />
-<div id="calendar-root" class="status-report"></div>
-<script type="module" src="~/ts-dist/calendar.js"></script>
+﻿<script type="module">
+	import { StartModule } from "./ts-dist/ModuleStatusCommon.js";
+
+	StartModule("CalendarRoot", "/Modules/GetCalendarModule", 15 * 60 * 1000);
+</script>

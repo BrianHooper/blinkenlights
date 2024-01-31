@@ -1,18 +1,13 @@
-﻿//import { SetModuleError } from "./StatusModule.js";
+﻿import { RefreshModule } from "./ModuleStatusCommon.js";
+
+const moduleKey = "UtilityRoot";
+const controllerEndpoint = "/Modules/GetUtilityData";
 
 var UtilityHandler = {
     refresh: function (): void {
-        console.log("Refreshed Utility Module");
-        $.get("/Modules/GetUtilityData", function (data) {
-            var root = $("#utility-root");
-            if (!root) {
-                //SetModuleError("Utility", "ModuleController returned null");
-            } else {
-                root.html(data);
-            }
-        });
+        RefreshModule(moduleKey, controllerEndpoint)
     }
 };
 
 UtilityHandler.refresh();
-setInterval(UtilityHandler.refresh, 3 * 60 * 60 * 1000);
+setInterval(UtilityHandler.refresh, 15 * 60 * 1000);

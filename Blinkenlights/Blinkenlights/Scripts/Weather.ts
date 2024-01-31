@@ -1,18 +1,13 @@
-﻿//import { SetModuleError } from "./StatusModule.js";
+﻿import { RefreshModule } from "./ModuleStatusCommon.js";
+
+const moduleKey = "WeatherRoot";
+const controllerEndpoint = "/Modules/GetWeatherData";
 
 var WeatherHandler = {
     refresh: function (): void {
-        console.log("Refreshed Weather Module");
-        $.get("/Modules/GetWeatherData", function (data) {
-            var root = $("#weather-root");
-            if (!root) {
-                //SetModuleError("Weather", "ModuleController returned null");
-            } else {
-                root.html(data);
-            }
-        });
+        RefreshModule(moduleKey, controllerEndpoint)
     }
 };
 
 WeatherHandler.refresh();
-setInterval(WeatherHandler.refresh, 30 * 60 * 1000);
+setInterval(WeatherHandler.refresh, 15 * 60 * 1000);

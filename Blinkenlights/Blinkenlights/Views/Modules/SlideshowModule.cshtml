@@ -1,13 +1,17 @@
 ﻿@using Blinkenlights.Models.ViewModels.Slideshow;
 @model SlideshowViewModel
 
-@await Html.PartialAsync("ModuleStatus", Model)
+<partial name="ModuleStatus" model="@Model" />
 
-<div id="stage">
-	<a href="1.jpg"><img src="images/slideshow/1.jpg" width="360" height="270"></a>
-	<a href="2.jpg"><img src="images/slideshow/2.jpg" width="360" height="270"></a>
-	<a href="3.jpg"><img src="images/slideshow/3.jpg" width="360" height="270"></a>
-	<a href="4.jpg"><img src="images/slideshow/4.jpg" width="360" height="270"></a>
+<link rel="stylesheet" href="~/css/slideshow.css" />
+
+<div id="slideshow-root">
+	<div id="stage">
+		<a href="1.jpg"><img src="images/slideshow/1.jpg" width="360" height="270"></a>
+		<a href="2.jpg"><img src="images/slideshow/2.jpg" width="360" height="270"></a>
+		<a href="3.jpg"><img src="images/slideshow/3.jpg" width="360" height="270"></a>
+		<a href="4.jpg"><img src="images/slideshow/4.jpg" width="360" height="270"></a>
+	</div>
 </div>
 
 <script type="module" src="~/ts-dist/SlideshowModule.js"></script>

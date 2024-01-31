@@ -24,11 +24,9 @@ html, body, .index-root {
 
 .index-module {
     margin: 5px;
-    padding: 10px;
     border-radius: 8px;
     box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
     background-color: #383838;
-    position: relative;
 }
 
 .module-name {
@@ -44,4 +42,46 @@ html, body, .index-root {
 
 .module-name-hide {
     visibility: hidden;
+}
+
+.module-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.module-header {
+    display: flex;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    overflow: hidden;
+}
+
+.status-field {
+    padding-block: 5px;
+    padding-inline: 10px;
+}
+
+.module-title {
+    width: 100px;
+}
+
+.module-success {
+    background-color: green;
+}
+
+.module-failed {
+    background-color: red;
+}
+
+.module-loading {
+    background-color: gray;
+}
+
+.module-body {
+    display: flex;
+    height: 100%;
+    padding: 10px;
+    position: relative;
+    overflow: hidden;
 }
