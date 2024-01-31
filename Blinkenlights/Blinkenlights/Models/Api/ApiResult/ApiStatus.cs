@@ -1,5 +1,6 @@
 ﻿using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.Api.ApiInfoTypes;
+using static Google.Apis.Requests.BatchRequest;
 
 namespace Blinkenlights.Models.Api.ApiResult
 {
@@ -15,28 +16,34 @@ namespace Blinkenlights.Models.Api.ApiResult
 
         public ApiSource Source { get; }
 
-        private ApiStatus(ApiType apiType, ApiResponse response, ApiState state, string statusMessage = null)
+        public ApiStatus(ApiType apiType, DateTime? lastUpdateTime, ApiSource? source, ApiState state, string statusMessage = null)
         {
             Name = apiType.ToString();
             Status = statusMessage;
-            LastUpdate = response is null ? string.Empty : response.LastUpdateTime.ToString("hh:mm tt");
+            LastUpdate = lastUpdateTime is null ? string.Empty : lastUpdateTime.Value.ToString("hh:mm tt");
             State = state;
-            Source = response is null ? ApiSource.Unknown : response.ApiSource;
+            Source = source is null ? ApiSource.Unknown : source.Value;
         }
 
         public static ApiStatus Success(ApiType apiType, ApiResponse response, string statusMessage = "Success")
         {
-            return new ApiStatus(apiType, response, ApiState.Success, statusMessage);
+            return new ApiStatus(apiType, response?.LastUpdateTime, response?.ApiSource, ApiState.Success, statusMessage);
         }
 
         public static ApiStatus Failed(ApiType apiType, ApiResponse response, string statusMessage = null)
         {
-            return new ApiStatus(apiType, response, ApiState.Failed, statusMessage);
+            return new ApiStatus(apiType, response?.LastUpdateTime, response?.ApiSource, ApiState.Failed, statusMessage);
+
         }
 
-        public static ApiStatus Stale(ApiType apiType, ApiResponse response, string statusMessage = null)
+        public static ApiStatus Success(ApiType apiType, DateTime? lastUpdateTime, ApiSource? source, string statusMessage = "Success")
         {
-            return new ApiStatus(apiType, response, ApiState.Stale, statusMessage);
+            return new ApiStatus(apiType, lastUpdateTime, source, ApiState.Success, statusMessage);
+        }
+
+        public static ApiStatus Failed(ApiType apiType, DateTime? lastUpdateTime, ApiSource? source, string statusMessage)
+        {
+            return new ApiStatus(apiType, lastUpdateTime, source, ApiState.Failed, statusMessage);
         }
     }
 }

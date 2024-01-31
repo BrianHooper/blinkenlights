@@ -1,5 +1,6 @@
 ﻿var SlideshowHandler = {
     refresh: function (): void {
+        console.log("Refreshed Slideshow Module");
         $.get("/Modules/GetSlideshowModule", function (data) {
             $("#slideshow-root").html(data);
         });

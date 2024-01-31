@@ -1,5 +1,6 @@
 ﻿var clockHandler = {
     refresh: function () {
+        console.log("Refreshed Time Module");
         $.get("/Modules/GetTimeModule", function (data) {
             $("#time-root").html(data);
 
@@ -7,6 +8,7 @@
                 var offset = parseInt($(this).attr("offset"));
                 var d = new Date();
                 d.setTime(d.getTime() + (offset * 1000));
+                
                 var dateStr = d.toLocaleString("en-US", {
                     timeZone: "Etc/GMT",
                     hour: "numeric",

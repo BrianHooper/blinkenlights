@@ -3,8 +3,10 @@
 namespace Blinkenlights.Models.ViewModels.Status
 {
 	public class StatusViewModel : IModuleViewModel
-	{
-		public IEnumerable<ApiType> ModulesToLoad { get; set; }
+    {
+        public string ModuleName => "Status";
+
+        public IEnumerable<ApiType> ModulesToLoad { get; set; }
 
 		public StatusViewModel(IEnumerable<ApiType> modulesToLoad) : base()
 		{

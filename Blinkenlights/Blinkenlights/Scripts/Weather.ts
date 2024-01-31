@@ -1,11 +1,12 @@
-﻿import { SetModuleError } from "./StatusModule.js";
+﻿//import { SetModuleError } from "./StatusModule.js";
 
 var WeatherHandler = {
     refresh: function (): void {
+        console.log("Refreshed Weather Module");
         $.get("/Modules/GetWeatherData", function (data) {
             var root = $("#weather-root");
             if (!root) {
-                SetModuleError("Weather", "ModuleController returned null");
+                //SetModuleError("Weather", "ModuleController returned null");
             } else {
                 root.html(data);
             }

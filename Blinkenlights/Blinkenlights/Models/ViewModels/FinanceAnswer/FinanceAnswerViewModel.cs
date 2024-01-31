@@ -1,4 +1,6 @@
 ﻿using Blinkenlights.Models.Api.ApiResult;
+using Blinkenlights.Models.ViewModels.Weather;
+using Newtonsoft.Json;
 
 namespace Blinkenlights.Models.ViewModels.FinanceAnswer
 {
@@ -6,7 +8,7 @@ namespace Blinkenlights.Models.ViewModels.FinanceAnswer
 	{
 		public List<FinanceData> Data { get; set; }
 
-		public FinanceAnswerViewModel(ApiStatus status, List<FinanceData> data = null) : base(status)
+		public FinanceAnswerViewModel(ApiStatus status, List<FinanceData> data = null) : base("FinanceAnswer", status)
 		{
 			this.Data = data;
 		}
@@ -18,24 +20,33 @@ namespace Blinkenlights.Models.ViewModels.FinanceAnswer
 
 		public string Price { get; set; }
 
-		public List<GraphDataPoint> DataPoints { get; set; }
+		public GraphDataPoint[] DataPoints { get; init; }
+
+		public string SerializePoints()
+		{
+			var jsonSettings = new JsonSerializerSettings()
+			{
+				NullValueHandling = NullValueHandling.Include,
+			};
+			return JsonConvert.SerializeObject(this.DataPoints, jsonSettings);
+		}
 	}
 
 	public class GraphDataPoint
 	{
-		public string X { get; set; }
-		public string Y { get; set; }
+		public int X { get; set; }
+		public double Y { get; set; }
 
-		public GraphDataPoint(string X, string Y) 
+		public GraphDataPoint(int X, double Y) 
 		{
 			this.X = X;
 			this.Y = Y;
 		}
 
-		public GraphDataPoint(string timestamp, TimeSeriesDataPoint timeSeriesDataPoint)
+		public GraphDataPoint(int timeIndex, TimeSeriesDataPoint timeSeriesDataPoint)
 		{
-			this.X = timestamp;
-			this.Y = timeSeriesDataPoint.Close;
+			this.X = timeIndex;
+			this.Y = double.Parse(timeSeriesDataPoint.Close);
 		}
 	}
 }

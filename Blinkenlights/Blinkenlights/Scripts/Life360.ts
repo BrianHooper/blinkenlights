@@ -1,4 +1,4 @@
-﻿import { SetModuleStatusByElement, SetModuleStatusByStr, SetModuleStatusByFields, SetModuleError } from "./StatusModule.js";
+﻿//import { SetModuleStatusByElement, SetModuleStatusByStr, SetModuleStatusByFields, SetModuleError } from "./StatusModule.js";
 
 export interface Life360JSONModel {
     Name: string;
@@ -37,13 +37,14 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 var Life360Handler = {
     refresh: function (): void {
+        console.log("Refreshed Life60 Module");
         $.get("/Modules/GetLife360Module", function (data) {
             var module = $("#life360-module");
             if (!module) {
-                SetModuleError("Life360", "ModuleController returned null");
+                //SetModuleError("Life360", "ModuleController returned null");
             } else {
                 module.html(data);
-                SetModuleStatusByElement($("#life360-data"));
+                //SetModuleStatusByElement($("#life360-data"));
                 CreateMap();
             }
         });

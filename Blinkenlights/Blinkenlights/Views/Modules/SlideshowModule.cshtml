@@ -1,25 +1,13 @@
 ﻿@using Blinkenlights.Models.ViewModels.Slideshow;
 @model SlideshowViewModel
 
+@await Html.PartialAsync("ModuleStatus", Model)
 
+<div id="stage">
+	<a href="1.jpg"><img src="images/slideshow/1.jpg" width="360" height="270"></a>
+	<a href="2.jpg"><img src="images/slideshow/2.jpg" width="360" height="270"></a>
+	<a href="3.jpg"><img src="images/slideshow/3.jpg" width="360" height="270"></a>
+	<a href="4.jpg"><img src="images/slideshow/4.jpg" width="360" height="270"></a>
+</div>
 
-@if (!string.IsNullOrWhiteSpace(Model?.Status))
-{
-	<div id="slideshow-status" data-api-status="@Model.Status" hidden>
-	</div>
-}
-
-@if (Model.Frames?.Any() == true)
-{
-	foreach(var frame in Model.Frames)
-	{
-		<div class="slideshow-image">
-			<div id="slideshow-title">@frame.Title</div>
-			<img src="@frame.Source" />
-			<a id="slideshow-link" href="@frame.Url" target="_blank"></a>
-		</div>
-	}
-}
-
-<link rel="stylesheet" href="~/css/slideshow.css" />
 <script type="module" src="~/ts-dist/SlideshowModule.js"></script>

@@ -1,11 +1,7 @@
 ﻿@using Blinkenlights.Models.ViewModels.IssTracker;
 @model IssTrackerViewModel
 
-@if (!string.IsNullOrWhiteSpace(Model?.Status))
-{
-	<div id="iss-status" data-api-status="@Model.Status" hidden>
-	</div>
-}
+@await Html.PartialAsync("ModuleStatus", Model)
 
 @if (!string.IsNullOrWhiteSpace(Model?.ImagePath))
 {

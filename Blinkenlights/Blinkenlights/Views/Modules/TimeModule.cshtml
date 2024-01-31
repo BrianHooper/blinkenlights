@@ -1,8 +1,7 @@
 ﻿@using Blinkenlights.Models.ViewModels.Time;
 @model TimeViewModel
 
-<div id="time-status" data-api-status="@Model.Status" hidden>
-</div>
+@await Html.PartialAsync("ModuleStatus", Model)
 
 @if (Model.TimeZoneInfos?.Any() == true) 
 {

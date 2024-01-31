@@ -1,5 +1,6 @@
 ﻿var StatusHandler = {
     refresh: function (): void {
+        console.log("Refreshed Status Module");
         $.get("/Modules/GetStatusModule", function (data) {
             $("#status-root").html(data);
         });

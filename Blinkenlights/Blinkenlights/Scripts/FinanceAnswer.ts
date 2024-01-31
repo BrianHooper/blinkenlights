@@ -1,5 +1,6 @@
 ﻿var FinanceAnswerHandler = {
     refresh: function (): void {
+        console.log("Refreshed Finance Module");
         $.get("/Modules/GetFinanceAnswerModule", function (data) {
             $("#fin-root").html(data);
         });

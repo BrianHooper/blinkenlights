@@ -3,8 +3,7 @@
 
 <link rel="stylesheet" href="~/css/weather.css" />
 
-<div id="weather-data" data-api-status="@Model.Status" hidden>
-</div>
+@await Html.PartialAsync("ModuleStatus", Model)
 
 
 <div id="weather-graph">

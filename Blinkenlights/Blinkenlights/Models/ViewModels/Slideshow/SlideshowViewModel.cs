@@ -5,12 +5,12 @@ namespace Blinkenlights.Models.ViewModels.Slideshow
 {
 	public class SlideshowViewModel : ApiResultBase
 	{
-		public SlideshowViewModel(List<SlideshowFrame> frames, ApiStatus status): base(status)
+		public SlideshowViewModel(List<SlideshowFrame> frames, ApiStatus status): base("Slideshow", status)
 		{
 			this.Frames = frames;
 		}
 
-		public SlideshowViewModel(ApiStatus status) : base(status)
+		public SlideshowViewModel(ApiStatus status) : base("Slideshow", status)
 		{
 		}
 

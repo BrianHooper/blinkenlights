@@ -1,5 +1,6 @@
 ﻿var CalendarHandler = {
     refresh: function (): void {
+        console.log("Refreshed Calendar Module");
         $.get("/Modules/GetCalendarModule", function (data) {
             var root = $("#calendar-root");
             if (!root) {

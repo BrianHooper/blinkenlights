@@ -42,3 +42,38 @@
     inset: 0;
     content: "";
 }
+
+#stage {
+    margin: 1em auto;
+    width: 360px;
+    height: 270px;
+    border: 10px solid #000;
+    overflow: hidden;
+    position: relative;
+}
+
+    #stage a {
+        position: absolute;
+        display: inline-block;
+    }
+
+
+.slideshow_zten {
+    z-index: 10;
+}
+
+.slideshow_ztwenty {
+    z-index: 20;
+}
+
+.slideshow_show {
+    display: inline-block;
+}
+.slideshow_hide {
+    display: none;
+}
+
+.slideshow_fade_in {
+    opacity: 1;
+    transition: opacity 1s;
+}

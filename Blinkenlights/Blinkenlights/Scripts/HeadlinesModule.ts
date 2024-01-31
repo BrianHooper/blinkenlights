@@ -1,5 +1,5 @@
-﻿import { SetModuleStatusByElement } from "./StatusModule.js";
+﻿//import { SetModuleStatusByElement } from "./StatusModule.js";
 
-$(".headlines-status").each(function () {
-    SetModuleStatusByElement($(this));
-});
+//$(".headlines-status").each(function () {
+//    SetModuleStatusByElement($(this));
+//});

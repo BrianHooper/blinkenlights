@@ -1,7 +1,9 @@
 ﻿@using Blinkenlights.Models.ViewModels.WWII;
 @model WWIIDayModel
 
-<div id="wwii-header" data-api-status="@Model.Status">
+@await Html.PartialAsync("ModuleStatus", Model)
+
+<div id="wwii-header">
     <div id="wwii-title">World War II - On this day, 80 years ago</div>
     <div id="wwii-date">@Model.Date</div>
 </div>

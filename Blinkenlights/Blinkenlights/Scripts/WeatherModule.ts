@@ -1,4 +1,4 @@
-﻿import { SetModuleStatusByElement } from "./StatusModule.js";
+﻿//import { SetModuleStatusByElement } from "./StatusModule.js";
 
 interface WeatherAxis {
     yAxisMin: number;
@@ -12,7 +12,7 @@ interface WeatherData {
     humidity: number;
 }
 
-const graphSizes = {
+const weatherGraphSizes = {
     height: 150,
     graphWidth: 90,
     axisWidth: 30,
@@ -23,15 +23,15 @@ const graphSizes = {
 function drawWeatherAxis(divElement, chartYMin, chartYMax) {
     const svg = d3.select("#" + divElement)
         .append("svg")
-        .attr("width", graphSizes.axisWidth)
-        .attr("height", graphSizes.height + 20)
+        .attr("width", weatherGraphSizes.axisWidth)
+        .attr("height", weatherGraphSizes.height + 20)
         .append("g")
         .attr("transform",
-            "translate(" + graphSizes.axisTranslateLeft + "," + graphSizes.translateTop + ")");
+            "translate(" + weatherGraphSizes.axisTranslateLeft + "," + weatherGraphSizes.translateTop + ")");
 
     const yScale = d3.scaleLinear()
         .domain([chartYMin, chartYMax])
-        .range([graphSizes.height, 0]);
+        .range([weatherGraphSizes.height, 0]);
 
     const yAxis = d3.axisLeft(yScale)
         .ticks(5, "f");
@@ -43,22 +43,22 @@ function drawWeatherAxis(divElement, chartYMin, chartYMax) {
 }
 
 function drawDayGraph(points: WeatherData[], chartYMin: number, chartYMax: number, parent: JQuery<HTMLElement>) {
-    const translate = "translate(0," + graphSizes.translateTop + ")";
+    const translate = "translate(0," + weatherGraphSizes.translateTop + ")";
 
     const svg = d3.create('svg');
     svg.attr("class", "weather-day-svg")
-        .attr("width", graphSizes.graphWidth)
-        .attr("height", graphSizes.height + 10)
+        .attr("width", weatherGraphSizes.graphWidth)
+        .attr("height", weatherGraphSizes.height + 10)
         .append("g")
         .attr("transform", translate);
 
     const xScale = d3.scaleLinear()
         .domain([0, 23])
-        .range([0, graphSizes.graphWidth]);
+        .range([0, weatherGraphSizes.graphWidth]);
 
     const yScale = d3.scaleLinear()
         .domain([chartYMin, chartYMax])
-        .range([graphSizes.height, 0]);
+        .range([weatherGraphSizes.height, 0]);
 
     const rainColor = "#3095FF";
     const tempColor = "#FF9A30";
@@ -101,8 +101,8 @@ function drawDayGraph(points: WeatherData[], chartYMin: number, chartYMax: numbe
     parent.html(svg.node());
 }
 
-const dataElement = $("#weather-data");
-SetModuleStatusByElement(dataElement);
+//const dataElement = $("#weather-data");
+//SetModuleStatusByElement(dataElement);
 
 const weatherAxisModel: WeatherAxis = JSON.parse($("#weather-axis").attr("data-weather-axis"));
 drawWeatherAxis("weather-axis", weatherAxisModel.yAxisMin, weatherAxisModel.yAxisMax);

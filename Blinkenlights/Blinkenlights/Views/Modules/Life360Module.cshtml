@@ -1,7 +1,9 @@
 ﻿@using Blinkenlights.Models.ViewModels.Life360;
 @model Life360ViewModel
 
-<div id="life360-data" data-api-status="@Model.Status" hidden>
+@await Html.PartialAsync("ModuleStatus", Model)
+
+<div id="life360-data">
 	@if (Model.Models?.Any() == true)
 	{
 		foreach (var userModel in Model.Models)

@@ -1,11 +1,11 @@
 ﻿import { Convert, APIStatus, APIStatusItem } from "./ApiStatus.js"
 
-/*
-    Unknown = 0,
-    Failed = 1,
-    Stale = 2,
-    Success = 3
-*/
+///*
+//    Unknown = 0,
+//    Failed = 1,
+//    Stale = 2,
+//    Success = 3
+//*/
 function getSourceClass(source: number): string {
     if (source === 1) {
         return "api-source api-source-cache";
@@ -19,13 +19,7 @@ function getSourceClass(source: number): string {
     }
 }
 
-function createSourceElement(className: string, source: number, parent: JQuery<HTMLElement>): void {
-    if (!parent || !className) {
-        return;
-    }
-
-    var cicleClass = getSourceClass(source);
-
+function createSourceIcon(source: number): SVGSVGElement {
     const svg = d3.create('svg');
     svg
         .attr("class", getSourceClass(source))
@@ -34,13 +28,7 @@ function createSourceElement(className: string, source: number, parent: JQuery<H
         .attr('cy', '50%')
         .attr('r', 5);
 
-    const childDiv = jQuery("<div/>", {
-        "class": className,
-    });
-
-    childDiv.html(svg.node());
-
-    childDiv.appendTo(parent);
+    return svg.node();
 }
 
 function createDivElement(className: string, value: any, parent: JQuery<HTMLElement>): void {
@@ -48,9 +36,10 @@ function createDivElement(className: string, value: any, parent: JQuery<HTMLElem
         return;
     }
 
-    const childDiv = jQuery("<div/>", {
+    const childDiv = $("<div/>", {
         "class": className,
     });
+
     if (value) {
         childDiv.html(value);
     }
@@ -75,92 +64,86 @@ function getStateClass(state: number): string {
     }
 }
 
-export function SetModuleStatusByFields(Name: string, Status: string, LastUpdate: string, State: number, Source: number): void {
-    const root = $("#status-root");
-    if (!root) {
-        console.log("SetModuleStatus: Failed to find root element");
-        return;
-    }
-
-    if (!Name) {
-        return;
-    }
-
-    var statusClass = `status-row ${getStateClass(State)}`;
-    var statusRow = $("div[data-status-key='" + Name + "']");
-    if (!statusRow || statusRow.html() === undefined) {
-        statusRow = jQuery("<div/>", {
-            "class": statusClass,
-            "data-status-key": Name
-        });
-    } else {
-        statusRow.attr("class", statusClass);
-    }
-
-    statusRow.empty();
-
-    createSourceElement("status-source", Source, statusRow);
-    createDivElement("status-name", Name, statusRow);
-    createDivElement("status-lastupdate", LastUpdate, statusRow);
-    createDivElement("status-status", Status, statusRow);
-
-    if (statusRow.children.length === 0) {
-        return;
-    }
-
-    statusRow.appendTo(root);
+function errorStatus(moduleName: string, errorStr: string): APIStatus {
+    return Convert.Create(moduleName, errorStr, new Date().toTimeString(), 0, 0);
 }
 
-export function SetModuleStatusByObject(apiStatus: APIStatus): void {
-    const root = $("#status-root");
-    if (!root) {
-        console.log("SetModuleStatus: Failed to find root element");
+function convertStatus(moduleName: string, apiStatusStr: string): APIStatus {
+    try {
+        const apiStatus = Convert.toAPIStatus(apiStatusStr);
+        if (apiStatus === undefined || apiStatus.Items === undefined || apiStatus.Items.length === 0) {
+            return errorStatus(moduleName, "Status is empty");
+        } else {
+            return apiStatus;
+        }
+    } catch (error) {
+        return errorStatus(moduleName, error);
+    }
+}
+
+function createStatusRow(key: string, item: APIStatusItem): JQuery<HTMLElement> {
+    var statusClass = `status-row ${getStateClass(item.State)}`;
+
+    const statusRow = $("<div/>", {
+        "class": `status-row ${statusClass}`,
+        "data-key": key
+    });
+
+    const sourceIcon = createSourceIcon(item.Source);
+
+    $("<div/>", { "class": "status-source" }).html(sourceIcon).appendTo(statusRow);
+
+    createDivElement("status-name", item.Name, statusRow);
+    createDivElement("status-lastupdate", item.LastUpdate, statusRow);
+    createDivElement("status-status", item.Status, statusRow);
+
+    return statusRow;
+}
+
+function updateStatusRow(row: JQuery<HTMLElement>, item: APIStatusItem): void {
+    if (!row || row === undefined || !item || item === undefined) {
         return;
     }
 
-    if (!apiStatus) {
-        console.log("SetModuleStatus: Dict is null");
+    const sourceIcon = createSourceIcon(item.Source);
+    row.children(".status-source").first().html(sourceIcon);
+    row.children(".status-lastupdate").first().html(item.LastUpdate);
+    row.children(".status-lastupdate").first().html(item.LastUpdate);
+    row.children(".status-status").first().html(item.Status);
+}
+
+function Update(module: JQuery<HTMLElement>): void {
+    if (!module || module === undefined || module.length === 0) {
         return;
     }
 
-    if (!apiStatus.Items || apiStatus.Items.length === 0) {
-        console.log("SetModuleStatus: Items is null or empty");
-        return;
-    }
+    var moduleName = module.attr("data-module-name");
+    var moduleStatus = module.attr("data-api-status");
+    var apiStatus = convertStatus(moduleName, moduleStatus);
 
     apiStatus.Items.forEach(function (item: APIStatusItem) {
         if (item) {
-            SetModuleStatusByFields(item.Name, item.Status, item.LastUpdate, item.State, item.Source);
+            const key = `${moduleName}-${item.Name}`;
+            var statusRows = $("#status-body").children(`[data-key='${key}']`);
+            if (!statusRows || statusRows === undefined || statusRows.length === 0) {
+                const statusElement = createStatusRow(key, item);
+                $("#status-body").append(statusElement);
+            } else {
+                updateStatusRow(statusRows.first(), item);
+            }
         }
     });
 }
 
-export function SetModuleStatusByStr(data: string): void {
-    if (!data) {
-        console.log(data);
-        console.log("SetModuleStatus: data is null");
-        return;
-    }
-
-    const apiStatus = Convert.toAPIStatus(data);
-    SetModuleStatusByObject(apiStatus);
+function RefreshAll(): void {
+    $(".module-status").each(function () {
+        Update($(this))
+    });
 }
 
-export function SetModuleStatusByElement(module: JQuery<HTMLElement>): void {
-    if (!module) {
-        console.log("SetModuleStatus: Module not found");
-        return;
-    }
+export function Refresh(key: string): void {
+    Update($(`.module-status [data-module-name='${key}']`).eq(0));
+}
 
-    const data = module.attr("data-api-status");
-    if (data === undefined || data.length === 0) {
-        const elementId = module.attr("id");
-        console.log(elementId);
-    } else {
-        SetModuleStatusByStr(data);
-    }
-};
-
-export function SetModuleError(Name: string, Status: string): void {
-    SetModuleStatusByFields(Name, Status, null, 1, 0);
-};
+RefreshAll();
+setInterval(RefreshAll, 15 * 1000);

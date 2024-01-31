@@ -6,13 +6,17 @@ using Blinkenlights.Models.ViewModels.Utility;
 using LiteDbLibrary;
 using LiteDbLibrary.Schemas;
 using Newtonsoft.Json;
+using static Google.Apis.Requests.BatchRequest;
 
 namespace Blinkenlights.Transformers
 {
     public class UtilityTransformer : TransformerBase
 	{
-		public UtilityTransformer(IApiHandler apiHandler, ILiteDbHandler liteDbHandler) : base(apiHandler, liteDbHandler)
+		private IWebHostEnvironment WebHostEnvironment { get; init; }
+
+		public UtilityTransformer(IApiHandler apiHandler, ILiteDbHandler liteDbHandler, IWebHostEnvironment webHostEnvironment) : base(apiHandler, liteDbHandler)
 		{
+			WebHostEnvironment = webHostEnvironment;
 		}
 
 		public override IModuleViewModel Transform()
@@ -26,39 +30,79 @@ namespace Blinkenlights.Transformers
 
 		private PackageTrackingViewModel GetPackageTrackingData()
 		{
-			var requests = this.LiteDb.Read<PackageTrackingItem>()
-				?.Where(t => !string.IsNullOrWhiteSpace(t?.TrackingNumber))
-				?.Select(t => new Ship24Request(t.TrackingNumber))
-				?.Select(t => JsonConvert.SerializeObject(t));
+			this.ApiHandler.TryGetCachedValue(ApiType.Ship24, out var ship24CacheData);
+			var ship24Cache = Ship24Cache.Deserialize(ship24CacheData);
 
-			if (requests?.Any() != true)
+			var trackings = this.LiteDb.Read<PackageTrackingItem>()
+				?.Where(t => !string.IsNullOrWhiteSpace(t?.TrackingNumber));
+
+			if (trackings?.Any() != true)
 			{
 				var errorStatus = ApiStatus.Failed(ApiType.Ship24, null, "No requests in database");
 				return new PackageTrackingViewModel(errorStatus);
 			}
 
-			var responses = requests.Select(async r => await this.ApiHandler.Fetch(ApiType.Ship24, r))?.ToList();
-			var responseResults = responses.Select(r => r.Result)?.ToList();
-			if (responseResults?.Any() != true)
+			var apiRequests = new Dictionary<string, Task<ApiResponse>>();
+			foreach (var tracking in trackings)
 			{
-				var errorStatus = ApiStatus.Failed(ApiType.Ship24, null, "No valid API responses");
-				return new PackageTrackingViewModel(errorStatus);
+				if (!ship24Cache.Responses.ContainsKey(tracking.TrackingNumber))
+				{
+					var apiRequestData = new Ship24Request(tracking.TrackingNumber);
+					var serializedRequest = JsonConvert.SerializeObject(apiRequestData);
+					apiRequests.Add(tracking.TrackingNumber, this.ApiHandler.Fetch(ApiType.Ship24, serializedRequest));
+				}
+			}
+			
+			var apiResponses = new Dictionary<string, Ship24Response>();
+			var successCount = 0;
+			var failedCount = 0;
+			var lastUpdateTime = ship24Cache.LastUpdateTime;
+			foreach (var tracking in trackings)
+			{
+				if (apiRequests.TryGetValue(tracking.TrackingNumber, out var apiResponse))
+				{
+					var apiResponseResult = apiResponse.Result;
+					var ship24Response = Ship24Response.Deserialize(apiResponse.Result?.Data);
+					apiResponses.Add(tracking.TrackingNumber, ship24Response);
+
+					if (ship24Response != null) 
+					{
+						successCount++;
+						ship24Cache.Responses.Add(tracking.TrackingNumber, ship24Response);
+						lastUpdateTime = DateTime.UtcNow;
+					}
+					else
+					{
+						failedCount++;
+					}
+				}
+				else if (ship24Cache.Responses.TryGetValue(tracking.TrackingNumber, out var cachedValue))
+				{
+					successCount++;
+					apiResponses.Add(tracking.TrackingNumber, cachedValue);
+				}
+				else
+				{
+					failedCount++;
+					apiResponses.Add(tracking.TrackingNumber, null);
+				}
 			}
 
-			var results = responseResults.Select(r => Ship24Response.Deserialize(r?.Data))
-				?.Select(r => r?.Data?.Trackings?.FirstOrDefault()?.Shipment?.StatusMilestone)
-				?.Where(r => !string.IsNullOrWhiteSpace(r))
-				?.Select(r => new Package()
-				{
-					Status = r
-				})?.ToList();
+			var cacheApiResponse = ApiResponse.Success(ApiType.Ship24, ship24Cache.Serialize(), ApiSource.Cache, lastUpdateTime);
+			this.ApiHandler.TryUpdateCache(cacheApiResponse);
 
-			var numFailed = responseResults.Where(r => r.ResultStatus != ApiResultStatus.Success).Count();
-			var status = numFailed > 0 ? ApiStatus.Failed(ApiType.Ship24, null, $"{numFailed} of {requests.Count()} requests failed") : ApiStatus.Success(ApiType.Ship24, responseResults.First());
-			return new PackageTrackingViewModel(status, results);
+			var packages = apiResponses.Select(kv => Package.FromResponse(kv, trackings)).Where(p => p != null).ToList();
+
+			var source = apiRequests.Any() ? ApiSource.Prod : ApiSource.Cache;
+
+
+			var status = failedCount > 0
+				? ApiStatus.Failed(ApiType.Ship24, lastUpdateTime, source, $"{successCount} success, {failedCount} failed")
+				: ApiStatus.Success(ApiType.Ship24, lastUpdateTime, source);
+			return new PackageTrackingViewModel(status, packages);
 		}
 
-        private MehViewModel GetMehData()
+		private MehViewModel GetMehData()
         {
 			var response = this.ApiHandler.Fetch(ApiType.Meh).Result;
 			if (response is null)

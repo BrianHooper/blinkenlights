@@ -1,10 +1,8 @@
 ﻿@using Blinkenlights.Models.ViewModels.Calendar;
+@using Blinkenlights.Utilities;
 @model CalendarViewModel
 
-@if (!string.IsNullOrWhiteSpace(Model?.Status)) {
-	<div id="calendar-status" data-api-status="@Model.Status" hidden>
-	</div>
-}
+@await Html.PartialAsync("ModuleStatus", Model)
 
 <div id="calendar-events">
 	@if (Model?.Events?.Any() == true)

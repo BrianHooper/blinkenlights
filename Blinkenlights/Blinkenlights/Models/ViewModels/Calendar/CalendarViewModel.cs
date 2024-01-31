@@ -5,7 +5,7 @@ namespace Blinkenlights.Models.ViewModels.Calendar
 {
     public class CalendarViewModel : ApiResultBase
     {
-        public CalendarViewModel(List<Event> events, ApiStatus status) : base(status)
+        public CalendarViewModel(List<Event> events, ApiStatus status) : base("Calendar", status)
         {
             Events = events;
         }

@@ -45,9 +45,9 @@ namespace Blinkenlights.Transformers
 				var errorStatus = ApiStatus.Failed(ApiType.AlphaVantage, response, "Required data missing in api response");
 				return new FinanceAnswerViewModel(errorStatus);
 			}
-			var dataPoints = model.TimeSeriesDataPoints.Select(kv => new GraphDataPoint(kv.Key, kv.Value)).ToList();
-			double.TryParse(dataPoints.First().Y, out var currentPrice);
-			var price = $"${Math.Round(currentPrice, 2)}";
+			var timeIndex = 0;
+			var dataPoints = model.TimeSeriesDataPoints.Select(kv => new GraphDataPoint(timeIndex++, kv.Value)).ToArray();
+			var price = $"${Math.Round(dataPoints.First().Y, 2)}";
 			var dataModel = new FinanceData()
 			{
 				Symbol = symbol,
