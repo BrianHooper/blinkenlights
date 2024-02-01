@@ -60,10 +60,5 @@ namespace Blinkenlights.Controllers
 		{
 			return GetPartialView<FinanceAnswerTransformer>("FinanceAnswerModule");
 		}
-
-		public IActionResult GetStatusModule()
-		{
-			return GetPartialView<StatusTransformer>("StatusModule");
-		}
 	}
 }

@@ -51,8 +51,16 @@ function SetModuleResultMessage(key: string, msg: string) {
     setModuleStatusField(header, "module-result", "", msg);
 }
 
-function GetModuleResultData(key: string): any {
-    return $(`.index-module[data-module-name='${key}']`).find(".module-result").attr("data-api-result");
+function GetModuleContainer(key: string): JQuery<HTMLElement> {
+    return $(`.index-module[data-module-name='${key}']`);
+}
+
+function GetModuleResultElement(key: string): JQuery<HTMLElement> {
+    return $(`.module-result[data-module-name='${key}']`);
+}
+
+function GetModuleResultData(resultElement: JQuery<HTMLElement>): string {
+    return resultElement.attr("data-api-result");
 }
 
 function SetApiResult(moduleName: string, apiStatusStr: string): void {
@@ -69,8 +77,10 @@ function SetApiResult(moduleName: string, apiStatusStr: string): void {
 }
 
 export function UpdateResult(key: string) {
-    const data = GetModuleResultData(key);
-    console.log(data);
+    const container = GetModuleContainer(key);
+    const result = GetModuleResultElement(key);
+    const data = GetModuleResultData(result);
+    console.log(`${key}: ${container},${result},${data}`);
 
     if (!data || data === undefined || data.length === 0) {
         SetModuleResultMessage(key, "Failed");
@@ -97,7 +107,7 @@ export function RefreshModule(key: string, endpoint: string) {
         error: function () {
             SetModuleStatusFailed(key);
         },
-        timeout: 5000
+        timeout: 30000
     });
 }
 

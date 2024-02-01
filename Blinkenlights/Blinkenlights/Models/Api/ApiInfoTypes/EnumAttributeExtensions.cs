@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿using Blinkenlights.Models.Module;
+using LiteDbLibrary.Schemas;
+using System.ComponentModel;
 
 namespace Blinkenlights.Models.Api.ApiInfoTypes
 {
@@ -17,11 +19,16 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 		}
 
 		public static IApiInfo Info(this ApiType val)
-        {
-            return val.GetAttribute<ApiInfoAttribute>()?.ApiInfo;
-        }
+		{
+			return val.GetAttribute<ApiInfoAttribute>()?.ApiInfo;
+		}
 
-        private static T GetAttribute<T>(this object val) where T : Attribute
+		public static IModuleTypeData Info(this ModuleType val)
+		{
+			return val.GetAttribute<ModuleTypeDataAttribute>()?.Data;
+		}
+
+		private static T GetAttribute<T>(this object val) where T : Attribute
         {
             var attribute = val
                .GetType()

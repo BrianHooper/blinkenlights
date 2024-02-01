@@ -34,20 +34,20 @@ namespace LiteDbOperator
 			{
 
                 // Row 1
-                new ModuleItem(name: "TimeRoot", endpoint: "/Modules/GetTimeModule", refreshRateMs: 60 * 1000, row: 1, col: 1),
-				new ModuleItem(name: "WeatherRoot", endpoint: "/Modules/GetWeatherData", refreshRateMs: 15 * 60 * 1000, row: 1, col: 2, colSpan: 5),
-				new ModuleItem(name: "IssTrackerRoot", endpoint: "/Modules/GetIssTrackerModule", refreshRateMs: 5 * 60 * 1000, row: 1, col: 7, colSpan: 2),
+                new ModuleItem(name: "Time", endpoint: "/Modules/GetTimeModule", refreshRateMs: 60 * 1000, row: 1, col: 1),
+				new ModuleItem(name: "Weather", endpoint: "/Modules/GetWeatherData", refreshRateMs: 15 * 60 * 1000, row: 1, col: 2, colSpan: 5),
+				new ModuleItem(name: "IssTracker", endpoint: "/Modules/GetIssTrackerModule", refreshRateMs: 5 * 60 * 1000, row: 1, col: 7, colSpan: 2),
 
                 // Row 2
-                new ModuleItem(name: "WWIIRoot", endpoint: "/Modules/GetWWIIModule", refreshRateMs: 3 * 60 * 60 * 1000, row: 2, col: 1, colSpan: 2),
-				new ModuleItem(name: "HeadlinesRoot", endpoint: "/Modules/GetHeadlinesModule", refreshRateMs: 60 * 60 * 1000, row: 2, col: 3, colSpan: 4),
-				new ModuleItem(name: "FinanceAnswerRoot", endpoint: "/Modules/GetFinanceAnswerModule", refreshRateMs: 3 * 60 * 60 * 1000, row: 2, col: 7, colSpan: 2),
+                new ModuleItem(name: "WWII", endpoint: "/Modules/GetWWIIModule", refreshRateMs: 3 * 60 * 60 * 1000, row: 2, col: 1, colSpan: 2),
+				new ModuleItem(name: "Headlines", endpoint: "/Modules/GetHeadlinesModule", refreshRateMs: 60 * 60 * 1000, row: 2, col: 3, colSpan: 4),
+				new ModuleItem(name: "FinanceAnswer", endpoint: "/Modules/GetFinanceAnswerModule", refreshRateMs: 3 * 60 * 60 * 1000, row: 2, col: 7, colSpan: 2),
 
                 // Row 3
-                new ModuleItem(name: "CalendarRoot", endpoint: "/Modules/GetCalendarModule", refreshRateMs: 15 * 60 * 1000, row: 3, col: 1, colSpan: 2),
-				new ModuleItem(name: "UtilityRoot", endpoint: "/Modules/GetUtilityData", refreshRateMs: 15 * 60 * 1000, row: 3, col: 3, colSpan: 2),
-				new ModuleItem(name: "Life360Root", endpoint: "/Modules/GetLife360Module", refreshRateMs: 2 * 60 * 1000, row: 3, col: 5, colSpan: 2),
-				new ModuleItem(name: "SlideshowRoot", endpoint: "/Modules/GetSlideshowModule", refreshRateMs: 3 * 60 * 60 * 1000, row: 3, col: 7, colSpan: 2),
+                new ModuleItem(name: "Calendar", endpoint: "/Modules/GetCalendarModule", refreshRateMs: 15 * 60 * 1000, row: 3, col: 1, colSpan: 2),
+				new ModuleItem(name: "Utility", endpoint: "/Modules/GetUtilityData", refreshRateMs: 15 * 60 * 1000, row: 3, col: 3, colSpan: 2),
+				new ModuleItem(name: "Life360", endpoint: "/Modules/GetLife360Module", refreshRateMs: 2 * 60 * 1000, row: 3, col: 5, colSpan: 2),
+				new ModuleItem(name: "Slideshow", endpoint: "/Modules/GetSlideshowModule", refreshRateMs: 3 * 60 * 60 * 1000, row: 3, col: 7, colSpan: 2),
 			};
 		}
 
