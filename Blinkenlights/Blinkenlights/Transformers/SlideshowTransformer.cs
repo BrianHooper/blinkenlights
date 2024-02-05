@@ -5,6 +5,7 @@ using Blinkenlights.Models.ViewModels;
 using Blinkenlights.Models.ViewModels.Slideshow;
 using LiteDbLibrary;
 using Newtonsoft.Json;
+using static Google.Apis.Requests.BatchRequest;
 
 namespace Blinkenlights.Transformers
 {
@@ -29,17 +30,17 @@ namespace Blinkenlights.Transformers
 
 			if (apiResponse is null)
 			{
-				return (null, ApiStatus.Failed(ApiType.Astronomy, null, "API Response is null"));
+				return (null, ApiStatus.Failed(ApiType.Astronomy, "API Response is null"));
 			}
 
 			if (string.IsNullOrWhiteSpace(apiResponse.Data))
 			{
-				return (null, ApiStatus.Failed(ApiType.Astronomy, apiResponse, "API Response data is empty"));
+				return (null, ApiStatus.Failed(ApiType.Astronomy, "API Response data is empty", apiResponse.LastUpdateTime));
 			}
 
 			if (ApiError.IsApiError(apiResponse.Data, out var errorMessage))
 			{
-				return (null, ApiStatus.Failed(ApiType.Astronomy, apiResponse, errorMessage));
+				return (null, ApiStatus.Failed(ApiType.Astronomy, errorMessage, apiResponse.LastUpdateTime));
 			}
 
 			SlideshowJsonModel slideshowData;
@@ -49,14 +50,14 @@ namespace Blinkenlights.Transformers
 			}
 			catch (JsonException)
 			{
-				return (null, ApiStatus.Failed(ApiType.Astronomy, apiResponse, "Exception while deserializing API response"));
+				return (null, ApiStatus.Failed(ApiType.Astronomy, "Exception while deserializing API response", apiResponse.LastUpdateTime));
 			}
 
 			if (string.IsNullOrWhiteSpace(slideshowData?.Title)
 				|| string.IsNullOrWhiteSpace(slideshowData?.Source)
 				|| string.IsNullOrWhiteSpace(slideshowData?.Url))
 			{
-				return (null, ApiStatus.Failed(ApiType.Astronomy, apiResponse, "Missing required data from api"));
+				return (null, ApiStatus.Failed(ApiType.Astronomy, "Missing required data from api", apiResponse.LastUpdateTime));
 			}
 
 			var status = ApiStatus.Success(ApiType.Astronomy, apiResponse);

@@ -4,7 +4,7 @@ namespace Blinkenlights.Models.ViewModels.WWII
 {
     public class WWIIDayModel : ApiResultBase
     {
-        public WWIIDayModel(string date, List<string> globalEvents, List<KeyValuePair<string, List<string>>> regionalEvents, ApiStatus status) : base(status)
+        public WWIIDayModel(string date, List<string> globalEvents, List<KeyValuePair<string, List<string>>> regionalEvents, ApiStatus status) : base("WWIIRoot", status)
         {
             Date = date;
             GlobalEvents = globalEvents;

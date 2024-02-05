@@ -36,6 +36,9 @@
 
 		[JsonProperty("shipment")]
 		public Shipment Shipment { get; set; }
+
+		[JsonProperty("events")]
+		public List<Event> Events { get; set; }
 	}
 
 	public partial class Shipment
@@ -44,7 +47,7 @@
 		public string ShipmentId { get; set; }
 
 		[JsonProperty("statusCode")]
-		public object StatusCode { get; set; }
+		public string StatusCode { get; set; }
 
 		[JsonProperty("statusCategory")]
 		public string StatusCategory { get; set; }
@@ -65,13 +68,13 @@
 	public partial class Delivery
 	{
 		[JsonProperty("estimatedDeliveryDate")]
-		public object EstimatedDeliveryDate { get; set; }
+		public string EstimatedDeliveryDate { get; set; }
 
 		[JsonProperty("service")]
-		public object Service { get; set; }
+		public string Service { get; set; }
 
 		[JsonProperty("signedBy")]
-		public object SignedBy { get; set; }
+		public string SignedBy { get; set; }
 	}
 
 	public partial class Tracker
@@ -86,9 +89,57 @@
 		public bool IsSubscribed { get; set; }
 
 		[JsonProperty("shipmentReference")]
-		public object ShipmentReference { get; set; }
+		public string ShipmentReference { get; set; }
 
 		[JsonProperty("createdAt")]
-		public DateTime CreatedAt { get; set; }
+		public string CreatedAt { get; set; }
+	}
+
+	public partial class Event
+	{
+		[JsonProperty("eventId")]
+		public string EventId { get; set; }
+
+		[JsonProperty("trackingNumber")]
+		public string TrackingNumber { get; set; }
+
+		[JsonProperty("eventTrackingNumber")]
+		public string EventTrackingNumber { get; set; }
+
+		[JsonProperty("status")]
+		public string Status { get; set; }
+
+		[JsonProperty("occurrenceDatetime")]
+		public string OccurrenceDatetime { get; set; }
+
+		[JsonProperty("order")]
+		public string Order { get; set; }
+
+		[JsonProperty("datetime")]
+		public string Datetime { get; set; }
+
+		[JsonProperty("hasNoTime")]
+		public bool HasNoTime { get; set; }
+
+		[JsonProperty("utcOffset")]
+		public string UtcOffset { get; set; }
+
+		[JsonProperty("location")]
+		public string Location { get; set; }
+
+		[JsonProperty("sourceCode")]
+		public string SourceCode { get; set; }
+
+		[JsonProperty("courierCode")]
+		public string CourierCode { get; set; }
+
+		[JsonProperty("statusCode")]
+		public string StatusCode { get; set; }
+
+		[JsonProperty("statusCategory")]
+		public string StatusCategory { get; set; }
+
+		[JsonProperty("statusMilestone")]
+		public string StatusMilestone { get; set; }
 	}
 }

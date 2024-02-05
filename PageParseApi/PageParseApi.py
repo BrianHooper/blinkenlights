@@ -1,5 +1,6 @@
 import uvicorn
 from fastapi import FastAPI, Request, Body
+import BrianTools
 from BrianTools.Tools import Engine, ApiError
 from GoogleCalendarApi import GetCalendar
 from WikipediaApi import GetWikipedia
@@ -58,4 +59,5 @@ def isstracker():
     return GetIssLocationImage()
 
 if __name__ == "__main__":
+    print(f"BrianTools version: {BrianTools.__version__}")
     uvicorn.run("PageParseApi:app", host="127.0.0.1", port=5001, log_level="info")

@@ -1,20 +1,17 @@
 ﻿@using Blinkenlights.Models.ViewModels.Headlines;
 @model HeadlinesViewModel
+<link rel="stylesheet" href="~/css/headlines.css" />
 
-@if (Model.Headlines?.Any() == true)
-{
-	@foreach (var headlinesContainer in Model.Headlines)
-	{
-		<div class="headlines-status" data-api-status="@headlinesContainer.Status" hidden>
-		</div>
-	}
+<partial name="ModuleStatus" model="@Model" />
 
+<div id="headlines-root">
 	<div id="headlines-body">
-		@foreach (var headlinesContainer in Model.Headlines)
+		@if (Model.Headlines?.Any() == true)
 		{
-			@if (headlinesContainer.Categories?.Any() == true)
+			@foreach (var headlinesContainer in Model.Headlines)
 			{
-				<div class="headlines-block">
+				@if (headlinesContainer.Categories?.Any() == true)
+				{
 					@foreach (var headlinesCategory in headlinesContainer.Categories)
 					{
 						@if (headlinesCategory?.Articles?.Any() == true)
@@ -37,10 +34,10 @@
 							</ul>
 						}
 					}
-				</div>
+				}
 			}
 		}
 	</div>
-}
+</div>
 
 <script type="module" src="~/ts-dist/HeadlinesModule.js"></script>

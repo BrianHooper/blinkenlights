@@ -1,5 +1,4 @@
 #weather-root {
-    background-color: #ccc;
     padding: 10px;
     height: calc(100% - 20px);
     width: calc(100% - 20px);
@@ -12,10 +11,15 @@
     color: black;
 }
 
+.index-module.Weather {
+    background-color: #ccc;
+}
+
 #weather-graph {
     display: grid;
     gap: 8px;
     grid-template-columns: 30px repeat(5, 1fr) 1fr;
+    max-width: 1000px;
 }
 
 .weather-day-graph {

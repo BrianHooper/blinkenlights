@@ -21,13 +21,13 @@ namespace Blinkenlights.Transformers
 
 			if (response is null)
 			{
-				var errorStatus = ApiStatus.Failed(ApiType.VisualCrossingWeather, null, "API Response is null");
+				var errorStatus = ApiStatus.Failed(ApiType.VisualCrossingWeather, "API Response is null");
 				return new WeatherViewModel(errorStatus);
 			}
 
 			if (string.IsNullOrWhiteSpace(response.Data))
 			{
-				var errorStatus = ApiStatus.Failed(ApiType.VisualCrossingWeather, response, "API Response data is empty");
+				var errorStatus = ApiStatus.Failed(ApiType.VisualCrossingWeather, "API Response data is empty", response.LastUpdateTime);
 				return new WeatherViewModel(errorStatus);
 			}
 
@@ -38,13 +38,13 @@ namespace Blinkenlights.Transformers
 			}
 			catch (Exception)
 			{
-				var errorStatus = ApiStatus.Failed(ApiType.VisualCrossingWeather, response, "Deserialization error");
+				var errorStatus = ApiStatus.Failed(ApiType.VisualCrossingWeather, "Deserialization error", response.LastUpdateTime);
 				return new WeatherViewModel(errorStatus);
 			}
 
 			if (weatherJsonModel?.Days?.Any() != true)
 			{
-				var errorStatus = ApiStatus.Failed(ApiType.VisualCrossingWeather, response, "Deserialized response is empty");
+				var errorStatus = ApiStatus.Failed(ApiType.VisualCrossingWeather, "Deserialized response is empty", response.LastUpdateTime);
 				return new WeatherViewModel(errorStatus);
 			}
 

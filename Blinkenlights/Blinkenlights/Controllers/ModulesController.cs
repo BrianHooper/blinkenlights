@@ -56,14 +56,9 @@ namespace Blinkenlights.Controllers
 			return GetPartialView<IssTrackerTransformer>("IssTrackerModule");
 		}
 
-		public IActionResult GetFinanceAnswerModule()
+		public IActionResult GetStockModule()
 		{
-			return GetPartialView<FinanceAnswerTransformer>("FinanceAnswerModule");
-		}
-
-		public IActionResult GetStatusModule()
-		{
-			return GetPartialView<StatusTransformer>("StatusModule");
+			return GetPartialView<StockTransformer>("StockModule");
 		}
 	}
 }

@@ -1,3 +1,3 @@
-﻿import { SetModuleStatusByElement } from "./StatusModule.js";
+﻿//import { Refresh } from "./StatusModule.js";
 
-SetModuleStatusByElement($("#wwii-header"));
+//Refresh($("#wwii-header"));

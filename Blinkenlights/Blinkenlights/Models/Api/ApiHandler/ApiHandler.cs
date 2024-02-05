@@ -133,10 +133,13 @@ namespace Blinkenlights.Models.Api.ApiHandler
 			File.WriteAllText(this.InstanceSecretsCachePath, instanceSecretsSerialized);
 		}
 
-		private bool TryGetCachedValue(ApiType apiType, int? cacheTimeout, out ApiResponse cachedValue)
+		public bool TryGetCachedValue(ApiType apiType, out ApiResponse cachedValue)
         {
             Mutex.WaitOne();
-            if (!CACHE_ENABLED || cacheTimeout == null || cacheTimeout == 0 || !File.Exists(CachePath))
+			var apiInfo = apiType.Info();
+			var cacheTimeout = apiInfo?.CacheTimeout;
+
+			if (!CACHE_ENABLED || cacheTimeout == null || cacheTimeout == 0 || !File.Exists(CachePath))
             {
                 cachedValue = null;
                 Mutex.ReleaseMutex();
@@ -362,8 +365,7 @@ namespace Blinkenlights.Models.Api.ApiHandler
                 return null;
             }
 
-            var cacheTimeout = apiInfo.CacheTimeout;
-            if (TryGetCachedValue(apiType, cacheTimeout, out var apiResponseCached))
+            if (TryGetCachedValue(apiType, out var apiResponseCached))
             {
                 return apiResponseCached;
             }

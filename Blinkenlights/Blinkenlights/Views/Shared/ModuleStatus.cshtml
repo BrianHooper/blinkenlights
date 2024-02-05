@@ -1,0 +1,10 @@
+﻿@using Blinkenlights.Models.Api.ApiResult;
+@model ApiResultBase
+
+<div class="module-result" data-module-name="@Model.ModuleName" data-api-result="@Model.Status" hidden>
+</div>
+
+<script type="module">
+	import { UpdateResult } from "./ts-dist/ModuleStatusCommon.js";
+	UpdateResult("@Model.ModuleName");
+</script>

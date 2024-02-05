@@ -1,3 +1,3 @@
-﻿import { SetModuleStatusByElement } from "./StatusModule.js";
+﻿//import { SetModuleStatusByElement } from "./StatusModule.js";
 
-SetModuleStatusByElement($("#calendar-status"));
+//SetModuleStatusByElement($("#calendar-status"));

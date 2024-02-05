@@ -1,16 +1,33 @@
 ﻿@using Blinkenlights.Models.ViewModels.Life360;
 @model Life360ViewModel
 
-<div id="life360-data" data-api-status="@Model.Status" hidden>
-	@if (Model.Models?.Any() == true)
-	{
-		foreach (var userModel in Model.Models)
+<partial name="ModuleStatus" model="@Model" />
+
+<link rel="stylesheet" href="~/js-lib/leaflet/dist/leaflet.css" />
+<script src="~/js-lib/leaflet/dist/leaflet.js"></script>
+
+<link rel="stylesheet" href="~/css/life360.css" />
+
+<div id="life360-root">
+	<div id="life360-module"></div>
+	<div id="life360-map"></div>
+
+	<div id="life360-data">
+		@if (Model.Models?.Any() == true)
 		{
-			<div class="life360-user-model" data-model-info="@userModel"></div>
+			foreach (var userModel in Model.Models)
+			{
+				<div class="life360-user-model" data-model-info="@userModel"></div>
+			}
 		}
-	}
+	</div>
+
+	<div id="life360-time">@Model.UpdateTimeStr</div>
+
 </div>
 
-<div id="life360-time">@Model.UpdateTimeStr</div>
+<script type="module">
+	import { RefreshLife360Module } from "./ts-dist/Life360Module.js";
 
-<script type="module" src="~/ts-dist/Life360Module.js"></script>
+	RefreshLife360Module();
+</script>

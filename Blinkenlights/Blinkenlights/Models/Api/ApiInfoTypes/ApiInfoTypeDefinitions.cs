@@ -429,7 +429,7 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 	{
 		public override bool ReportedInModule { get; } = true;
 
-		public override string ModuleRootName { get; } = "FinanceAnswerRoot";
+		public override string ModuleRootName { get; } = "StockRoot";
 
 		public override int? CacheTimeout { get; } = 120;
 

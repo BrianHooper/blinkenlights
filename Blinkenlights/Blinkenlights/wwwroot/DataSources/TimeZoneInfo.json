@@ -2,9 +2,9 @@
     "TimeZoneInfos": {
         "Seattle": -28800,
         "Beijing": 28800,
-        "Ho Chi Minh City": 25200,
-        "Washington D.C.": -18000,
-        "Indian Standard Time": 19800,
-        "GMT": 0
+        "HCMC": 25200,
+        "D.C.": -18000,
+        "India": 19800,
+        "UST": 0
     }
 }

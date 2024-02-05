@@ -31,6 +31,20 @@ export class Convert {
     public static aPIStatusToJson(value: APIStatus): string {
         return JSON.stringify(uncast(value, r("APIStatus")), null, 2);
     }
+
+    public static Create(name: string, status: string, lastUpdate: string, state: number, source: number): APIStatus {
+        return {
+            "Items": [
+                {
+                    Name: name,
+                    Status: status,
+                    LastUpdate: lastUpdate,
+                    State: state,
+                    Source: source,
+                    }
+                ]
+        };
+    }
 }
 
 function invalidValue(typ: any, val: any, key: any, parent: any = ''): never {

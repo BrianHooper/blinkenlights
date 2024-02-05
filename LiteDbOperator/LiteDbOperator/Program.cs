@@ -11,34 +11,20 @@ namespace LiteDbOperator
 		{
 			return new List<PackageTrackingItem>()
 			{
-				//new PackageTrackingItem()
-				//{
-				//	Name = "Item",
-				//	TrackingNumber = "1ZY549V70290264835",
-				//	Provider = "USPS",
-				//	Url = ""
-				//},
-				//new PackageTrackingItem()
-				//{
-				//	Name = "Item",
-				//	TrackingNumber = "1ZY549V70290264836",
-				//	Provider = "UPS",
-				//	Url = ""
-				//},
-				//new PackageTrackingItem()
-				//{
-				//	Name = "Item",
-				//	TrackingNumber = "638012418280",
-				//	Provider = "Fedex",
-				//	Url = ""
-				//},
-				//new PackageTrackingItem()
-				//{
-				//	Name = "Item",
-				//	TrackingNumber = "1Z023E2X0214323462",
-				//	Provider = "Amazon",
-				//	Url = ""
-				//},
+				new PackageTrackingItem()
+				{
+					Name = "Powder Coat",
+					TrackingNumber = "1Z254528YW91175832",
+					Carrier = "UPS",
+					Url = "https://www.ups.com/track?track=yes&trackNums=1Z254528YW91175832&loc=en_US&requester=ST/trackdetails"
+				},
+				new PackageTrackingItem()
+				{
+					Name = "Multimeter",
+					TrackingNumber = "9405508205499681686715",
+					Carrier = "USPS",
+					Url = "https://tools.usps.com/go/TrackConfirmAction_input?strOrigTrackNum=9405508205499681686715"
+				},
 			};
 		}
 
@@ -48,21 +34,20 @@ namespace LiteDbOperator
 			{
 
                 // Row 1
-                new ModuleItem(name: "TimeRoot", row: 1, col: 1),
-				new ModuleItem(name: "WeatherRoot", row: 1, col: 2, colSpan: 5),
-				new ModuleItem(name: "IssTrackerRoot", row: 1, col: 7, colSpan: 2),
-				//new ModuleItem(name: "Life360Root", row: 1, col: 4),
+                new ModuleItem(name: "Time", endpoint: "/Modules/GetTimeModule", refreshRateMs: 60 * 1000, row: 1, col: 1),
+				new ModuleItem(name: "Weather", endpoint: "/Modules/GetWeatherData", refreshRateMs: 15 * 60 * 1000, row: 1, col: 2, colSpan: 5),
+				new ModuleItem(name: "IssTracker", endpoint: "/Modules/GetIssTrackerModule", refreshRateMs: 5 * 60 * 1000, row: 1, col: 7, colSpan: 2),
 
                 // Row 2
-                new ModuleItem(name: "WWIIRoot", row: 2, col: 1, colSpan: 2),
-				new ModuleItem(name: "HeadlinesRoot", row: 2, col: 3, colSpan: 4),
-				new ModuleItem(name: "FinanceAnswerRoot", row: 2, col: 7, colSpan: 2),
+                new ModuleItem(name: "WWII", endpoint: "/Modules/GetWWIIModule", refreshRateMs: 3 * 60 * 60 * 1000, row: 2, col: 1, colSpan: 2),
+				new ModuleItem(name: "Headlines", endpoint: "/Modules/GetHeadlinesModule", refreshRateMs: 60 * 60 * 1000, row: 2, col: 3, colSpan: 4),
+				new ModuleItem(name: "Stock", endpoint: "/Modules/GetStockModule", refreshRateMs: 3 * 60 * 60 * 1000, row: 2, col: 7, colSpan: 2),
 
                 // Row 3
-                new ModuleItem(name: "CalendarRoot", row: 3, col: 1, colSpan: 2),
-				new ModuleItem(name: "UtilityRoot", row: 3, col: 3, colSpan: 2),
-				new ModuleItem(name: "StatusRoot", row: 3, col: 5, colSpan: 2),
-				new ModuleItem(name: "SlideshowRoot", row: 3, col: 7, colSpan: 2),
+                new ModuleItem(name: "Calendar", endpoint: "/Modules/GetCalendarModule", refreshRateMs: 15 * 60 * 1000, row: 3, col: 1, colSpan: 2),
+				new ModuleItem(name: "Utility", endpoint: "/Modules/GetUtilityData", refreshRateMs: 15 * 60 * 1000, row: 3, col: 3, colSpan: 2),
+				new ModuleItem(name: "Life360", endpoint: "/Modules/GetLife360Module", refreshRateMs: 2 * 60 * 1000, row: 3, col: 5, colSpan: 2),
+				new ModuleItem(name: "Slideshow", endpoint: "/Modules/GetSlideshowModule", refreshRateMs: 3 * 60 * 60 * 1000, row: 3, col: 7, colSpan: 2),
 			};
 		}
 

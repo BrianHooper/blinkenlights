@@ -22,13 +22,13 @@ namespace Blinkenlights.Transformers
 			var response = this.ApiHandler.Fetch(ApiType.TimeZone).Result;
 			if (response is null)
 			{
-				var errorStatus = ApiStatus.Failed(ApiType.TimeZone, null, "Failed to get local data");
+				var errorStatus = ApiStatus.Failed(ApiType.TimeZone, "Failed to get local data");
 				return new TimeViewModel(errorStatus);
 			}
 
 			if (!Helpers.TryDeserialize<TimeViewModel>(response.Data, out var serverModel))
             {
-				var errorStatus = ApiStatus.Failed(ApiType.TimeZone, null, "Failed to read data");
+				var errorStatus = ApiStatus.Failed(ApiType.TimeZone, "Failed to read data");
 				return new TimeViewModel(errorStatus);
             }
 

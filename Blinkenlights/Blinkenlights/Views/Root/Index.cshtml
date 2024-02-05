@@ -2,11 +2,20 @@
 @model IndexViewModel
 <link rel="stylesheet" href="~/css/index.css" />
 <div class="index-root" style="@Model.GridTemplateStyle">
-    @foreach (var modulePair in Model.ModulePlacementPairs)
+    @foreach (var module in Model.Modules)
     {
-        <div class="index-module" name="@modulePair.Key" style="@modulePair.Value">
-            <partial name="@modulePair.Key" />
-            <div class="module-name module-name-hide" name="@modulePair.Key"></div>
+        <div class="index-module @module.Name" data-module-name="@module.Name" style="@module.GridStyle">
+            <div class="module-container">
+                <div class="module-header"></div>
+                <div class="module-body">
+                    <script type="module">
+	                    import { StartModule } from "./ts-dist/ModuleStatusCommon.js";
+
+	                    StartModule("@module.Name", "@module.Endpoint", @module.RefreshRateMs);
+                    </script>
+                </div>
+            </div>
+            <div class="module-name module-name-hide" name="@module.Name"></div>
         </div>
     }
 </div>

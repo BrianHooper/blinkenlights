@@ -4,7 +4,7 @@ namespace Blinkenlights.Models.ViewModels.Time
 {
     public class TimeViewModel : ApiResultBase
     {
-        public TimeViewModel(ApiStatus status) : base(status) { }
+        public TimeViewModel(ApiStatus status) : base("Time", status) { }
 
         public Dictionary<string, int> TimeZoneInfos { get; set; }
 

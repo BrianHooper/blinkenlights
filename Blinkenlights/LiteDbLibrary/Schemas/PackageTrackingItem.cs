@@ -10,6 +10,10 @@ namespace LiteDbLibrary.Schemas
 
 		public string Name { get; set; }
 
+		public string Carrier { get; set; }
+
+		public string Url { get; set; }
+
 		public bool SameIndex(ILiteDbObject other)
 		{
 			return string.Equals(this.TrackingNumber, (other as PackageTrackingItem).TrackingNumber);

@@ -1,10 +1,13 @@
 ﻿using Blinkenlights.Models.ViewModels;
+using LiteDbLibrary.Schemas;
 
 namespace Blinkenlights.Models
 {
     public class IndexViewModel : IModuleViewModel
     {
-        public List<KeyValuePair<string, string>> ModulePlacementPairs { get; init; }
+        public string ModuleName => "Index";
+
+        public List<ModuleItem> Modules { get; init; }
 
         public string GridTemplateStyle { get; init; }
     }

@@ -1,22 +1,20 @@
 ﻿@using Blinkenlights.Models.ViewModels.IssTracker;
 @model IssTrackerViewModel
 
-@if (!string.IsNullOrWhiteSpace(Model?.Status))
-{
-	<div id="iss-status" data-api-status="@Model.Status" hidden>
-	</div>
-}
-
-@if (!string.IsNullOrWhiteSpace(Model?.ImagePath))
-{
-	<div class="iss-content">
-		<img src="@Model.ImagePath" />
-	</div>
-	<div class="iss-update">
-		@Model.Report
-	</div>
-
-}
+<partial name="ModuleStatus" model="@Model" />
 
 <link rel="stylesheet" href="~/css/iss.css" />
+<div id="iss-root" class="status-report">
+	@if (!string.IsNullOrWhiteSpace(Model?.ImagePath))
+	{
+		<div class="iss-content">
+			<img src="@Model.ImagePath" />
+		</div>
+		<div class="iss-update">
+			@Model.Report
+		</div>
+
+	}
+</div>
+
 <script type="module" src="~/ts-dist/IssTrackerModule.js"></script>

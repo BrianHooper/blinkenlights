@@ -35,7 +35,7 @@ namespace Blinkenlights.Models.Api.ApiHandler
 				Data = data,
 				ApiSource = source,
 				LastUpdateTime = lastUpdateTime,
-				ResultStatus = ApiResultStatus.Success,
+				ResultStatus = ApiResultStatus.Success
 			};
 		}
 
