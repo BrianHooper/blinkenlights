@@ -14,3 +14,7 @@
     justify-content: space-around;
     font-size: 18px;
 }
+
+.finance-graph-svg {
+    background-color: #ccc;
+}

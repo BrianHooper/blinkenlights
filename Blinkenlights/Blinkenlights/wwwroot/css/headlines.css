@@ -32,7 +32,7 @@
 .headlines-header {
     font-weight: bold;
     border-bottom: 1px solid #1E1E1E;
-    padding-block-end: 2px;
+    box-sizing: border-box;
 }
 
 #headlines-body > ul {
@@ -42,4 +42,5 @@
     flex-direction: column;
     gap: 2px;
     margin-block-start: 2px;
+    margin-block-end: 2px;
 }

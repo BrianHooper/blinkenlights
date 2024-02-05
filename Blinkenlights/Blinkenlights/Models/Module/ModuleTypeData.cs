@@ -77,9 +77,9 @@ namespace Blinkenlights.Models.Module
 		public override int RefreshRateMs { get; } = 60 * 1000;
 	}
 
-	public class FinanceAnswerModuleData : ModuleTypeData
+	public class StockModuleData : ModuleTypeData
 	{
-		public override string Name => ModuleType.FinanceAnswer.ToString();
+		public override string Name => ModuleType.Stock.ToString();
 
 		public override string Endpoint { get; } = "/Modules/GetTimeModule";
 

@@ -1,8 +1,4 @@
-﻿//import { SetModuleStatusByElement } from "./StatusModule.js";
-
-//SetModuleStatusByElement($("#fin-status"));
-
-interface FinanceData {
+﻿interface FinanceData {
     X: number;
     Y: number;
 }
@@ -75,9 +71,30 @@ function drawGraph(points: FinanceData[], chartYMin: number, chartYMax: number, 
         .x(d => xScale(d[0]))
         .y(d => yScale(d[1]));
 
+    var defs = svg.append("defs");
+
+    var gradient = defs.append("linearGradient")
+        .attr("id", "svgGradient")
+        .attr("x1", "0%")
+        .attr("x2", "100%")
+        .attr("y1", "0%")
+        .attr("y2", "100%");
+
+    gradient.append("stop")
+        .attr("class", "start")
+        .attr("offset", "0%")
+        .attr("stop-color", "red")
+        .attr("stop-opacity", 1);
+
+    gradient.append("stop")
+        .attr("class", "end")
+        .attr("offset", "20%")
+        .attr("stop-color", "blue")
+        .attr("stop-opacity", 0);
+
     svg.append("path")
         .datum(priceData)
-        .attr("fill", tempColor)
+        .attr("fill", "url(#svgGradient)")
         .attr("fill-opacity", 1)
         .attr("d", area)
         .attr("transform", translate);
@@ -85,7 +102,7 @@ function drawGraph(points: FinanceData[], chartYMin: number, chartYMax: number, 
     svg.append("path")
         .datum(priceData)
         .attr("stroke", "#333333")
-        .attr("stroke-width", 4)
+        .attr("stroke-width", 2)
         .attr("fill-opacity", 0)
         .attr("d", line)
         .attr("transform", translate);
@@ -98,16 +115,18 @@ function drawGraph(points: FinanceData[], chartYMin: number, chartYMax: number, 
     childDiv.appendTo(parent);
 }
 
-$(".finance-block").each(function (d) {
-    const modelData = $(this).attr("data-finance-graph");
-    const points: FinanceData[] = JSON.parse(modelData);
-    const yValues: number[] = points.map(p => p.Y);
-    var chartYMin = Math.min(...yValues);
-    var chartYMax = Math.max(...yValues);
-    const chartYOffset = Math.abs(chartYMax - chartYMin) * 0.1;
-    chartYMin -= chartYOffset;
-    chartYMax += chartYOffset;
+export function RefreshStockModule() {
+    $(".finance-block").each(function (d) {
+        const modelData = $(this).attr("data-finance-graph");
+        const points: FinanceData[] = JSON.parse(modelData);
+        const yValues: number[] = points.map(p => p.Y);
+        var chartYMin = Math.min(...yValues);
+        var chartYMax = Math.max(...yValues);
+        const chartYOffset = Math.abs(chartYMax - chartYMin) * 0.1;
+        chartYMin -= chartYOffset;
+        chartYMax += chartYOffset;
 
-    drawAxis(chartYMin, chartYMax, $(this));
-    drawGraph(points, chartYMin, chartYMax, $(this));
-});
+        drawAxis(chartYMin, chartYMax, $(this));
+        drawGraph(points, chartYMin, chartYMax, $(this));
+    });
+}

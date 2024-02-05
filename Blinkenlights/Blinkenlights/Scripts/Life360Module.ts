@@ -5,7 +5,7 @@
     Longitude: number;
 }
 
-function CreateMap() {
+function CreateMap(mapElement: L.Map, layerGroup: L.LayerGroup<any>): void {
     const userModels = $(".life360-user-model").map(function (d): Life360JSONModel {
         const userModel = $(this).attr("data-model-info");
         return JSON.parse(userModel);
@@ -27,10 +27,12 @@ function CreateMap() {
     });
 }
 
-const mapElement = L.map("life360-map", { attributionControl: false });
-const layerGroup = L.layerGroup().addTo(mapElement);
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-}).addTo(mapElement);
+export function RefreshLife360Module() {
+    const mapElement = L.map("life360-map", { attributionControl: false });
+    const layerGroup = L.layerGroup().addTo(mapElement);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+    }).addTo(mapElement);
 
-CreateMap();
+    CreateMap(mapElement, layerGroup);
+}

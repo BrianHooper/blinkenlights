@@ -2,25 +2,28 @@
 
 namespace Blinkenlights.Models.ViewModels.Headlines
 {
-    public class HeadlinesViewModel : IModuleViewModel
+    public class HeadlinesViewModel : ApiResultBase
 	{
         public List<HeadlinesContainer> Headlines { get; set; }
 
-        public string ModuleName => "Headlines";
-
-        public HeadlinesViewModel(params HeadlinesContainer[] headlines)
+        public HeadlinesViewModel(params HeadlinesContainer[] headlines) : base("Headlines", headlines.Select(h => h.Status).ToArray())
         {
             Headlines = headlines.ToList();
         }
+
+
     }
 
-    public class HeadlinesContainer : ApiResultBase
+    public class HeadlinesContainer
     {
         public List<HeadlinesCategory> Categories { get; set; }
 
-        public HeadlinesContainer(List<HeadlinesCategory> categories, ApiStatus status) : base("Headlines", status)
+        public ApiStatus Status { get; set; }
+
+        public HeadlinesContainer(List<HeadlinesCategory> categories, ApiStatus status)
         {
             Categories = categories;
+            Status = status;
         }
     }
 

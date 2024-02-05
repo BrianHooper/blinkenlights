@@ -41,7 +41,7 @@ namespace LiteDbOperator
                 // Row 2
                 new ModuleItem(name: "WWII", endpoint: "/Modules/GetWWIIModule", refreshRateMs: 3 * 60 * 60 * 1000, row: 2, col: 1, colSpan: 2),
 				new ModuleItem(name: "Headlines", endpoint: "/Modules/GetHeadlinesModule", refreshRateMs: 60 * 60 * 1000, row: 2, col: 3, colSpan: 4),
-				new ModuleItem(name: "FinanceAnswer", endpoint: "/Modules/GetFinanceAnswerModule", refreshRateMs: 3 * 60 * 60 * 1000, row: 2, col: 7, colSpan: 2),
+				new ModuleItem(name: "Stock", endpoint: "/Modules/GetStockModule", refreshRateMs: 3 * 60 * 60 * 1000, row: 2, col: 7, colSpan: 2),
 
                 // Row 3
                 new ModuleItem(name: "Calendar", endpoint: "/Modules/GetCalendarModule", refreshRateMs: 15 * 60 * 1000, row: 3, col: 1, colSpan: 2),

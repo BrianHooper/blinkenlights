@@ -2,13 +2,13 @@
 using Blinkenlights.Models.ViewModels.Weather;
 using Newtonsoft.Json;
 
-namespace Blinkenlights.Models.ViewModels.FinanceAnswer
+namespace Blinkenlights.Models.ViewModels.Stock
 {
-	public class FinanceAnswerViewModel : ApiResultBase
+	public class StockViewModel : ApiResultBase
 	{
 		public List<FinanceData> Data { get; set; }
 
-		public FinanceAnswerViewModel(ApiStatus status, List<FinanceData> data = null) : base("FinanceAnswer", status)
+		public StockViewModel(ApiStatus status, List<FinanceData> data = null) : base("Stock", status)
 		{
 			this.Data = data;
 		}

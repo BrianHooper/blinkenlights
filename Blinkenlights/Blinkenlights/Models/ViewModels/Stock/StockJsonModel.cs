@@ -1,4 +1,4 @@
-﻿namespace Blinkenlights.Models.ViewModels.FinanceAnswer
+﻿namespace Blinkenlights.Models.ViewModels.Stock
 {
 	using System;
 	using System.Collections.Generic;
@@ -6,7 +6,7 @@
 	using Newtonsoft.Json;
 	using Newtonsoft.Json.Linq;
 
-	public class FinanceAnswerJsonModel
+	public class StockJsonModel
 	{
 		[JsonProperty("Meta Data")]
 		public MetaData MetaData { get; set; }

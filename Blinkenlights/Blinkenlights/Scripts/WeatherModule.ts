@@ -101,14 +101,13 @@ function drawDayGraph(points: WeatherData[], chartYMin: number, chartYMax: numbe
     parent.html(svg.node());
 }
 
-//const dataElement = $("#weather-data");
-//SetModuleStatusByElement(dataElement);
+export function RefreshWeatherModule() {
+    const weatherAxisModel: WeatherAxis = JSON.parse($("#weather-axis").attr("data-weather-axis"));
+    drawWeatherAxis("weather-axis", weatherAxisModel.yAxisMin, weatherAxisModel.yAxisMax);
 
-const weatherAxisModel: WeatherAxis = JSON.parse($("#weather-axis").attr("data-weather-axis"));
-drawWeatherAxis("weather-axis", weatherAxisModel.yAxisMin, weatherAxisModel.yAxisMax);
-
-$(".weather-day-graph").each(function (d) {
-    const modelData = $(this).attr("data-weather-day");
-    const points: WeatherData[] = JSON.parse(modelData);
-    drawDayGraph(points, weatherAxisModel.yAxisMin, weatherAxisModel.yAxisMax, $(this));
-});
+    $(".weather-day-graph").each(function (d) {
+        const modelData = $(this).attr("data-weather-day");
+        const points: WeatherData[] = JSON.parse(modelData);
+        drawDayGraph(points, weatherAxisModel.yAxisMin, weatherAxisModel.yAxisMax, $(this));
+    });
+}

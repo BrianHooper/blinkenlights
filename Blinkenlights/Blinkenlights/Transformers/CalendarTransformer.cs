@@ -22,19 +22,19 @@ namespace Blinkenlights.Transformers
 
 			if (response is null)
             {
-                var status = ApiStatus.Failed(ApiType.GoogleCalendar, null, "API Response is null");
+                var status = ApiStatus.Failed(ApiType.GoogleCalendar, "API Response is null");
                 return new CalendarViewModel(null, status);
             }
 
             if (string.IsNullOrWhiteSpace(response.Data))
             {
-                var status = ApiStatus.Failed(ApiType.GoogleCalendar, response, "API Response data is empty");
+                var status = ApiStatus.Failed(ApiType.GoogleCalendar, "API Response data is empty", response.LastUpdateTime);
                 return new CalendarViewModel(null, status);
             }
 
             if (ApiError.IsApiError(response.Data, out var errorMessage))
             {
-                var status = ApiStatus.Failed(ApiType.GoogleCalendar, response, errorMessage);
+                var status = ApiStatus.Failed(ApiType.GoogleCalendar, errorMessage, response.LastUpdateTime);
             }
 
             CalendarData calendarData;
@@ -44,7 +44,7 @@ namespace Blinkenlights.Transformers
             }
             catch (JsonException)
             {
-                var status = ApiStatus.Failed(ApiType.GoogleCalendar, response, "Exception while deserializing API response");
+                var status = ApiStatus.Failed(ApiType.GoogleCalendar, "Exception while deserializing API response", response.LastUpdateTime);
                 return new CalendarViewModel(null, status);
             }
 
@@ -59,7 +59,7 @@ namespace Blinkenlights.Transformers
             }
             else
             {
-                var status = ApiStatus.Failed(ApiType.GoogleCalendar, response, "Events list is empty");
+                var status = ApiStatus.Failed(ApiType.GoogleCalendar, "Events list is empty", response.LastUpdateTime);
                 return new CalendarViewModel(null, status);
             }
         }

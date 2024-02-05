@@ -1,11 +1,15 @@
-﻿namespace Blinkenlights.Models.ViewModels.Utility
+﻿using Blinkenlights.Models.Api.ApiResult;
+
+namespace Blinkenlights.Models.ViewModels.Utility
 {
-	public class UtilityViewModel : IModuleViewModel
+	public class UtilityViewModel : ApiResultBase
 	{
+		public UtilityViewModel(params ApiStatus[] apiStatuses) : base("Utility", apiStatuses)
+		{
+		}
+
 		public MehViewModel MehData { get; set; }
 
 		public PackageTrackingViewModel PackageTrackingData { get; set; }
-
-		public string ModuleName => "Utility";
     }
 }

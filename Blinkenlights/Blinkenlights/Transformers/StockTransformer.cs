@@ -2,15 +2,15 @@
 using Blinkenlights.Models.Api.ApiInfoTypes;
 using Blinkenlights.Models.Api.ApiResult;
 using Blinkenlights.Models.ViewModels;
-using Blinkenlights.Models.ViewModels.FinanceAnswer;
+using Blinkenlights.Models.ViewModels.Stock;
 using LiteDbLibrary;
 using Newtonsoft.Json;
 
 namespace Blinkenlights.Transformers
 {
-	public class FinanceAnswerTransformer : TransformerBase
+	public class StockTransformer : TransformerBase
 	{
-		public FinanceAnswerTransformer(IApiHandler apiHandler, ILiteDbHandler liteDbHandler) : base(apiHandler, liteDbHandler)
+		public StockTransformer(IApiHandler apiHandler, ILiteDbHandler liteDbHandler) : base(apiHandler, liteDbHandler)
 		{
 		}
 
@@ -19,31 +19,31 @@ namespace Blinkenlights.Transformers
 			var response = this.ApiHandler.Fetch(ApiType.AlphaVantage).Result;
 			if (response is null)
 			{
-				var errorStatus = ApiStatus.Failed(ApiType.AlphaVantage, null, "Api response is null");
-				return new FinanceAnswerViewModel(errorStatus);
+				var errorStatus = ApiStatus.Failed(ApiType.AlphaVantage, "Api response is null");
+				return new StockViewModel(errorStatus);
 			}
 			else if (string.IsNullOrWhiteSpace(response.Data))
 			{
-				var errorStatus = ApiStatus.Failed(ApiType.AlphaVantage, response, "Api response is empty");
-				return new FinanceAnswerViewModel(errorStatus);
+				var errorStatus = ApiStatus.Failed(ApiType.AlphaVantage, "Api response is empty", response.LastUpdateTime);
+				return new StockViewModel(errorStatus);
 			}
 
-			FinanceAnswerJsonModel model;
+			StockJsonModel model;
 			try
 			{
-				model = JsonConvert.DeserializeObject<FinanceAnswerJsonModel>(response.Data);
+				model = JsonConvert.DeserializeObject<StockJsonModel>(response.Data);
 			}
 			catch (JsonException)
 			{
-				var errorStatus = ApiStatus.Failed(ApiType.AlphaVantage, response, "Error deserializing api response");
-				return new FinanceAnswerViewModel(errorStatus);
+				var errorStatus = ApiStatus.Failed(ApiType.AlphaVantage, "Error deserializing api response", response.LastUpdateTime);
+				return new StockViewModel(errorStatus);
 			}
 
 			var symbol = model?.MetaData?.Symbol;
 			if (string.IsNullOrWhiteSpace(symbol))
 			{
-				var errorStatus = ApiStatus.Failed(ApiType.AlphaVantage, response, "Required data missing in api response");
-				return new FinanceAnswerViewModel(errorStatus);
+				var errorStatus = ApiStatus.Failed(ApiType.AlphaVantage, "Required data missing in api response", response.LastUpdateTime);
+				return new StockViewModel(errorStatus);
 			}
 			var timeIndex = 0;
 			var dataPoints = model.TimeSeriesDataPoints.Select(kv => new GraphDataPoint(timeIndex++, kv.Value)).ToArray();
@@ -58,7 +58,7 @@ namespace Blinkenlights.Transformers
 
 			var status = ApiStatus.Success(ApiType.AlphaVantage, response);
 			this.ApiHandler.TryUpdateCache(response);
-			return new FinanceAnswerViewModel(status, data);
+			return new StockViewModel(status, data);
 		}
 	}
 }

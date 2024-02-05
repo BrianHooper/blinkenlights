@@ -1,9 +1,9 @@
-﻿@using Blinkenlights.Models.ViewModels.FinanceAnswer;
-@model FinanceAnswerViewModel
+﻿@using Blinkenlights.Models.ViewModels.Stock;
+@model StockViewModel
 
 <partial name="ModuleStatus" model="@Model" />
 
-<link rel="stylesheet" href="~/css/financeanswer.css" />
+<link rel="stylesheet" href="~/css/Stock.css" />
 <div id="fin-root">
 	@if (Model?.Data?.Any() == true)
 	{
@@ -25,4 +25,8 @@
 	}
 </div>
 
-<script type="module" src="~/ts-dist/FinanceAnswerModule.js"></script>
+<script type="module">
+	import { RefreshStockModule } from "./ts-dist/StockModule.js";
+
+	RefreshStockModule();
+</script>

@@ -83,7 +83,7 @@ namespace Blinkenlights.Transformers
 			var response = await this.ApiHandler.Fetch(ApiType.NewYorkTimes);
 			if (response is null)
             {
-                var errorStatus = ApiStatus.Failed(ApiType.NewYorkTimes, null, "Api response is null");
+                var errorStatus = ApiStatus.Failed(ApiType.NewYorkTimes, "Api response is null");
                 return new HeadlinesContainer(null, errorStatus);
             }
 
@@ -110,7 +110,7 @@ namespace Blinkenlights.Transformers
             }
             else
             {
-                var errorStatus = ApiStatus.Failed(ApiType.NewYorkTimes, null, "No Results");
+                var errorStatus = ApiStatus.Failed(ApiType.NewYorkTimes, "No Results", response.LastUpdateTime);
 				return new HeadlinesContainer(null, errorStatus);
 			}
         }
@@ -120,19 +120,19 @@ namespace Blinkenlights.Transformers
             var response = await this.ApiHandler.Fetch(apiType);
 			if (response is null)
             {
-                var errorStatus = ApiStatus.Failed(apiType, null, "Api response is null");
+                var errorStatus = ApiStatus.Failed(apiType, "Api response is null", response.LastUpdateTime);
 				return new HeadlinesContainer(null, errorStatus);
             }
 
             if (ApiError.IsApiError(response.Data, out var errorMessage))
             {
-                var errorStatus = ApiStatus.Failed(apiType, response, errorMessage);
+                var errorStatus = ApiStatus.Failed(apiType, errorMessage, response.LastUpdateTime);
 				return new HeadlinesContainer(null, errorStatus);
 			}
 
             if (string.IsNullOrWhiteSpace(response?.Data))
             {
-				var errorStatus = ApiStatus.Failed(apiType, response, "Response data is null");
+				var errorStatus = ApiStatus.Failed(apiType, "Response data is null", response.LastUpdateTime);
 				return new HeadlinesContainer(null, errorStatus);
 			}
 
@@ -143,7 +143,7 @@ namespace Blinkenlights.Transformers
 			}
             catch (JsonException)
             {
-				var errorStatus = ApiStatus.Failed(apiType, response, "Exception deserializing response");
+				var errorStatus = ApiStatus.Failed(apiType, "Exception deserializing response", response.LastUpdateTime);
 				return new HeadlinesContainer(null, errorStatus);
 			}
 
@@ -165,7 +165,7 @@ namespace Blinkenlights.Transformers
             }
             else
             {
-                var errorStatus = ApiStatus.Failed(apiType, response, "No headlines created");
+                var errorStatus = ApiStatus.Failed(apiType, "No headlines created", response.LastUpdateTime);
                 return new HeadlinesContainer(null, errorStatus);
             }
         }

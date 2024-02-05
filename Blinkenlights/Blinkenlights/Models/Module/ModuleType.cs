@@ -8,7 +8,7 @@
 		IssTracker = 3,
 		WWII = 4,
 		Headlines = 5,
-		FinanceAnswer = 6,
+		Stock = 6,
 		Calendar = 7,
 		Utility = 8,
 		Life360 = 9,

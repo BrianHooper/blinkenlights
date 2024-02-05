@@ -74,11 +74,11 @@ namespace Blinkenlights.Models.ViewModels.Utility
 		}
 	}
 
-	public class PackageTrackingViewModel : ApiResultBase
+	public class PackageTrackingViewModel
 	{
 		public List<Package> Packages { get; set; }
 
-		public PackageTrackingViewModel(ApiStatus status, List<Package> packages = null) : base("PackageTracking", status)
+		public PackageTrackingViewModel(List<Package> packages = null)
 		{
 			this.Packages = packages;
 		}

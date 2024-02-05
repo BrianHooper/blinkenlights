@@ -30,7 +30,7 @@ namespace Blinkenlights.Transformers
 
 			var latitude = trackerData.Latitude >= 0.0 ? $"{Math.Round(trackerData.Latitude, 2)}° N" : $"{Math.Round(trackerData.Latitude, 2) * -1}° S";
 			var longitude = trackerData.Longitude >= 0.0 ? $"{Math.Round(trackerData.Longitude, 2)}° E" : $"{Math.Round(trackerData.Longitude, 2) * -1}° W";
-			var report = $"{trackerData.LastUpdateTime} - {latitude}, {longitude}";
+			var report = $"{latitude}, {longitude}";
 
 			return new IssTrackerViewModel
 			(
@@ -45,17 +45,17 @@ namespace Blinkenlights.Transformers
 			var apiResponse = await this.ApiHandler.Fetch(ApiType.IssTracker);
 			if (apiResponse is null)
 			{
-				return (null, ApiStatus.Failed(ApiType.IssTracker, null, "API Response is null"));
+				return (null, ApiStatus.Failed(ApiType.IssTracker, "API Response is null"));
 			}
 
 			if (string.IsNullOrWhiteSpace(apiResponse.Data))
 			{
-				return (null, ApiStatus.Failed(ApiType.IssTracker, apiResponse, "API Response data is empty"));
+				return (null, ApiStatus.Failed(ApiType.IssTracker, "API Response data is empty", apiResponse.LastUpdateTime));
 			}
 
 			if (ApiError.IsApiError(apiResponse.Data, out var errorMessage))
 			{
-				return (null, ApiStatus.Failed(ApiType.IssTracker, apiResponse, errorMessage));
+				return (null, ApiStatus.Failed(ApiType.IssTracker, errorMessage, apiResponse.LastUpdateTime));
 			}
 
 			IssTrackerJsonModel trackerData;
@@ -65,17 +65,17 @@ namespace Blinkenlights.Transformers
 			}
 			catch (JsonException)
 			{
-				return (null, ApiStatus.Failed(ApiType.IssTracker, apiResponse, "Exception while deserializing API response"));
+				return (null, ApiStatus.Failed(ApiType.IssTracker, "Exception while deserializing API response", apiResponse.LastUpdateTime));
 			}
 
 			if (string.IsNullOrWhiteSpace(trackerData?.ImagePath))
 			{
-				return (null, ApiStatus.Failed(ApiType.IssTracker, apiResponse, "Missing required data from api"));
+				return (null, ApiStatus.Failed(ApiType.IssTracker, "Missing required data from api", apiResponse.LastUpdateTime));
 			}
 
 			if (!File.Exists(trackerData?.ImagePath))
 			{
-				return (null, ApiStatus.Failed(ApiType.IssTracker, apiResponse, "Image file not found"));
+				return (null, ApiStatus.Failed(ApiType.IssTracker, "Image file not found", apiResponse.LastUpdateTime));
 			}
 
 			var filename = Path.GetFileName(trackerData?.ImagePath);
@@ -88,7 +88,7 @@ namespace Blinkenlights.Transformers
 			}
 			catch(Exception ex)
 			{
-				return (null, ApiStatus.Failed(ApiType.IssTracker, apiResponse, ex.Message));
+				return (null, ApiStatus.Failed(ApiType.IssTracker, ex.Message, apiResponse.LastUpdateTime));
 			}
 			trackerData.ImagePath = relativePath;
 

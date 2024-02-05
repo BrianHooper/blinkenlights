@@ -4,7 +4,7 @@
 <div class="index-root" style="@Model.GridTemplateStyle">
     @foreach (var module in Model.Modules)
     {
-        <div class="index-module" data-module-name="@module.Name" style="@module.GridStyle">
+        <div class="index-module @module.Name" data-module-name="@module.Name" style="@module.GridStyle">
             <div class="module-container">
                 <div class="module-header"></div>
                 <div class="module-body">

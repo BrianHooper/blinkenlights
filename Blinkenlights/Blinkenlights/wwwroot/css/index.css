@@ -55,6 +55,17 @@ html, body, .index-root {
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
     overflow: hidden;
+    align-items: center;
+    height: 20px;
+    gap: 0px 10px;
+    background: rgba(82,82,82,1); /* Old Browsers */
+    background: -moz-linear-gradient(left, rgba(82,82,82,1) 0%, rgba(82,82,82,1) 6%, rgba(82,82,82,0.5) 13%, rgba(82,82,82,0) 100%); /* FF3.6+ */
+    background: -webkit-gradient(left top, right top, color-stop(0%, rgba(82,82,82,1)), color-stop(6%, rgba(82,82,82,1)), color-stop(13%, rgba(82,82,82,0.5)), color-stop(100%, rgba(82,82,82,0))); /* Chrome, Safari4+ */
+    background: -webkit-linear-gradient(left, rgba(82,82,82,1) 0%, rgba(82,82,82,1) 6%, rgba(82,82,82,0.5) 13%, rgba(82,82,82,0) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(left, rgba(82,82,82,1) 0%, rgba(82,82,82,1) 6%, rgba(82,82,82,0.5) 13%, rgba(82,82,82,0) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(left, rgba(82,82,82,1) 0%, rgba(82,82,82,1) 6%, rgba(82,82,82,0.5) 13%, rgba(82,82,82,0) 100%); /* IE 10+ */
+    background: linear-gradient(to right, rgba(82,82,82,1) 0%, rgba(82,82,82,1) 6%, rgba(82,82,82,0.5) 13%, rgba(82,82,82,0) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#525252', endColorstr='#525252', GradientType=1 ); /* IE6-9 */
 }
 
 .status-field {
@@ -62,20 +73,16 @@ html, body, .index-root {
     padding-inline: 10px;
 }
 
-.module-title {
-    width: 100px;
-}
-
 .module-success {
-    background-color: #0b5b0b;
+    fill: green;
 }
 
 .module-failed {
-    background-color: red;
+    fill: red;
 }
 
 .module-loading {
-    background-color: gray;
+    fill: gray;
 }
 
 .module-body {
@@ -84,4 +91,67 @@ html, body, .index-root {
     padding: 10px;
     position: relative;
     overflow: hidden;
+}
+
+.module-body > div {
+    width: 100%;
+}
+
+.module-api-result {
+    display: flex;
+}
+
+.module-status-result {
+    display: flex;
+    gap: 0px 5px;
+    align-items: center;
+}
+
+..module-status {
+    display: flex;
+    gap: 0px 5px;
+    align-items: center;
+}
+
+.module-status-result > div {
+    white-space: nowrap;
+}
+
+.api-status {
+    display: flex;
+    gap: 0px 5px;
+    align-items: center;
+    height: 20px;
+}
+.api-source {
+    height: 10px;
+    width: 10px;
+    overflow: visible;
+}
+
+.module-status-icon {
+    height: 15px;
+    width: 10px;
+    margin-left: 10px;
+    overflow: visible;
+}
+
+.api-source-cache {
+    fill: darkorange;
+}
+
+.api-source-prod {
+    fill: green;
+}
+
+.api-source-error {
+    fill: red;
+}
+
+.status-source {
+    width: 10px;
+}
+
+.status-lastupdate {
+    width: 60px;
 }
