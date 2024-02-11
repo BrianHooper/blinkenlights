@@ -1,4 +1,5 @@
-﻿using Blinkenlights.Models.Api.ApiResult;
+﻿using Blinkenlights.Dataschemas;
+using Blinkenlights.Models.Api.ApiResult;
 using Newtonsoft.Json;
 
 namespace Blinkenlights.Models.ViewModels.Slideshow

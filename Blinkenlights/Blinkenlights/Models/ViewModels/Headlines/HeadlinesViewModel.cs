@@ -1,4 +1,5 @@
-﻿using Blinkenlights.Models.Api.ApiResult;
+﻿using Blinkenlights.Dataschemas;
+using Blinkenlights.Models.Api.ApiResult;
 
 namespace Blinkenlights.Models.ViewModels.Headlines
 {

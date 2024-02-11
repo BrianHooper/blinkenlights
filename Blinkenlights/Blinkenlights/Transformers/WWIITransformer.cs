@@ -1,4 +1,5 @@
 ﻿using Blinkenlights.Data.LiteDb;
+using Blinkenlights.Dataschemas;
 using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.Api.ApiInfoTypes;
 using Blinkenlights.Models.Api.ApiResult;
@@ -23,7 +24,7 @@ namespace Blinkenlights.Transformers
             var response = this.ApiHandler.Fetch(ApiType.WWII).Result;
             if (string.IsNullOrWhiteSpace(response?.Data))
 			{
-				var status = ApiStatus.Failed(ApiType.WWII, "Failed to get local data");
+				var status = ApiStatus.Failed(ApiType.WWII.ToString(), "Failed to get local data");
 				return new WWIIDayModel(null, null, null, status);
 			}
 
@@ -34,7 +35,7 @@ namespace Blinkenlights.Transformers
             }
             catch (JsonException)
             {
-                var status = ApiStatus.Failed(ApiType.WWII, "Failed to deserialize data");
+                var status = ApiStatus.Failed(ApiType.WWII.ToString(), "Failed to deserialize data");
                 return new WWIIDayModel(null, null, null, status);
             }
 
@@ -48,13 +49,13 @@ namespace Blinkenlights.Transformers
                 var regionalEvents = wWIIDayJsonModel.Events.Where(kv => !string.Equals(kv.Key, "Global", StringComparison.OrdinalIgnoreCase)).ToList();
 
 
-				var status = ApiStatus.Success(ApiType.WWII, response);
+				var status = ApiStatus.Success(ApiType.WWII.ToString(), response.LastUpdateTime, response.ApiSource);
 				this.ApiHandler.TryUpdateCache(response);
                 return new WWIIDayModel(dateFormatted, globalEvents, regionalEvents, status);
             }
             else
             {
-                var status = ApiStatus.Failed(ApiType.WWII, "Failed to get data");
+                var status = ApiStatus.Failed(ApiType.WWII.ToString(), "Failed to get data");
                 return new WWIIDayModel(null, null, null, status);
             }
         }

@@ -1,4 +1,5 @@
-﻿using Blinkenlights.Models.Api.ApiInfoTypes;
+﻿using Blinkenlights.Dataschemas;
+using Blinkenlights.Models.Api.ApiInfoTypes;
 
 namespace Blinkenlights.Models.Api.ApiHandler
 {

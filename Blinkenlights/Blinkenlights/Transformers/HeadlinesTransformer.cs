@@ -5,6 +5,7 @@ using Blinkenlights.Models.Api.ApiResult;
 using Blinkenlights.Models.ViewModels.Headlines;
 using Blinkenlights.Models.ViewModels;
 using LiteDbLibrary;
+using Blinkenlights.Dataschemas;
 
 namespace Blinkenlights.Transformers
 {
@@ -83,7 +84,7 @@ namespace Blinkenlights.Transformers
 			var response = await this.ApiHandler.Fetch(ApiType.NewYorkTimes);
 			if (response is null)
             {
-                var errorStatus = ApiStatus.Failed(ApiType.NewYorkTimes, "Api response is null");
+                var errorStatus = ApiStatus.Failed(ApiType.NewYorkTimes.ToString(), "Api response is null");
                 return new HeadlinesContainer(null, errorStatus);
             }
 
@@ -104,13 +105,13 @@ namespace Blinkenlights.Transformers
 
             if (categories.Any())
             {
-                var status = ApiStatus.Success(ApiType.NewYorkTimes, response);
+                var status = ApiStatus.Success(ApiType.NewYorkTimes.ToString(), response.LastUpdateTime, response.ApiSource);
 				this.ApiHandler.TryUpdateCache(response);
 				return new HeadlinesContainer(categories, status);
             }
             else
             {
-                var errorStatus = ApiStatus.Failed(ApiType.NewYorkTimes, "No Results", response.LastUpdateTime);
+                var errorStatus = ApiStatus.Failed(ApiType.NewYorkTimes.ToString(), "No Results", response.LastUpdateTime);
 				return new HeadlinesContainer(null, errorStatus);
 			}
         }
@@ -120,19 +121,19 @@ namespace Blinkenlights.Transformers
             var response = await this.ApiHandler.Fetch(apiType);
 			if (response is null)
             {
-                var errorStatus = ApiStatus.Failed(apiType, "Api response is null", response.LastUpdateTime);
+                var errorStatus = ApiStatus.Failed(apiType.ToString(), "Api response is null", response.LastUpdateTime);
 				return new HeadlinesContainer(null, errorStatus);
             }
 
             if (ApiError.IsApiError(response.Data, out var errorMessage))
             {
-                var errorStatus = ApiStatus.Failed(apiType, errorMessage, response.LastUpdateTime);
+                var errorStatus = ApiStatus.Failed(apiType.ToString(), errorMessage, response.LastUpdateTime);
 				return new HeadlinesContainer(null, errorStatus);
 			}
 
             if (string.IsNullOrWhiteSpace(response?.Data))
             {
-				var errorStatus = ApiStatus.Failed(apiType, "Response data is null", response.LastUpdateTime);
+				var errorStatus = ApiStatus.Failed(apiType.ToString(), "Response data is null", response.LastUpdateTime);
 				return new HeadlinesContainer(null, errorStatus);
 			}
 
@@ -143,14 +144,14 @@ namespace Blinkenlights.Transformers
 			}
             catch (JsonException)
             {
-				var errorStatus = ApiStatus.Failed(apiType, "Exception deserializing response", response.LastUpdateTime);
+				var errorStatus = ApiStatus.Failed(apiType.ToString(), "Exception deserializing response", response.LastUpdateTime);
 				return new HeadlinesContainer(null, errorStatus);
 			}
 
             var articles = model?.stories?.Select(a => new HeadlinesArticle(a))?.Take(3)?.ToList();
             if (articles?.Any() == true)
             {
-                var status = ApiStatus.Success(apiType, response);
+                var status = ApiStatus.Success(apiType.ToString(), response.LastUpdateTime, response.ApiSource);
                 var categories = new List<HeadlinesCategory>() { new HeadlinesCategory(title, articles) };
 				this.ApiHandler.TryUpdateCache(response);
 				var headlinesContatiner = new HeadlinesContainer(categories, status);
@@ -165,7 +166,7 @@ namespace Blinkenlights.Transformers
             }
             else
             {
-                var errorStatus = ApiStatus.Failed(apiType, "No headlines created", response.LastUpdateTime);
+                var errorStatus = ApiStatus.Failed(apiType.ToString(), "No headlines created", response.LastUpdateTime);
                 return new HeadlinesContainer(null, errorStatus);
             }
         }

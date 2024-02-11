@@ -1,4 +1,5 @@
-﻿using Blinkenlights.Models.Api.ApiHandler;
+﻿using Blinkenlights.Dataschemas;
+using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.Api.ApiInfoTypes;
 using Blinkenlights.Models.Api.ApiResult;
 using Blinkenlights.Models.ViewModels;
@@ -19,12 +20,12 @@ namespace Blinkenlights.Transformers
 			var response = this.ApiHandler.Fetch(ApiType.AlphaVantage).Result;
 			if (response is null)
 			{
-				var errorStatus = ApiStatus.Failed(ApiType.AlphaVantage, "Api response is null");
+				var errorStatus = ApiStatus.Failed(ApiType.AlphaVantage.ToString(), "Api response is null");
 				return new StockViewModel(errorStatus);
 			}
 			else if (string.IsNullOrWhiteSpace(response.Data))
 			{
-				var errorStatus = ApiStatus.Failed(ApiType.AlphaVantage, "Api response is empty", response.LastUpdateTime);
+				var errorStatus = ApiStatus.Failed(ApiType.AlphaVantage.ToString(), "Api response is empty", response.LastUpdateTime);
 				return new StockViewModel(errorStatus);
 			}
 
@@ -35,14 +36,14 @@ namespace Blinkenlights.Transformers
 			}
 			catch (JsonException)
 			{
-				var errorStatus = ApiStatus.Failed(ApiType.AlphaVantage, "Error deserializing api response", response.LastUpdateTime);
+				var errorStatus = ApiStatus.Failed(ApiType.AlphaVantage.ToString(), "Error deserializing api response", response.LastUpdateTime);
 				return new StockViewModel(errorStatus);
 			}
 
 			var symbol = model?.MetaData?.Symbol;
 			if (string.IsNullOrWhiteSpace(symbol))
 			{
-				var errorStatus = ApiStatus.Failed(ApiType.AlphaVantage, "Required data missing in api response", response.LastUpdateTime);
+				var errorStatus = ApiStatus.Failed(ApiType.AlphaVantage.ToString(), "Required data missing in api response", response.LastUpdateTime);
 				return new StockViewModel(errorStatus);
 			}
 			var timeIndex = 0;
@@ -56,7 +57,7 @@ namespace Blinkenlights.Transformers
 			};
 			var data = new List<FinanceData>() { dataModel };
 
-			var status = ApiStatus.Success(ApiType.AlphaVantage, response);
+			var status = ApiStatus.Success(ApiType.AlphaVantage.ToString(), response.LastUpdateTime, response.ApiSource);
 			this.ApiHandler.TryUpdateCache(response);
 			return new StockViewModel(status, data);
 		}

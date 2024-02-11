@@ -1,11 +1,14 @@
 using Blinkenlights.Data;
 using Blinkenlights.Data.LiteDb;
+using Blinkenlights.DataFetchers;
 using Blinkenlights.Models.Api.ApiHandler;
+using Blinkenlights.Models.ViewModels.Utility;
 using Blinkenlights.Transformers;
 using LiteDbLibrary;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System.Timers;
 
 namespace Blinkenlights
 {
@@ -32,13 +35,16 @@ namespace Blinkenlights
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddControllersWithViews();
 
+			builder.Services.AddSingleton<IDatabaseHandler, DatabaseHandler>();
 			builder.Services.AddSingleton<IApiHandler, ApiHandler>();
-            builder.Services.AddSingleton<ILiteDbHandler, LiteDbHandler>(x =>
+			builder.Services.AddSingleton<ILiteDbHandler, LiteDbHandler>(x =>
             {
 				return LiteDbFactory.Build(builder.Services.Get<IWebHostEnvironment>());
 			});
 
-            var app = builder.Build();
+			builder.Services.AddSingleton<IIssDataFetcher, IssDataFetcher>();
+
+			var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -61,7 +67,29 @@ namespace Blinkenlights
                 pattern: "{controller=Root}/{action=Index}/{id?}");
             app.MapRazorPages();
 
+			app.MapGet("/read/{key}", (string key, IDatabaseHandler db) =>
+			{
+				if (db.TryRead(key, out var value) && !string.IsNullOrWhiteSpace(value))
+				{
+					return Results.Content(value);
+				}
+
+				return Results.NoContent();
+			});
+
+			app.MapPut("/write/{key}", (string key, string value, IDatabaseHandler db) =>
+			{
+				if (db.Write(key, value))
+				{
+					return Results.Ok();
+				}
+				else
+				{
+					return Results.Problem();
+                }
+            });
+
             app.Run();
-        }
-    }
+		}
+	}
 }

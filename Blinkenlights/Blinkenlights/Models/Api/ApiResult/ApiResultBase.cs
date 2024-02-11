@@ -1,4 +1,5 @@
-﻿using Blinkenlights.Models.ViewModels;
+﻿using Blinkenlights.Dataschemas;
+using Blinkenlights.Models.ViewModels;
 
 namespace Blinkenlights.Models.Api.ApiResult
 {

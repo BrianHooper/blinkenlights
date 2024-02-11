@@ -1,4 +1,5 @@
 ﻿using Blinkenlights.Data.LiteDb;
+using Blinkenlights.Dataschemas;
 using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.Api.ApiInfoTypes;
 using Blinkenlights.Models.Api.ApiResult;
@@ -22,19 +23,19 @@ namespace Blinkenlights.Transformers
 
 			if (response is null)
             {
-                var status = ApiStatus.Failed(ApiType.GoogleCalendar, "API Response is null");
+                var status = ApiStatus.Failed(ApiType.GoogleCalendar.ToString(), "API Response is null");
                 return new CalendarViewModel(null, status);
             }
 
             if (string.IsNullOrWhiteSpace(response.Data))
             {
-                var status = ApiStatus.Failed(ApiType.GoogleCalendar, "API Response data is empty", response.LastUpdateTime);
+                var status = ApiStatus.Failed(ApiType.GoogleCalendar.ToString(), "API Response data is empty", response.LastUpdateTime);
                 return new CalendarViewModel(null, status);
             }
 
             if (ApiError.IsApiError(response.Data, out var errorMessage))
             {
-                var status = ApiStatus.Failed(ApiType.GoogleCalendar, errorMessage, response.LastUpdateTime);
+                var status = ApiStatus.Failed(ApiType.GoogleCalendar.ToString(), errorMessage, response.LastUpdateTime);
             }
 
             CalendarData calendarData;
@@ -44,7 +45,7 @@ namespace Blinkenlights.Transformers
             }
             catch (JsonException)
             {
-                var status = ApiStatus.Failed(ApiType.GoogleCalendar, "Exception while deserializing API response", response.LastUpdateTime);
+                var status = ApiStatus.Failed(ApiType.GoogleCalendar.ToString(), "Exception while deserializing API response", response.LastUpdateTime);
                 return new CalendarViewModel(null, status);
             }
 
@@ -53,13 +54,13 @@ namespace Blinkenlights.Transformers
             
             if (events?.Any() == true)
             {
-                var status = ApiStatus.Success(ApiType.GoogleCalendar, response);
+                var status = ApiStatus.Success(ApiType.GoogleCalendar.ToString(), response.LastUpdateTime, response.ApiSource);
                 this.ApiHandler.TryUpdateCache(response);
                 return new CalendarViewModel(events, status);
             }
             else
             {
-                var status = ApiStatus.Failed(ApiType.GoogleCalendar, "Events list is empty", response.LastUpdateTime);
+                var status = ApiStatus.Failed(ApiType.GoogleCalendar.ToString(), "Events list is empty", response.LastUpdateTime);
                 return new CalendarViewModel(null, status);
             }
         }

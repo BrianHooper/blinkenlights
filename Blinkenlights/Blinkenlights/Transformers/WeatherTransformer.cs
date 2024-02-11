@@ -1,4 +1,5 @@
 ﻿using Blinkenlights.Data.LiteDb;
+using Blinkenlights.Dataschemas;
 using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.Api.ApiInfoTypes;
 using Blinkenlights.Models.Api.ApiResult;
@@ -21,13 +22,13 @@ namespace Blinkenlights.Transformers
 
 			if (response is null)
 			{
-				var errorStatus = ApiStatus.Failed(ApiType.VisualCrossingWeather, "API Response is null");
+				var errorStatus = ApiStatus.Failed(ApiType.VisualCrossingWeather.ToString(), "API Response is null");
 				return new WeatherViewModel(errorStatus);
 			}
 
 			if (string.IsNullOrWhiteSpace(response.Data))
 			{
-				var errorStatus = ApiStatus.Failed(ApiType.VisualCrossingWeather, "API Response data is empty", response.LastUpdateTime);
+				var errorStatus = ApiStatus.Failed(ApiType.VisualCrossingWeather.ToString(), "API Response data is empty", response.LastUpdateTime);
 				return new WeatherViewModel(errorStatus);
 			}
 
@@ -38,13 +39,13 @@ namespace Blinkenlights.Transformers
 			}
 			catch (Exception)
 			{
-				var errorStatus = ApiStatus.Failed(ApiType.VisualCrossingWeather, "Deserialization error", response.LastUpdateTime);
+				var errorStatus = ApiStatus.Failed(ApiType.VisualCrossingWeather.ToString(), "Deserialization error", response.LastUpdateTime);
 				return new WeatherViewModel(errorStatus);
 			}
 
 			if (weatherJsonModel?.Days?.Any() != true)
 			{
-				var errorStatus = ApiStatus.Failed(ApiType.VisualCrossingWeather, "Deserialized response is empty", response.LastUpdateTime);
+				var errorStatus = ApiStatus.Failed(ApiType.VisualCrossingWeather.ToString(), "Deserialized response is empty", response.LastUpdateTime);
 				return new WeatherViewModel(errorStatus);
 			}
 
@@ -111,7 +112,7 @@ namespace Blinkenlights.Transformers
 				new CurrentCondition("Wind Direction", AsDirection(weatherJsonModel.CurrentConditions.Winddir ?? 0.0), "windsock.png", $"Wind Direction: {weatherJsonModel.CurrentConditions.Winddir} degrees"),
 			};
 
-			var status = ApiStatus.Success(ApiType.VisualCrossingWeather, response);
+			var status = ApiStatus.Success(ApiType.VisualCrossingWeather.ToString(), response.LastUpdateTime, response.ApiSource);
 			this.ApiHandler.TryUpdateCache(response);
 			var viewModel = new WeatherViewModel(weatherJsonModel.Description, weatherDayModels, graphModel, currentConditions, status);
 			return viewModel;

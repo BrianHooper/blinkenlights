@@ -1,4 +1,5 @@
-﻿using Blinkenlights.Models.Api.ApiHandler;
+﻿using Blinkenlights.Dataschemas;
+using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.Api.ApiInfoTypes;
 using Blinkenlights.Models.Api.ApiResult;
 using Blinkenlights.Models.ViewModels;
@@ -30,17 +31,17 @@ namespace Blinkenlights.Transformers
 
 			if (apiResponse is null)
 			{
-				return (null, ApiStatus.Failed(ApiType.Astronomy, "API Response is null"));
+				return (null, ApiStatus.Failed(ApiType.Astronomy.ToString(), "API Response is null"));
 			}
 
 			if (string.IsNullOrWhiteSpace(apiResponse.Data))
 			{
-				return (null, ApiStatus.Failed(ApiType.Astronomy, "API Response data is empty", apiResponse.LastUpdateTime));
+				return (null, ApiStatus.Failed(ApiType.Astronomy.ToString(), "API Response data is empty", apiResponse.LastUpdateTime));
 			}
 
 			if (ApiError.IsApiError(apiResponse.Data, out var errorMessage))
 			{
-				return (null, ApiStatus.Failed(ApiType.Astronomy, errorMessage, apiResponse.LastUpdateTime));
+				return (null, ApiStatus.Failed(ApiType.Astronomy.ToString(), errorMessage, apiResponse.LastUpdateTime));
 			}
 
 			SlideshowJsonModel slideshowData;
@@ -50,17 +51,17 @@ namespace Blinkenlights.Transformers
 			}
 			catch (JsonException)
 			{
-				return (null, ApiStatus.Failed(ApiType.Astronomy, "Exception while deserializing API response", apiResponse.LastUpdateTime));
+				return (null, ApiStatus.Failed(ApiType.Astronomy.ToString(), "Exception while deserializing API response", apiResponse.LastUpdateTime));
 			}
 
 			if (string.IsNullOrWhiteSpace(slideshowData?.Title)
 				|| string.IsNullOrWhiteSpace(slideshowData?.Source)
 				|| string.IsNullOrWhiteSpace(slideshowData?.Url))
 			{
-				return (null, ApiStatus.Failed(ApiType.Astronomy, "Missing required data from api", apiResponse.LastUpdateTime));
+				return (null, ApiStatus.Failed(ApiType.Astronomy.ToString(), "Missing required data from api", apiResponse.LastUpdateTime));
 			}
 
-			var status = ApiStatus.Success(ApiType.Astronomy, apiResponse);
+			var status = ApiStatus.Success(ApiType.Astronomy.ToString(), DateTime.Now, ApiSource.Prod);
 			this.ApiHandler.TryUpdateCache(apiResponse);
 			var frame = new SlideshowFrame($"NASA Picture of the Day: {slideshowData.Title}", slideshowData.Source, slideshowData.Url);
 			return (frame, status);

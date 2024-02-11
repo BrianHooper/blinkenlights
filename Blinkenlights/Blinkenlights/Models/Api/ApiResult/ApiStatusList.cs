@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Blinkenlights.Dataschemas;
+using Newtonsoft.Json;
 
 namespace Blinkenlights.Models.Api.ApiResult
 {

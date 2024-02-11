@@ -37,6 +37,7 @@
 		<Exec Command="npm run build" />
 	</Target>
 	<ItemGroup>
+	  <ProjectReference Include="..\Dataschemas\Blinkenlights.Dataschemas.csproj" />
 	  <ProjectReference Include="..\LiteDbLibrary\LiteDbLibrary.csproj" />
 	</ItemGroup>
     <ItemGroup>

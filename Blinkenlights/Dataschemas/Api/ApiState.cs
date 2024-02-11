@@ -1,4 +1,4 @@
-﻿namespace Blinkenlights.Models.Api.ApiResult
+﻿namespace Blinkenlights.Dataschemas
 {
 	public enum ApiState
     {

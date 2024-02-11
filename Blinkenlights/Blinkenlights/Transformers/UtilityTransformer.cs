@@ -1,4 +1,5 @@
-﻿using Blinkenlights.Models.Api.ApiHandler;
+﻿using Blinkenlights.Dataschemas;
+using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.Api.ApiInfoTypes;
 using Blinkenlights.Models.Api.ApiResult;
 using Blinkenlights.Models.ViewModels;
@@ -39,7 +40,7 @@ namespace Blinkenlights.Transformers
 
 			if (trackings?.Any() != true)
 			{
-				apiStatus = ApiStatus.Failed(ApiType.Ship24, "No requests in database");
+				apiStatus = ApiStatus.Failed(ApiType.Ship24.ToString(), "No requests in database");
 				return new PackageTrackingViewModel();
 			}
 
@@ -98,8 +99,8 @@ namespace Blinkenlights.Transformers
 
 
 			apiStatus = failedCount > 0
-				? ApiStatus.Failed(ApiType.Ship24, $"{successCount} success, {failedCount} failed", lastUpdateTime)
-				: ApiStatus.Success(ApiType.Ship24, lastUpdateTime, source);
+				? ApiStatus.Failed(ApiType.Ship24.ToString(), $"{successCount} success, {failedCount} failed", lastUpdateTime)
+				: ApiStatus.Success(ApiType.Ship24.ToString(), lastUpdateTime, source);
 			return new PackageTrackingViewModel(packages);
 		}
 
@@ -108,12 +109,12 @@ namespace Blinkenlights.Transformers
 			var response = this.ApiHandler.Fetch(ApiType.Meh).Result;
 			if (response is null)
 			{
-				apiStatus = ApiStatus.Failed(ApiType.Meh, "Api response is null");
+				apiStatus = ApiStatus.Failed(ApiType.Meh.ToString(), "Api response is null");
 				return new MehViewModel();
 			}
 			else if (string.IsNullOrWhiteSpace(response.Data))
 			{
-				apiStatus = ApiStatus.Failed(ApiType.Meh, "Api response is empty", response.LastUpdateTime);
+				apiStatus = ApiStatus.Failed(ApiType.Meh.ToString(), "Api response is empty", response.LastUpdateTime);
 				return new MehViewModel();
 			}
 
@@ -124,7 +125,7 @@ namespace Blinkenlights.Transformers
 			}
 			catch (JsonException)
 			{
-				apiStatus = ApiStatus.Failed(ApiType.Meh, "Error deserializing api response", response.LastUpdateTime);
+				apiStatus = ApiStatus.Failed(ApiType.Meh.ToString(), "Error deserializing api response", response.LastUpdateTime);
 				return new MehViewModel();
 			}
 
@@ -138,11 +139,11 @@ namespace Blinkenlights.Transformers
 				|| string.IsNullOrWhiteSpace(imageUrl)
 				|| string.IsNullOrWhiteSpace(price))
 			{
-				apiStatus = ApiStatus.Failed(ApiType.Meh, "Required data missing in api response", response.LastUpdateTime);
+				apiStatus = ApiStatus.Failed(ApiType.Meh.ToString(), "Required data missing in api response", response.LastUpdateTime);
 				return new MehViewModel();
 			}
 
-			apiStatus = ApiStatus.Success(ApiType.Meh, response);
+			apiStatus = ApiStatus.Success(ApiType.Meh.ToString(), response.LastUpdateTime, response.ApiSource);
 			this.ApiHandler.TryUpdateCache(response);
 			return new MehViewModel($"Meh - ${price} - {title}", url, imageUrl);
 		}

@@ -1,4 +1,5 @@
 ﻿using Blinkenlights.Data.LiteDb;
+using Blinkenlights.Dataschemas;
 using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.Api.ApiInfoTypes;
 using Blinkenlights.Models.Api.ApiResult;
@@ -20,12 +21,12 @@ namespace Blinkenlights.Transformers
 			var response = this.ApiHandler.Fetch(ApiType.Life360).Result;
 			if (response == null)
             {
-                var status = ApiStatus.Failed(ApiType.Life360, "Api response is null");
+                var status = ApiStatus.Failed(ApiType.Life360.ToString(), "Api response is null");
                 return new Life360ViewModel(null, status);
 			}
             else if (response.ResultStatus != ApiResultStatus.Success)
             {
-				var status = ApiStatus.Failed(ApiType.Life360, response.StatusMessage, response.LastUpdateTime);
+				var status = ApiStatus.Failed(ApiType.Life360.ToString(), response.StatusMessage, response.LastUpdateTime);
 				return new Life360ViewModel(null, status);
 			}
 
@@ -36,20 +37,20 @@ namespace Blinkenlights.Transformers
             }
             catch (JsonException)
             {
-                var status = ApiStatus.Failed(ApiType.Life360, "Exception while deserializing API response");
+                var status = ApiStatus.Failed(ApiType.Life360.ToString(), "Exception while deserializing API response");
 				return new Life360ViewModel(null, status);
             }
 
             var models = serverModel?.Members?.Select(m => Life360Model.Parse(m))?.Where(m => m != null)?.ToList();
             if (models?.Any() == true)
             {
-                var status = ApiStatus.Success(ApiType.Life360, response);
+                var status = ApiStatus.Success(ApiType.Life360.ToString(), response.LastUpdateTime, response.ApiSource);
                 this.ApiHandler.TryUpdateCache(response);
 				return new Life360ViewModel(models, status);
             }
             else
             {
-                var status = ApiStatus.Failed(ApiType.Life360, "Models list was empty", response.LastUpdateTime);
+                var status = ApiStatus.Failed(ApiType.Life360.ToString(), "Models list was empty", response.LastUpdateTime);
 				return new Life360ViewModel(null, status);
             }
         }
