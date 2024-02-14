@@ -1,6 +1,6 @@
 ﻿namespace Blinkenlights.Dataschemas
 {
-	public enum ApiState
+    public enum ApiState
     {
         Unknown = 0,
         Failed = 1,

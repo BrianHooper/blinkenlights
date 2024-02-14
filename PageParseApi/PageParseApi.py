@@ -6,9 +6,10 @@ from GoogleCalendarApi import GetCalendar
 from WikipediaApi import GetWikipedia
 from YCombinatorApi import GetYCombinatorData
 from RocketLaunchApi import GetRocketData
-from AstronomyApi import GetPicOfTheDay
+from AstronomyApi import GetAstroPicOfTheDay
 from PackageTrackingApi import GetTrackingInfo
 from IssTrackerApi import GetIssLocationImage
+from WikipediaPotd import GetWikiPicOfTheDay
 
 app = FastAPI()
 
@@ -48,7 +49,7 @@ async def GoogleCalendar(request: Request):
 
 @app.get("/astronomypotd")
 def astronomy():
-    return GetPicOfTheDay()
+    return GetAstroPicOfTheDay()
 
 @app.post("/packagetracking")
 async def PackageTracking(requests: Request, Items = Body(...)):
@@ -57,6 +58,10 @@ async def PackageTracking(requests: Request, Items = Body(...)):
 @app.get("/isstracker")
 def isstracker():
     return GetIssLocationImage()
+
+@app.get("/wikipotd")
+def wikipotd():
+    return GetWikiPicOfTheDay()
 
 if __name__ == "__main__":
     print(f"BrianTools version: {BrianTools.__version__}")

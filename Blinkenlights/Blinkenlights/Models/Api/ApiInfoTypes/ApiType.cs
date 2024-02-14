@@ -8,10 +8,10 @@
         TimeZone = 1,
 
         [ApiInfo(typeof(MehApiInfo))]
-		Meh = 2,
+        Meh = 2,
 
         [ApiInfo(typeof(Life360ApiInfo))]
-		Life360 = 3,
+        Life360 = 3,
 
         [ApiInfo(typeof(WWIIApiInfo))]
         WWII = 4,
@@ -31,28 +31,31 @@
         [ApiInfo(typeof(YCombinatorApiInfo))]
         YCombinator = 9,
 
-		[ApiInfo(typeof(RocketLaunchesApiInfo))]
-		RocketLaunches = 10,
+        [ApiInfo(typeof(RocketLaunchesApiInfo))]
+        RocketLaunches = 10,
 
-		[ApiInfo(typeof(AstronomyApiInfo))]
-		Astronomy = 11,
+        [ApiInfo(typeof(AstronomyApiInfo))]
+        Astronomy = 11,
 
-		[ApiInfo(typeof(UpsPackageTrackingApiInfo))]
-		UpsPackageTracking = 12,
+        [ApiInfo(typeof(UpsPackageTrackingApiInfo))]
+        UpsPackageTracking = 12,
 
-		[ApiInfo(typeof(UpsOAuthApiInfo))]
-		UpsOath = 13,
+        [ApiInfo(typeof(UpsOAuthApiInfo))]
+        UpsOath = 13,
 
-		[ApiInfo(typeof(PackageTrackingApiInfo))]
-		PackageTracking = 14,
+        [ApiInfo(typeof(PackageTrackingApiInfo))]
+        PackageTracking = 14,
 
-		[ApiInfo(typeof(Ship24ApiInfo))]
-		Ship24 = 15,
+        [ApiInfo(typeof(Ship24ApiInfo))]
+        Ship24 = 15,
 
-		[ApiInfo(typeof(IssTrackerApiInfo))]
-		IssTracker = 16,
+        [ApiInfo(typeof(IssTrackerApiInfo))]
+        IssTracker = 16,
 
 		[ApiInfo(typeof(AlphaVantageApiInfo))]
-		AlphaVantage = 17
+		AlphaVantage = 17,
+
+		[ApiInfo(typeof(WikiPotdApiInfo))]
+		WikiPotd = 18
 	}
 }

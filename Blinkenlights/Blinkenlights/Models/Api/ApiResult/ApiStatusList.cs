@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Blinkenlights.Models.Api.ApiResult
 {
-	public class ApiStatusList
+    public class ApiStatusList
     {
         public List<ApiStatus> Items { get; }
 

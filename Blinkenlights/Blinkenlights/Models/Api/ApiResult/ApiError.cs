@@ -2,7 +2,7 @@
 
 namespace Blinkenlights.Models.Api.ApiResult
 {
-	public class ApiError
+    public class ApiError
     {
         public string Error { get; set; }
 

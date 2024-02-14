@@ -1,6 +1,6 @@
 ﻿using Blinkenlights.Dataschemas;
 
-namespace Blinkenlights
+namespace Blinkenlights.DatabaseHandler
 {
     public interface IDatabaseHandler
     {

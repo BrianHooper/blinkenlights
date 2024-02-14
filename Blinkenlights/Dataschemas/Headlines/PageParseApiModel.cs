@@ -1,4 +1,4 @@
-﻿namespace Blinkenlights.Models.ViewModels.Headlines
+﻿namespace Blinkenlights.Dataschemas
 {
     public class PageParseApiModel
     {

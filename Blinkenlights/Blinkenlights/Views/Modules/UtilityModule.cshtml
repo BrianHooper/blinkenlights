@@ -6,48 +6,58 @@
 <partial name="ModuleStatus" model="@Model" />
 
 <div id="utility-root">
-	<div class="util-body">
-		@if (Model.MehData != null) {
+    <div class="util-body">
+        @if (Model.MehData != null)
+        {
 
-			@if (!string.IsNullOrWhiteSpace(Model.MehData.Title))
-			{
-				<div class="util-block">
-					<div class="util-row meh-row">
-						<div class="util-col meh-title">@Model.MehData.Title</div>
-					</div>
-					<a class="util-url" href="@Model.MehData.Url" target="_blank"></a>
-				</div>
-			}
-		}
+            @if (!string.IsNullOrWhiteSpace(Model.MehData.Title))
+            {
+                <div class="util-block">
+                    <div class="util-row meh-row">
+                        <div class="util-col meh-title">@Model.MehData.Title</div>
+                    </div>
+                    <a class="util-url" href="@Model.MehData.Url" target="_blank"></a>
+                </div>
+            }
+        }
 
-		@if (Model.PackageTrackingData != null)
-		{
-			@if (Model.PackageTrackingData.Packages?.Any() == true)
-			{
-				foreach(var package in Model.PackageTrackingData.Packages)
-				{
-					<div class="util-block">
-						<div class="util-row pkg-row">
-							<div class="util-col pkgtrack-icon">
-								@if(!string.IsNullOrWhiteSpace(package.Icon))
-								{
-									<img src="@package.Icon" class="pkg-icon" />
-								}
-							</div>
-							<div class="util-col pkgtrack-name">@package.Name</div>
-							<div class="util-col pkgtrack-status">@package.Status</div>
-							<div class="util-col pkgtrack-eta">@package.Eta</div>
-							<div class="util-col pkgtrack-location">@package.Location</div>
-						</div>
-						@if(!string.IsNullOrEmpty(package.Url))
-						{
-						<a class="util-url" href="@package.Url" target="_blank"></a>
-						}
-					</div>
-				}
-			}
-		}
-	</div>
+        @if (Model.PackageTrackingData != null)
+        {
+            @if (Model.PackageTrackingData.Packages?.Any() == true)
+            {
+                foreach (var package in Model.PackageTrackingData.Packages)
+                {
+                    <div class="util-block">
+                        <div class="util-row pkg-row">
+                            <div class="util-col pkgtrack-icon">
+                                @if (!string.IsNullOrWhiteSpace(package.Icon))
+                                {
+                                    <img src="@package.Icon" class="pkg-icon" />
+                                }
+                            </div>
+                            <div class="util-col pkgtrack-name">@package.Name</div>
+                            <div class="util-col pkgtrack-status">@package.Status</div>
+                            <div class="util-col pkgtrack-eta">@package.Eta</div>
+                            <div class="util-col pkgtrack-location">@package.Location</div>
+                        </div>
+                        @if (!string.IsNullOrEmpty(package.Url))
+                        {
+                            <a class="util-url" href="@package.Url" target="_blank"></a>
+                        }
+                    </div>
+                }
+            }
+
+            @if (Model.Life360Data?.Title != null)
+            {
+                <div class="util-block">
+                    <div class="util-row">
+                        @Model.Life360Data.Title
+                    </div>
+                </div>
+            }
+        }
+    </div>
 </div>
 
 <script type="module" src="~/ts-dist/UtilityModule.js"></script>

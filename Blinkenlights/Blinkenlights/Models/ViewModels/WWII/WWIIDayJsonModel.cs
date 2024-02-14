@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-
-namespace Blinkenlights.Models.ViewModels.WWII
+﻿namespace Blinkenlights.Models.ViewModels.WWII
 {
     public class WWIIDayJsonModel
     {

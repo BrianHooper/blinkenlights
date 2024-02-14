@@ -11,7 +11,9 @@ namespace Blinkenlights.Models.Api.ApiResult
 
         public ApiResultBase(string moduleName, params ApiStatus[] apiStatuses)
         {
-            Status = ApiStatusList.Serialize(apiStatuses);
+            var validStatuses = apiStatuses.Where(s => !string.IsNullOrEmpty(s?.Name)).ToArray();
+
+            Status = ApiStatusList.Serialize(validStatuses);
             this.ModuleName = moduleName;
         }
     }

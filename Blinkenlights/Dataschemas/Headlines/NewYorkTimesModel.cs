@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace Blinkenlights.Models.ViewModels.Headlines
+﻿namespace Blinkenlights.Dataschemas
 {
     public class NewYorkTimesModel
     {
@@ -12,9 +10,7 @@ namespace Blinkenlights.Models.ViewModels.Headlines
         public string section { get; set; }
         public string subsection { get; set; }
         public string title { get; set; }
-
-        [JsonProperty("abstract")]
-        public string article_abstract { get; set; }
+        public string @abstract { get; set; }
         public string url { get; set; }
     }
 }

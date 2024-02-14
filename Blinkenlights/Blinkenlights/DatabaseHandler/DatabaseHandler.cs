@@ -1,11 +1,8 @@
-﻿using Blinkenlights.DataFetchers;
-using Blinkenlights.Dataschemas;
-using Microsoft.Extensions.Primitives;
+﻿using Blinkenlights.Dataschemas;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Timers;
 
-namespace Blinkenlights
+namespace Blinkenlights.DatabaseHandler
 {
     public class DatabaseHandler : IDatabaseHandler
     {
@@ -15,23 +12,23 @@ namespace Blinkenlights
 
         private Mutex Mutex { get; init; }
 
-		private readonly IWebHostEnvironment WebHostEvironment;
-
-		private JsonSerializerOptions JsonSerializerOptions = new JsonSerializerOptions
+        private JsonSerializerOptions JsonSerializerOptions = new JsonSerializerOptions
         {
             WriteIndented = true,
             Converters =
             {
                 new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
 
-	        }
+            }
         };
 
-        public DatabaseHandler(IWebHostEnvironment environment)
+        public DatabaseHandler(IWebHostEnvironment environment) : this(environment.ContentRootPath)
         {
-            this.WebHostEvironment = environment;
+        }
 
-            var pathParts = new string[] { environment.ContentRootPath, DATABASE_FILENAME };
+        public DatabaseHandler(string contentRootPath)
+        {
+            var pathParts = new string[] { contentRootPath, DATABASE_FILENAME };
             var databaseAbsoluteFilePath = Path.Combine(pathParts);
             this.DatabaseAbsoluteFilePath = databaseAbsoluteFilePath;
             this.Mutex = new Mutex();
@@ -53,8 +50,8 @@ namespace Blinkenlights
             }
             catch (Exception)
             {
-				return new Dictionary<string, string>();
-			}
+                return new Dictionary<string, string>();
+            }
         }
 
         private bool WriteDatabase(Dictionary<string, string> data)
@@ -102,9 +99,9 @@ namespace Blinkenlights
         {
             var key = typeof(T).Name;
             if (!TryRead(key, out var value) || string.IsNullOrWhiteSpace(value))
-			{
-				return default;
-			}
+            {
+                return default;
+            }
 
             try
             {
@@ -114,13 +111,13 @@ namespace Blinkenlights
             {
                 return default;
             }
-		}
+        }
 
         public bool Set<T>(T moduleData) where T : IModuleData
-		{
-			var key = moduleData.GetType().Name;
+        {
+            var key = moduleData.GetType().Name;
             var data = JsonSerializer.Serialize<T>(moduleData, this.JsonSerializerOptions);
             return Write(key, data);
-		}
-	}
+        }
+    }
 }

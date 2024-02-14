@@ -15,4 +15,10 @@
     <PackageReference Include="ZoneTree" Version="1.7.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Blinkenlights.Dataschemas">
+      <HintPath>..\..\Blinkenlights\Dataschemas\bin\Debug\net6.0\Blinkenlights.Dataschemas.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

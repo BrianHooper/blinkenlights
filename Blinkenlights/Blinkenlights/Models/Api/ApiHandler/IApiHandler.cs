@@ -15,5 +15,5 @@ namespace Blinkenlights.Models.Api.ApiHandler
         public bool TryGetCachedValue(ApiType apiType, out ApiResponse cachedValue);
 
 
-	}
+    }
 }

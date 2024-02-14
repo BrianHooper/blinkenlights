@@ -12,7 +12,7 @@ namespace Blinkenlights.Utilities
             if (addOffset)
             {
                 var offset = tzOffset is null ? DateTimeOffset.Now.Offset.Hours : tzOffset;
-				dt = dt.AddHours((double)offset);
+                dt = dt.AddHours((double)offset);
             }
             return dt;
         }

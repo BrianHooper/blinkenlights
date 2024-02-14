@@ -1,7 +1,7 @@
 from datetime import date
 from BrianTools.Tools import Engine, ApiError, IsNullOrEmpty
 
-def GetPicOfTheDay():
+def GetAstroPicOfTheDay():
     engine = Engine()
     soup, html = engine.GetSoup("https://apod.nasa.gov/apod/astropix.html")    
     if soup is None:
@@ -35,5 +35,5 @@ def GetPicOfTheDay():
     return data
 
 if __name__ == "__main__":
-    data = GetPicOfTheDay()
+    data = GetAstroPicOfTheDay()
     print(data)

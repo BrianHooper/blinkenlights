@@ -1,57 +1,48 @@
 ﻿//import { SetModuleStatusByElement } from "./StatusModule.js";
 //setModuleStatusByElement($("#slideshow-status"));
 
+const slideshowframes: JQuery<HTMLDivElement> = $("#slideshow-root");
+const children = slideshowframes.children();
+
+let curIdx = children.length - 1;
+let nxtIdx = 0;
+
 var SlideshowRunner = {
     refresh: async function (): Promise<void> {
-        const frames: JQuery<HTMLDivElement> = $("#stage");
-        const children = frames.children();
-        const count = children.length;
+        // set z-index of next to 1
+        children[nxtIdx].classList.add("stacked");
 
-            for (var i = 0; i < count; i++) {
+        // start fading in next to visible
+        children[nxtIdx].classList.add("visible");
+        await new Promise(resolve => setTimeout(resolve, 1500));
 
-                /*
-    
-                wait for slideshow length
-                set current z-index to 10
-                set next to visible
-                set next z-index to 20;
-                start fading in opacity of next
-                start fading out opacity of current
-                wait for opacity animation
-                set current to hidden
-                */
-                var nextI = i + 1;
-                if (nextI >= count) {
-                    nextI = 0;
-                }
+        // start fading out previous
+        children[curIdx].classList.remove("visible");
+        children[curIdx].classList.add("visible-end");
+        await new Promise(resolve => setTimeout(resolve, 1500));
 
-                const current = children[i];
-                const next = children[nextI];
+        // after fades are complete, set current to invisible
+        children[curIdx].classList.remove("visible-end");
 
-                children[nextI].classList.remove("slideshow_hide");
-                children[nextI].classList.add("slideshow_show");
+        // set z-index of next to 0
+        children[nxtIdx].classList.remove("stacked");
 
-                children[i].classList.remove("slideshow_ztwenty");
-                children[i].classList.add("slideshow_zten");
+        curIdx++;
+        nxtIdx++;
 
-                children[nextI].classList.remove("slideshow_zten");
-                children[nextI].classList.add("slideshow_ztwenty");
+        if (curIdx >= children.length) {
+            curIdx = 0;
+        }
 
-                children[nextI].classList.remove("slideshow_fade_out");
-                children[nextI].classList.add("slideshow_fade_in");
-
-                children[i].classList.remove("slideshow_fade_in");
-                children[i].classList.add("slideshow_fade_out");
-
-                await new Promise(resolve => setTimeout(resolve, 10000));
-
-                children[i].classList.remove("slideshow_show");
-                children[i].classList.add("slideshow_hide");
-
-
+        if (nxtIdx >= children.length) {
+            nxtIdx = 0;
         }
     }
 };
 
-SlideshowRunner.refresh();
-setInterval(SlideshowRunner.refresh, 20 * 1000);
+if (children.length > 1) {
+    SlideshowRunner.refresh();
+    setInterval(SlideshowRunner.refresh, 10 * 1000);
+} else if (children.length == 1) {
+    children[0].classList.add("visible");
+}

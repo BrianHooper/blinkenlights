@@ -1,6 +1,8 @@
-﻿using System.Text.Json;
+﻿using Blinkenlights.Dataschemas;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
-namespace Blinkenlights.HoopDB
+namespace HoopDB
 {
     public class DatabaseHandler : IDatabaseHandler
     {
@@ -10,8 +12,22 @@ namespace Blinkenlights.HoopDB
 
         private Mutex Mutex { get; init; }
 
+        private readonly IWebHostEnvironment WebHostEvironment;
+
+        private JsonSerializerOptions JsonSerializerOptions = new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            Converters =
+            {
+                new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+
+            }
+        };
+
         public DatabaseHandler(IWebHostEnvironment environment)
         {
+            this.WebHostEvironment = environment;
+
             var pathParts = new string[] { environment.ContentRootPath, DATABASE_FILENAME };
             var databaseAbsoluteFilePath = Path.Combine(pathParts);
             this.DatabaseAbsoluteFilePath = databaseAbsoluteFilePath;
@@ -30,11 +46,11 @@ namespace Blinkenlights.HoopDB
                 Mutex.WaitOne();
                 var stringData = File.ReadAllText(this.DatabaseAbsoluteFilePath);
                 Mutex.ReleaseMutex();
-                return JsonSerializer.Deserialize<Dictionary<string, string>>(stringData);
+                return JsonSerializer.Deserialize<Dictionary<string, string>>(stringData, this.JsonSerializerOptions);
             }
             catch (Exception)
             {
-                return null;
+                return new Dictionary<string, string>();
             }
         }
 
@@ -42,7 +58,7 @@ namespace Blinkenlights.HoopDB
         {
             try
             {
-                var stringData = JsonSerializer.Serialize(data);
+                var stringData = JsonSerializer.Serialize(data, this.JsonSerializerOptions);
                 Mutex.WaitOne();
                 File.WriteAllText(this.DatabaseAbsoluteFilePath, stringData);
                 Mutex.ReleaseMutex();
@@ -59,16 +75,16 @@ namespace Blinkenlights.HoopDB
             throw new NotImplementedException();
         }
 
-        public string Read(string key)
+        public bool TryRead(string key, out string value)
         {
             var data = LoadDatabase();
-            if (data.TryGetValue(key, out var value))
+            if (data.TryGetValue(key, out value))
             {
-                return value;
+                return true;
             }
             else
             {
-                return null;
+                return false;
             }
         }
 
@@ -77,6 +93,31 @@ namespace Blinkenlights.HoopDB
             var data = LoadDatabase();
             data[key] = value;
             return WriteDatabase(data);
+        }
+
+        public T Get<T>() where T : IModuleData
+        {
+            var key = typeof(T).Name;
+            if (!TryRead(key, out var value) || string.IsNullOrWhiteSpace(value))
+            {
+                return default;
+            }
+
+            try
+            {
+                return JsonSerializer.Deserialize<T>(value, this.JsonSerializerOptions);
+            }
+            catch (Exception)
+            {
+                return default;
+            }
+        }
+
+        public bool Set<T>(T moduleData) where T : IModuleData
+        {
+            var key = moduleData.GetType().Name;
+            var data = JsonSerializer.Serialize<T>(moduleData, this.JsonSerializerOptions);
+            return Write(key, data);
         }
     }
 }
