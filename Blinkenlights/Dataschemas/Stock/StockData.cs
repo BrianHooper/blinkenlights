@@ -12,6 +12,8 @@ namespace Blinkenlights.Dataschemas
 
         public ApiStatus Status { get; init; }
 
+        public List<FinanceData> FinanceData { get; init; }
+
         public static StockData Clone(StockData other, ApiStatus status)
         {
             return new StockData()
