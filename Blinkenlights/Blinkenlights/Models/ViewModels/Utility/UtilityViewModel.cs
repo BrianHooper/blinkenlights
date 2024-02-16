@@ -9,9 +9,9 @@ namespace Blinkenlights.Models.ViewModels.Utility
         {
         }
 
-        public MehViewModel MehData { get; set; }
+        public MehData MehData { get; set; }
 
-        public PackageTrackingViewModel PackageTrackingData { get; set; }
+        public PackageTrackingData PackageTrackingData { get; set; }
 
         public Life360UtilityModel Life360Data { get; set; }
     }

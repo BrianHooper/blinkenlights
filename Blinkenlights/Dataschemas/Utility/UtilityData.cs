@@ -10,14 +10,17 @@ namespace Blinkenlights.Dataschemas
 
         public DateTime? TimeStamp { get; init; }
 
-        public ApiStatus Status { get; init; }
+        public MehData MehData { get; init; }
 
-        public static UtilityData Clone(UtilityData other, ApiStatus status)
+        public PackageTrackingData PackageTrackingData { get; init; }
+
+        public static UtilityData Clone(UtilityData other)
         {
             return new UtilityData()
             {
-                Status = status,
-                TimeStamp = other?.TimeStamp
+                TimeStamp = other?.TimeStamp,
+                MehData = other?.MehData,
+                PackageTrackingData = other?.PackageTrackingData
             };
         }
     }

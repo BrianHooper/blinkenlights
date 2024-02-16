@@ -35,14 +35,14 @@
                                     <img src="@package.Icon" class="pkg-icon" />
                                 }
                             </div>
-                            <div class="util-col pkgtrack-name">@package.Name</div>
+                            <div class="util-col pkgtrack-name">@package.Package.Name</div>
                             <div class="util-col pkgtrack-status">@package.Status</div>
                             <div class="util-col pkgtrack-eta">@package.Eta</div>
                             <div class="util-col pkgtrack-location">@package.Location</div>
                         </div>
-                        @if (!string.IsNullOrEmpty(package.Url))
+                        @if (!string.IsNullOrEmpty(package.Package.Url))
                         {
-                            <a class="util-url" href="@package.Url" target="_blank"></a>
+                            <a class="util-url" href="@package.Package.Url" target="_blank"></a>
                         }
                     </div>
                 }
