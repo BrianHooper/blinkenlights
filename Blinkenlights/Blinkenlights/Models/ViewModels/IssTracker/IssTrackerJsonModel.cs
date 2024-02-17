@@ -1,19 +1,19 @@
-﻿namespace Blinkenlights.Models.ViewModels.IssTracker
+﻿using System.Text.Json.Serialization;
+
+namespace Blinkenlights.Models.ViewModels.IssTracker
 {
-	using Newtonsoft.Json;
+    public class IssTrackerJsonModel
+    {
+        [JsonPropertyName("image_path")]
+        public string ImagePath { get; set; }
 
-	public class IssTrackerJsonModel
-	{
-		[JsonProperty("image_path", Required = Required.Always)]
-		public string ImagePath { get; set; }
+        [JsonPropertyName("last_update_time")]
+        public string LastUpdateTime { get; set; }
 
-		[JsonProperty("last_update_time", Required = Required.Always)]
-		public string LastUpdateTime { get; set; }
+        [JsonPropertyName("latitude")]
+        public float Latitude { get; set; }
 
-		[JsonProperty("latitude", Required = Required.Always)]
-		public float Latitude { get; set; }
-
-		[JsonProperty("longitude", Required = Required.Always)]
-		public float Longitude { get; set; }
-	}
+        [JsonPropertyName("longitude")]
+        public float Longitude { get; set; }
+    }
 }

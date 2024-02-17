@@ -1,30 +1,30 @@
-﻿using Blinkenlights.Models.Api.ApiResult;
-using Newtonsoft.Json;
+﻿using Blinkenlights.Dataschemas;
+using System.Text.Json.Serialization;
 
 namespace Blinkenlights.Models.ViewModels.Calendar
 {
-    public class CalendarViewModel : ApiResultBase
+    public class CalendarViewModel : ModuleViewModelBase
     {
-        public CalendarViewModel(List<Event> events, ApiStatus status) : base("Calendar", status)
+        public CalendarViewModel(List<CalendarModuleEvent> events, ApiStatus status) : base("Calendar", status)
         {
             Events = events;
         }
 
-        public List<Event> Events { get; set; }
+        public List<CalendarModuleEvent> Events { get; set; }
     }
 
     public class CalendarData
     {
-        [JsonProperty("Events")]
+        [JsonPropertyName("Events")]
         public List<Event> Events { get; set; }
     }
 
     public class Event
     {
-        [JsonProperty("Name")]
+        [JsonPropertyName("Name")]
         public string Name { get; set; }
 
-        [JsonProperty("Date")]
+        [JsonPropertyName("Date")]
         public string Date { get; set; }
 
         public bool IsValid()

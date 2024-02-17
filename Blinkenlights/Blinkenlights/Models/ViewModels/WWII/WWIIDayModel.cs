@@ -1,8 +1,8 @@
-﻿using Blinkenlights.Models.Api.ApiResult;
+﻿using Blinkenlights.Dataschemas;
 
 namespace Blinkenlights.Models.ViewModels.WWII
 {
-    public class WWIIDayModel : ApiResultBase
+    public class WWIIDayModel : ModuleViewModelBase
     {
         public WWIIDayModel(string date, List<string> globalEvents, List<KeyValuePair<string, List<string>>> regionalEvents, ApiStatus status) : base("WWIIRoot", status)
         {

@@ -1,11 +1,10 @@
-﻿using Blinkenlights.Models.Api.ApiResult;
-using Newtonsoft.Json;
+﻿using Blinkenlights.Dataschemas;
 
 namespace Blinkenlights.Models.ViewModels.Slideshow
 {
-	public class SlideshowViewModel : ApiResultBase
+    public class SlideshowViewModel : ModuleViewModelBase
 	{
-		public SlideshowViewModel(List<SlideshowFrame> frames, ApiStatus status): base("Slideshow", status)
+		public SlideshowViewModel(List<SlideshowFrame> frames) : base("Slideshow", frames.Select(h => h.Status).ToArray())
 		{
 			this.Frames = frames;
 		}
@@ -15,21 +14,5 @@ namespace Blinkenlights.Models.ViewModels.Slideshow
 		}
 
 		public List<SlideshowFrame> Frames { get; set; }
-	}
-
-	public class SlideshowFrame
-	{
-		public SlideshowFrame(string title, string source, string url)
-		{
-			Title = title;
-			Source = source;
-			Url = url;
-		}
-
-		public string Title { get; set; }
-
-		public string Source { get; set; }
-
-		public string Url { get; set; }
 	}
 }

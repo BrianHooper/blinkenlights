@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json;
 
 namespace Blinkenlights.Models.Api.ApiResult
 {
-	public class ApiError
+    public class ApiError
     {
         public string Error { get; set; }
 
@@ -17,7 +17,7 @@ namespace Blinkenlights.Models.Api.ApiResult
 
             try
             {
-                var errorModel = JsonConvert.DeserializeObject<ApiError>(response);
+                var errorModel = JsonSerializer.Deserialize<ApiError>(response);
                 if (!string.IsNullOrWhiteSpace(errorModel?.Error))
                 {
                     errorMessage = errorModel.Error;

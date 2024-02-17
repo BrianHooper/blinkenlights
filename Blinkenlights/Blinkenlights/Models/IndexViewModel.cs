@@ -1,5 +1,5 @@
-﻿using Blinkenlights.Models.ViewModels;
-using LiteDbLibrary.Schemas;
+﻿using Blinkenlights.Dataschemas;
+using Blinkenlights.Models.ViewModels;
 
 namespace Blinkenlights.Models
 {
@@ -7,7 +7,7 @@ namespace Blinkenlights.Models
     {
         public string ModuleName => "Index";
 
-        public List<ModuleItem> Modules { get; init; }
+        public List<ModulePlacementData> Modules { get; init; }
 
         public string GridTemplateStyle { get; init; }
     }

@@ -5,7 +5,7 @@ VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blinkenlights", "Blinkenlights\Blinkenlights.csproj", "{9EEFCB53-1643-4831-924B-0075824527FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiteDbLibrary", "LiteDbLibrary\LiteDbLibrary.csproj", "{014B1DF0-0F49-4662-9587-46A775E4657C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blinkenlights.Dataschemas", "Dataschemas\Blinkenlights.Dataschemas.csproj", "{4E3F7D05-7C6B-469A-87F2-9C9F3A8A25EE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{9EEFCB53-1643-4831-924B-0075824527FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9EEFCB53-1643-4831-924B-0075824527FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9EEFCB53-1643-4831-924B-0075824527FC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{014B1DF0-0F49-4662-9587-46A775E4657C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{014B1DF0-0F49-4662-9587-46A775E4657C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{014B1DF0-0F49-4662-9587-46A775E4657C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{014B1DF0-0F49-4662-9587-46A775E4657C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E3F7D05-7C6B-469A-87F2-9C9F3A8A25EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E3F7D05-7C6B-469A-87F2-9C9F3A8A25EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E3F7D05-7C6B-469A-87F2-9C9F3A8A25EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E3F7D05-7C6B-469A-87F2-9C9F3A8A25EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

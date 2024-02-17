@@ -6,12 +6,20 @@
 <link rel="stylesheet" href="~/css/slideshow.css" />
 
 <div id="slideshow-root">
-	<div id="stage">
-		<a href="1.jpg"><img src="images/slideshow/1.jpg" width="360" height="270"></a>
-		<a href="2.jpg"><img src="images/slideshow/2.jpg" width="360" height="270"></a>
-		<a href="3.jpg"><img src="images/slideshow/3.jpg" width="360" height="270"></a>
-		<a href="4.jpg"><img src="images/slideshow/4.jpg" width="360" height="270"></a>
-	</div>
+	@if (Model.Frames != null)
+	{
+		@foreach (var frame in Model.Frames)
+		{
+			<div class="frame">
+				@if (!string.IsNullOrWhiteSpace(frame.Source))
+				{
+					var url = string.IsNullOrWhiteSpace(frame.Url) ? frame.Source : frame.Source;
+					<img src="@frame.Source" alt="@frame.Subtitle">
+					<a class="frame-url" href="@url" target="_blank"></a>
+				}
+			</div>
+		}
+	}
 </div>
 
 <script type="module" src="~/ts-dist/SlideshowModule.js"></script>

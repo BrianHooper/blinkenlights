@@ -7,12 +7,12 @@ namespace Blinkenlights.Controllers
 {
     public class RootController : BlinkenController
     {
-		private readonly IApiHandler apiHandler;
+        private readonly IApiHandler apiHandler;
 
-		public RootController(IApiHandler apiHandler, IServiceProvider serviceProvider) : base(serviceProvider)
-		{
-			this.apiHandler = apiHandler;
-		}
+        public RootController(IApiHandler apiHandler, IServiceProvider serviceProvider) : base(serviceProvider)
+        {
+            this.apiHandler = apiHandler;
+        }
 
         public IActionResult Index()
         {
