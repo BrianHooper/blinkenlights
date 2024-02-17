@@ -52,7 +52,8 @@ namespace Blinkenlights.DataFetchers
             {
                 Status = ApiStatus.Success(ApiType.TimeZone.ToString(), DateTime.Now, ApiSource.Prod),
                 TimeZoneInfos = tzInfos,
-                CountdownInfos = countdownInfos
+                CountdownInfos = countdownInfos,
+                TimeStamp = DateTime.Now,
             };
         }
 

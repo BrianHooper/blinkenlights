@@ -49,7 +49,7 @@ namespace Blinkenlights.Transformers
                 return null;
             }
 
-            if (life360data.Locations?.Any() != true)
+            if (life360data.DistanceData == null)
             {
                 apiStatus = life360data.Status;
                 return null;
@@ -58,7 +58,8 @@ namespace Blinkenlights.Transformers
             apiStatus = life360data.Status;
             return new Life360UtilityModel()
             {
-                Title = life360data.Locations.First().Name
+                Distance = life360data.DistanceData.Distance,
+                TimeDelta = life360data.DistanceData.TimeDelta
             };
         }
     }

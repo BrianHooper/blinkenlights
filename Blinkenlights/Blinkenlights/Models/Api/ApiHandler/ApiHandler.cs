@@ -216,6 +216,7 @@ namespace Blinkenlights.Models.Api.ApiHandler
                 request.AddBody(obj: body, contentType: "application/json");
             }
 
+            Console.WriteLine($"Calling remote API...: {apiType}");
             RestResponse response;
             try
             {

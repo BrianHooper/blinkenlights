@@ -28,17 +28,22 @@ namespace Blinkenlights.DataFetchers
                 return StockData.Clone(existingData, errorStatus);
             }
 
-            // TODO Handle rate limit
-            /*
+            StockErrorModel errorResponse = null;
+            try
             {
-                "Information": "Thank you for using Alpha Vantage! Our standard API rate limit is 25 requests per day. Please subscribe to any of the premium plans at https://www.alphavantage.co/premium/ to instantly remove all daily rate limits."
-            } 
-            */
+                errorResponse = JsonSerializer.Deserialize<StockErrorModel>(response.Data);
+            }
+            catch (Exception ex) { }
+            if (!string.IsNullOrWhiteSpace(errorResponse?.Information) && errorResponse.Information.Contains("rate limit"))
+            {
+                var errorStatus = ApiStatus.Failed(ApiType.AlphaVantage.ToString(), "Rate limited");
+                return StockData.Clone(existingData, errorStatus);
+            }
 
             StockJsonModel model;
             try
             {
-                model = JsonSerializer.Deserialize<StockJsonModel>(response.Data);
+                model = StockJsonModel.FromJson(response.Data);
             }
             catch (JsonException)
             {
@@ -53,7 +58,7 @@ namespace Blinkenlights.DataFetchers
                 return StockData.Clone(existingData, errorStatus);
             }
             var timeIndex = 0;
-            var dataPoints = model.TimeSeriesDataPoints.Select(kv => new GraphDataPoint() { X = timeIndex++, Y = double.Parse(kv.Value.Close) }).ToArray();
+            var dataPoints = model.TimeSeries.Select(kv => new GraphDataPoint() { X = timeIndex++, Y = double.Parse(kv.Value.Close) }).ToArray();
             var price = $"${Math.Round(dataPoints.First().Y, 2)}";
             var dataModel = new FinanceData()
             {
@@ -68,6 +73,7 @@ namespace Blinkenlights.DataFetchers
             {
                 FinanceData = data,
                 Status = status,
+                TimeStamp = DateTime.Now,
             };
         }
 

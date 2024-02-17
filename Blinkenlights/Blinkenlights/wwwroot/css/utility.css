@@ -31,6 +31,9 @@
     min-width: 0;
     padding: 3px;
     align-items: center;
+    display: flex;
+    gap: 10px;
+    padding-inline: 10px;
 }
 
 .meh-row {
@@ -51,4 +54,10 @@
 .pkg-icon {
     height: 16px;
     width: 16px;
+}
+
+.util-col {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }

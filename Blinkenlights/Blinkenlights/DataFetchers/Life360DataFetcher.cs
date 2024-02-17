@@ -86,10 +86,13 @@ namespace Blinkenlights.DataFetchers
                 return Life360DistanceData.Clone(existingData, errorStatus);
             }
 
+            var timeDelta = locA.TimeDeltaSeconds < locB.TimeDeltaSeconds ? locA.TimeDeltaStr : locB.TimeDeltaStr;
+
             var status = ApiStatus.Success(ApiType.Distance.ToString(), DateTime.Now, ApiSource.Prod);
             return new Life360DistanceData()
             {
                 Distance = serverModel.distance.ToString(),
+                TimeDelta = timeDelta,
                 Status = status,
             };
         }

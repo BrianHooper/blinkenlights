@@ -2,6 +2,8 @@
 {
     public class Life360UtilityModel
     {
-        public string Title { get; set; }
+        public string Distance { get; set; }
+
+        public string TimeDelta { get; set; }
     }
 }

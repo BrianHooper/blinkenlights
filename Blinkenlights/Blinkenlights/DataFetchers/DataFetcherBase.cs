@@ -50,6 +50,7 @@ namespace Blinkenlights.DataFetchers
             var remoteData = GetRemoteData(existingData);
             if (remoteData != null)
             {
+                Console.WriteLine($"Retrived {typeof(T).Name} remote data");
                 this.DatabaseHandler.Set(remoteData);
             }
         }

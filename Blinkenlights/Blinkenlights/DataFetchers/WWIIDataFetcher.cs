@@ -72,6 +72,7 @@ namespace Blinkenlights.DataFetchers
             {
                 Status = status,
                 Days = dayData,
+                TimeStamp = DateTime.Now,
             };
         }
 

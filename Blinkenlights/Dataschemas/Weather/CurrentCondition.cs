@@ -2,13 +2,13 @@
 {
     public class CurrentCondition
     {
-        public string Key;
+        public string Key { get; set; }
 
-        public string Value;
+        public string Value { get; set; }
 
-        public string Icon;
+        public string Icon { get; set; }
 
-        public string Description;
+        public string Description { get; set; }
 
         public static CurrentCondition Create(string key, string value, string icon, string description)
         {

@@ -40,19 +40,21 @@
                             <div class="util-col pkgtrack-eta">@package.Eta</div>
                             <div class="util-col pkgtrack-location">@package.Location</div>
                         </div>
-                        @if (!string.IsNullOrEmpty(package.Package.Url))
-                        {
-                            <a class="util-url" href="@package.Package.Url" target="_blank"></a>
-                        }
+                        <a class="util-url" href="@package.Package.Url" target="_blank"> </a>
                     </div>
                 }
             }
 
-            @if (Model.Life360Data?.Title != null)
+            @if (Model.Life360Data?.Distance != null)
             {
                 <div class="util-block">
                     <div class="util-row">
-                        @Model.Life360Data.Title
+                        <div class="util-col">
+                            @Model.Life360Data.Distance
+                        </div>
+                        <div class="util-col">
+                            @Model.Life360Data.TimeDelta
+                        </div>
                     </div>
                 </div>
             }

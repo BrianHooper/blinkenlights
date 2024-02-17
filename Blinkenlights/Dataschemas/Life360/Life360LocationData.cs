@@ -6,7 +6,9 @@
         public string TimeStr { get; init; }
         public double Latitude { get; init; }
         public double Longitude { get; init; }
-
+        public DateTime Time { get; init; }
+        public int TimeDeltaSeconds { get; init; }
+        public string TimeDeltaStr { get; init; }
 
         public static Life360LocationData Parse(string name, string timestamp, string latitudeStr, string longitudeStr)
         {
@@ -32,8 +34,11 @@
 
             var offset = DateTimeOffset.Now.Offset;
             var lastSignalDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddSeconds(epoch).Add(offset);
-            var diffMinutes = DateTime.Now.Subtract(lastSignalDateTime).Minutes;
-            var diffMinutesStr = diffMinutes > 0 ? $"Diff: -{diffMinutes}" : string.Empty;
+
+            var deltaSecondsTotal = (int)(DateTime.Now - lastSignalDateTime).TotalSeconds;
+            var minutes = (deltaSecondsTotal / 60).ToString("D2");
+            var seconds = (deltaSecondsTotal % 60).ToString("D2");
+            var timeDeltaStr = $"-{minutes}:{seconds}";
 
             var lastRefreshTimeStr = DateTime.Now.ToString("h:mm tt");
             var lastSignalTimeStr = lastSignalDateTime.ToString("h:mm tt");
@@ -42,7 +47,7 @@
             {
                 $"Signal: {lastSignalTimeStr}",
                 $"Refresh: {lastRefreshTimeStr}",
-                diffMinutes > 0 ? $"Diff: -{diffMinutes}" : string.Empty
+                $"Diff: {timeDeltaStr}"
             }.Where(s => !string.IsNullOrWhiteSpace(s));
 
             var timeStr = string.Join(", ", fields);
@@ -51,7 +56,10 @@
                 Latitude = latitude,
                 Longitude = longitude,
                 Name = name,
-                TimeStr = timeStr
+                TimeStr = timeStr,
+                Time = lastSignalDateTime,
+                TimeDeltaSeconds = deltaSecondsTotal,
+                TimeDeltaStr = timeDeltaStr
             };
         }
     }

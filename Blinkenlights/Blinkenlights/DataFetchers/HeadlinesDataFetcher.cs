@@ -29,7 +29,8 @@ namespace Blinkenlights.DataFetchers
                     wikipediaModel.Result,
                     ycombinatorModel.Result,
                     rocketModel.Result,
-                }
+                },
+                TimeStamp = DateTime.Now,
             };
         }
 

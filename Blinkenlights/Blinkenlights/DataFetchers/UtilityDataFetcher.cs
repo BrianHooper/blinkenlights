@@ -23,7 +23,8 @@ namespace Blinkenlights.DataFetchers
             return new UtilityData()
             {
                 MehData = mehData.Result,
-                PackageTrackingData = packageTrakingData
+                PackageTrackingData = packageTrakingData,
+                TimeStamp = DateTime.Now,
             };
         }
 
@@ -79,7 +80,8 @@ namespace Blinkenlights.DataFetchers
                 {
                     Name = "Present",
                     TrackingNumber = "9434608205499799759287",
-                    Url = "https://tools.usps.com/go/TrackConfirmAction_input?strOrigTrackNum=9434608205499799759287"
+                    Url = "https://tools.usps.com/go/TrackConfirmAction_input?strOrigTrackNum=9434608205499799759287",
+                    Carrier = "usps"
                 }
             };
         }
@@ -144,9 +146,14 @@ namespace Blinkenlights.DataFetchers
                 return PackageData.Clone(package, existingPackageData, errorStatus);
             }
 
+            var eta = "-";
+            if (trackingResponse.Shipment?.Delivery?.EstimatedDeliveryDate != null && DateTime.TryParse(trackingResponse.Shipment.Delivery.EstimatedDeliveryDate, out var etaDateTime)) 
+            {
+                eta = etaDateTime.ToShortDateString();
+            }
+
             var lastEvent = trackingResponse.Events?.FirstOrDefault();
             var status = trackingResponse.Shipment?.StatusMilestone;
-            var eta = trackingResponse.Shipment?.Delivery?.EstimatedDeliveryDate;
             var location = lastEvent?.Location;
             var icon = GetIcon(package.Carrier);
 
@@ -186,6 +193,24 @@ namespace Blinkenlights.DataFetchers
             if (existingData.MehData == null || existingData.MehData.ApiStatus == null || existingData.MehData.ApiStatus.Expired(TimeSpan.FromDays(1)))
             {
                 return false;
+            }
+
+            var packages = GetPackages();
+            if (packages?.Any() == true)
+            {
+                if (existingData.PackageTrackingData?.Packages?.Any() != true)
+                {
+                    return false;
+                }
+
+                foreach( var package in packages)
+                {
+                    var matchingPackage = existingData.PackageTrackingData.Packages.FirstOrDefault(otherOkg => string.Equals(package.TrackingNumber, otherOkg.Package?.TrackingNumber, StringComparison.OrdinalIgnoreCase));
+                    if (matchingPackage == null)
+                    {
+                        return false;
+                    }
+                }
             }
 
             return true;
