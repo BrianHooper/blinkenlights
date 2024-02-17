@@ -37,43 +37,12 @@ function getModuleHeader(moduleKey: string): JQuery<HTMLElement> {
     return $(`.index-module[data-module-name='${moduleKey}']`).find(".module-header").first();
 }
 
-//function setModuleStatusField(header: JQuery<HTMLElement>, className: string, styleClass: string): void {
-//    if (!header || header === undefined || header.length === 0) {
-//        return;
-//    }
-
-//    var fieldElement = header.find(`.${className}`).first();
-//    if (!fieldElement || fieldElement === undefined || fieldElement.length === 0) {
-//        fieldElement = $("<div/>");
-//        fieldElement.appendTo(header);
-//    } else {
-//        fieldElement.html("");
-//    }
-//    fieldElement.attr("class", `status-field ${className} ${styleClass}`);
-
-//    fieldElement.html(innerHtml);
-//}
-
-//function setModuleStatus(key: string, styleClass: string): void {
-//    const header = getModuleHeader(key);
-
-//    if (!header || header === undefined || header.length === 0) {
-//        return;
-//    }
-
-//    setModuleStatusField(header, "module-title", styleClass, key);
-//}
-
 function SetModuleResultMessage(key: string, msg: string) {
     const header = getModuleHeader(key);
 
     if (!header || header === undefined || header.length === 0) {
         return;
     }
-}
-
-function GetModuleContainer(key: string): JQuery<HTMLElement> {
-    return $(`.index-module[data-module-name='${key}']`);
 }
 
 function GetModuleResultElement(key: string): JQuery<HTMLElement> {

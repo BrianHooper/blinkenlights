@@ -2,7 +2,7 @@
 {
     public enum ApiSecretType
     {
-        // dotnet user-secrets set "<SecretKey>" "<Secret>"
+        // dotnet user-secrets set "<SecretKey>" "<Secret>"  --project .\Blinkenlights.sln
         Default = 0,
 
         [SecretKey("Life360:AuthorizationToken")]
@@ -46,5 +46,8 @@
 
         [SecretKey("FinanceAnswer:AlphaVantage")]
         FinanceApiKey = 14,
+
+        [SecretKey("RapidApi:ApiKey")]
+        RapidApiKey = 15,
     }
 }

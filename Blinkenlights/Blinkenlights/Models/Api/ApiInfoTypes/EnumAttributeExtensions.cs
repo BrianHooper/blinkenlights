@@ -1,7 +1,4 @@
-﻿using Blinkenlights.Models.Module;
-using LiteDbLibrary.Schemas;
-
-namespace Blinkenlights.Models.Api.ApiInfoTypes
+﻿namespace Blinkenlights.Models.Api.ApiInfoTypes
 {
     public static class EnumAttributeExtensions
     {
@@ -20,11 +17,6 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
         public static IApiInfo Info(this ApiType val)
         {
             return val.GetAttribute<ApiInfoAttribute>()?.ApiInfo;
-        }
-
-        public static IModuleTypeData Info(this ModuleType val)
-        {
-            return val.GetAttribute<ModuleTypeDataAttribute>()?.Data;
         }
 
         private static T GetAttribute<T>(this object val) where T : Attribute

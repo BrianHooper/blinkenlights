@@ -1,10 +1,9 @@
 ﻿using Blinkenlights.Dataschemas;
-using Blinkenlights.Models.Api.ApiResult;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Blinkenlights.Models.ViewModels.Weather
 {
-    public class WeatherViewModel : ApiResultBase
+    public class WeatherViewModel : ModuleViewModelBase
     {
         public string Description { get; set; }
 
@@ -23,7 +22,7 @@ namespace Blinkenlights.Models.ViewModels.Weather
             this.Description = description;
             this.DayModels = dayModels;
             this.CurrentConditions = currentConditions;
-            this.GraphModel = JsonConvert.SerializeObject(graphModel);
+            this.GraphModel = JsonSerializer.Serialize(graphModel);
         }
     }
 }

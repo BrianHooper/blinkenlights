@@ -3,7 +3,7 @@ using Blinkenlights.Dataschemas;
 using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.Api.ApiInfoTypes;
 using Blinkenlights.Models.ViewModels.Life360;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Blinkenlights.DataFetchers
 {
@@ -31,11 +31,11 @@ namespace Blinkenlights.DataFetchers
             Life360JsonModel serverModel;
             try
             {
-                serverModel = JsonConvert.DeserializeObject<Life360JsonModel>(response.Data);
+                serverModel = Life360JsonModel.FromJson(response.Data);
             }
-            catch (JsonException)
+            catch (JsonException e)
             {
-                var errorStatus = ApiStatus.Failed(ApiType.Life360.ToString(), "Exception while deserializing API response");
+                var errorStatus = ApiStatus.Failed(ApiType.Life360.ToString(), $"Exception while deserializing API response: {e.Message}");
                 return Life360Data.Clone(existingData, errorStatus);
             }
 
@@ -46,18 +46,62 @@ namespace Blinkenlights.DataFetchers
                 return Life360Data.Clone(existingData, errorStatus);
             }
 
+            var locA = models.ElementAtOrDefault(0);
+            var locB = models.ElementAtOrDefault(1);
+            var distance = FetchDistance(existingData?.DistanceData, locA, locB);
+
             var status = ApiStatus.Success(ApiType.Life360.ToString(), response.LastUpdateTime, response.ApiSource);
             return new Life360Data()
             {
                 Status = status,
                 TimeStamp = DateTime.Now,
                 Locations = models,
+                DistanceData = distance,
+            };
+        }
+
+        private Life360DistanceData FetchDistance(Life360DistanceData existingData, Life360LocationData locA, Life360LocationData locB)
+        {
+            if (locA == null || locB == null)
+            {
+                var errorStatus = ApiStatus.Failed(ApiType.Distance.ToString(), $"Insufficient data to call api");
+                return Life360DistanceData.Clone(existingData, errorStatus);
+            }
+
+            var response = this.ApiHandler.Fetch(ApiType.Distance, "", locA.Latitude.ToString(), locA.Longitude.ToString(), locB.Latitude.ToString(), locB.Longitude.ToString()).Result;
+            if (response == null)
+            {
+                var errorStatus = ApiStatus.Failed(ApiType.Distance.ToString(), $"API response was null");
+                return Life360DistanceData.Clone(existingData, errorStatus);
+            }
+
+            DistanceJsonModel serverModel;
+            try
+            {
+                serverModel = JsonSerializer.Deserialize<DistanceJsonModel>(response.Data);
+            }
+            catch (JsonException e)
+            {
+                var errorStatus = ApiStatus.Failed(ApiType.Distance.ToString(), $"Exception while deserializing API response: {e.Message}");
+                return Life360DistanceData.Clone(existingData, errorStatus);
+            }
+
+            var status = ApiStatus.Success(ApiType.Distance.ToString(), DateTime.Now, ApiSource.Prod);
+            return new Life360DistanceData()
+            {
+                Distance = serverModel.distance.ToString(),
+                Status = status,
             };
         }
 
         private static Life360LocationData Parse(Member member)
         {
             return Life360LocationData.Parse(member?.FirstName, member?.Location?.Timestamp?.ToString(), member?.Location?.Latitude?.ToString(), member?.Location?.Longitude?.ToString());
+        }
+
+        protected override bool IsValid(Life360Data existingData = null)
+        {
+            return existingData?.Locations?.Any() == true && existingData.Status?.Expired(TimeSpan.FromMinutes(10)) == false;
         }
     }
 }

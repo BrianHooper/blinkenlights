@@ -1,9 +1,8 @@
 ﻿using Blinkenlights.Dataschemas;
-using Blinkenlights.Models.Api.ApiResult;
 
 namespace Blinkenlights.Models.ViewModels.Utility
 {
-    public class UtilityViewModel : ApiResultBase
+    public class UtilityViewModel : ModuleViewModelBase
     {
         public UtilityViewModel(params ApiStatus[] apiStatuses) : base("Utility", apiStatuses)
         {

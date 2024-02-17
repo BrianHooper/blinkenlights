@@ -3,9 +3,7 @@ using Blinkenlights.Dataschemas;
 using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.Api.ApiInfoTypes;
 using Blinkenlights.Models.ViewModels;
-using Blinkenlights.Models.ViewModels.IssTracker;
 using Blinkenlights.Models.ViewModels.Stock;
-using Newtonsoft.Json;
 
 namespace Blinkenlights.Transformers
 {

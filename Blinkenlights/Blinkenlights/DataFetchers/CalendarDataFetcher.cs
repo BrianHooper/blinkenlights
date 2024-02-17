@@ -4,7 +4,7 @@ using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.Api.ApiInfoTypes;
 using Blinkenlights.Models.Api.ApiResult;
 using Blinkenlights.Models.ViewModels.Calendar;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Blinkenlights.DataFetchers
 {
@@ -40,7 +40,7 @@ namespace Blinkenlights.DataFetchers
             CalendarData calendarData;
             try
             {
-                calendarData = JsonConvert.DeserializeObject<CalendarData>(apiResponse.Data);
+                calendarData = JsonSerializer.Deserialize<CalendarData>(apiResponse.Data);
             }
             catch (JsonException)
             {
@@ -70,6 +70,16 @@ namespace Blinkenlights.DataFetchers
                 TimeStamp = DateTime.Now,
                 Events = events,
             };
+        }
+
+        protected override bool IsValid(CalendarModuleData existingData = null)
+        {
+            if (existingData?.Events?.Any() != true || existingData.Status == null)
+            {
+                return false;
+            }
+
+            return !existingData.Status.Expired(TimeSpan.FromHours(4));
         }
     }
 }

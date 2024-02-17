@@ -6,9 +6,8 @@ namespace Blinkenlights.DataFetchers
 {
     public class IndexDataFetcher : DataFetcherBase<IndexModuleData>
     {
-        public IndexDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler) : base(TimeSpan.FromMinutes(5), databaseHandler, apiHandler)
+        public IndexDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler) : base(TimeSpan.FromMinutes(2), databaseHandler, apiHandler)
         {
-            this.Start();
         }
 
         protected override IndexModuleData GetRemoteData(IndexModuleData existingData = null)
@@ -18,6 +17,11 @@ namespace Blinkenlights.DataFetchers
                 TimeStamp = DateTime.Now,
                 Modules = CreateModulesData()
             };
+        }
+
+        protected override bool IsValid(IndexModuleData existingData = null)
+        {
+            return false;
         }
 
         private List<ModulePlacementData> CreateModulesData()
@@ -35,9 +39,9 @@ namespace Blinkenlights.DataFetchers
                 ModulePlacementData.Create(name : "Stock", endpoint : "/Modules/GetStockModule", refreshRateMs : 3 * 60 * 60 * 1000, row : 2, col : 7, colSpan : 2),
 
                 // Row 3
-                ModulePlacementData.Create(name : "Calendar", endpoint : "/Modules/GetCalendarModule", refreshRateMs : 15 * 60 * 1000, row : 3, col : 1, colSpan : 2),
-                ModulePlacementData.Create(name : "Utility", endpoint : "/Modules/GetUtilityData", refreshRateMs : 15 * 60 * 1000, row : 3, col : 3, colSpan : 2),
-                ModulePlacementData.Create(name : "Life360", endpoint : "/Modules/GetLife360Module", refreshRateMs : 2 * 60 * 1000, row : 3, col : 5, colSpan : 2),
+                ModulePlacementData.Create(name : "Calendar", endpoint : "/Modules/GetCalendarModule", refreshRateMs : 15 * 60 * 1000, row : 3, col : 1, colSpan : 3),
+                ModulePlacementData.Create(name : "Utility", endpoint : "/Modules/GetUtilityData", refreshRateMs : 15 * 60 * 1000, row : 3, col : 4, colSpan : 2),
+                //ModulePlacementData.Create(name : "Life360", endpoint : "/Modules/GetLife360Module", refreshRateMs : 2 * 60 * 1000, row : 3, col : 5, colSpan : 2),
                 ModulePlacementData.Create(name : "Slideshow", endpoint : "/Modules/GetSlideshowModule", refreshRateMs : 3 * 60 * 60 * 1000, row : 3, col : 7, colSpan : 2),
             };
         }

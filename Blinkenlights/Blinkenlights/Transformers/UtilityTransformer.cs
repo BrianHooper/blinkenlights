@@ -5,7 +5,6 @@ using Blinkenlights.Models.Api.ApiInfoTypes;
 using Blinkenlights.Models.ViewModels;
 using Blinkenlights.Models.ViewModels.Utility;
 using Microsoft.Net.Http.Headers;
-using Newtonsoft.Json;
 using System.Net.NetworkInformation;
 
 namespace Blinkenlights.Transformers
@@ -52,7 +51,7 @@ namespace Blinkenlights.Transformers
 
             if (life360data.Locations?.Any() != true)
             {
-                apiStatus = ApiStatus.Failed(ApiType.Life360.ToString(), "Database record empty");
+                apiStatus = life360data.Status;
                 return null;
             }
 

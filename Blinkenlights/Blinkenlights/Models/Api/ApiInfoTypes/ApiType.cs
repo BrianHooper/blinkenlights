@@ -55,7 +55,10 @@
 		[ApiInfo(typeof(AlphaVantageApiInfo))]
 		AlphaVantage = 17,
 
-		[ApiInfo(typeof(WikiPotdApiInfo))]
-		WikiPotd = 18
-	}
+        [ApiInfo(typeof(WikiPotdApiInfo))]
+        WikiPotd = 18,
+
+        [ApiInfo(typeof(DistanceApiInfo))]
+        Distance = 19
+    }
 }

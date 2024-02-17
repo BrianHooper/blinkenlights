@@ -3,7 +3,7 @@ using Blinkenlights.Dataschemas;
 using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.Api.ApiInfoTypes;
 using Blinkenlights.Models.Api.ApiResult;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Blinkenlights.DataFetchers
 {
@@ -16,6 +16,7 @@ namespace Blinkenlights.DataFetchers
 
         protected override HeadlinesData GetRemoteData(HeadlinesData existingData = null)
         {
+            // TODO Check expiration before calling individual APIs
             var nytModel = ProcessNytResponse();
             var wikipediaModel = ProcessPageParseApiResponse(ApiType.Wikipedia, "Wikipedia - In the news");
             var ycombinatorModel = ProcessPageParseApiResponse(ApiType.YCombinator, "YCombinator");
@@ -95,7 +96,7 @@ namespace Blinkenlights.DataFetchers
                 return new HeadlinesContainer(null, errorStatus);
             }
 
-            var nytModel = !string.IsNullOrWhiteSpace(response?.Data) ? JsonConvert.DeserializeObject<NewYorkTimesModel>(response.Data) : default;
+            var nytModel = !string.IsNullOrWhiteSpace(response?.Data) ? JsonSerializer.Deserialize<NewYorkTimesModel>(response.Data) : default;
             var top3usItems = nytModel?.results?.Where(r => string.Equals(r?.section, "us", StringComparison.OrdinalIgnoreCase))?.Take(3)?.Select(a => new HeadlinesArticle(a))?.ToList();
             var top3worldItems = nytModel?.results?.Where(r => string.Equals(r?.section, "world", StringComparison.OrdinalIgnoreCase))?.Take(3)?.Select(a => new HeadlinesArticle(a))?.ToList();
 
@@ -113,7 +114,6 @@ namespace Blinkenlights.DataFetchers
             if (categories.Any())
             {
                 var status = ApiStatus.Success(ApiType.NewYorkTimes.ToString(), response.LastUpdateTime, response.ApiSource);
-                this.ApiHandler.TryUpdateCache(response);
                 return new HeadlinesContainer(categories, status);
             }
             else
@@ -147,7 +147,7 @@ namespace Blinkenlights.DataFetchers
             PageParseApiModel model;
             try
             {
-                model = JsonConvert.DeserializeObject<PageParseApiModel>(response.Data);
+                model = JsonSerializer.Deserialize<PageParseApiModel>(response.Data);
             }
             catch (JsonException)
             {
@@ -160,7 +160,6 @@ namespace Blinkenlights.DataFetchers
             {
                 var status = ApiStatus.Success(apiType.ToString(), response.LastUpdateTime, response.ApiSource);
                 var categories = new List<HeadlinesCategory>() { new HeadlinesCategory(title, articles) };
-                this.ApiHandler.TryUpdateCache(response);
                 var headlinesContatiner = new HeadlinesContainer(categories, status);
 
                 // TODO Process this on the python api side
@@ -176,6 +175,16 @@ namespace Blinkenlights.DataFetchers
                 var errorStatus = ApiStatus.Failed(apiType.ToString(), "No headlines created", response.LastUpdateTime);
                 return new HeadlinesContainer(null, errorStatus);
             }
+        }
+
+        protected override bool IsValid(HeadlinesData existingData = null)
+        {
+            if (existingData?.Headlines?.Any() != true)
+            {
+                return false;
+            }
+
+            return !existingData.Headlines.Any(hl => hl?.Status?.Expired(TimeSpan.FromHours(4)) == true);
         }
     }
 }

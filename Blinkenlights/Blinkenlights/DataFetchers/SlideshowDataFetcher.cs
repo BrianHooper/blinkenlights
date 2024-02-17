@@ -4,7 +4,7 @@ using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.Api.ApiInfoTypes;
 using Blinkenlights.Models.Api.ApiResult;
 using Blinkenlights.Models.ViewModels.Slideshow;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Blinkenlights.DataFetchers
 {
@@ -56,7 +56,7 @@ namespace Blinkenlights.DataFetchers
             SlideshowJsonModel slideshowData;
             try
             {
-                slideshowData = JsonConvert.DeserializeObject<SlideshowJsonModel>(apiResponse.Data);
+                slideshowData = JsonSerializer.Deserialize<SlideshowJsonModel>(apiResponse.Data);
             }
             catch (JsonException)
             {
@@ -79,6 +79,16 @@ namespace Blinkenlights.DataFetchers
                 Url = slideshowData.Url,
 				Status = status
             };
+        }
+
+        protected override bool IsValid(SlideshowData existingData = null)
+        {
+            if (existingData?.Frames?.Any() != true)
+            {
+                return false;
+            }
+
+            return !existingData.Frames.Any(f => f?.Status?.Expired(TimeSpan.FromDays(1)) == true);        
         }
     }
 }

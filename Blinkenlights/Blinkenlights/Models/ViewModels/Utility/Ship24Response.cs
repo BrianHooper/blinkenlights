@@ -1,18 +1,19 @@
-﻿namespace Blinkenlights.Models.ViewModels.Utility
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+
+namespace Blinkenlights.Models.ViewModels.Utility
 {
-    using Newtonsoft.Json;
-    using System.Collections.Generic;
 
     public partial class Ship24Response
     {
-        [JsonProperty("data")]
+        [JsonPropertyName("data")]
         public Data Data { get; set; }
 
         public static Ship24Response Deserialize(string data)
         {
             try
             {
-                var response = JsonConvert.DeserializeObject<Ship24Response>(data);
+                var response = JsonSerializer.Deserialize<Ship24Response>(data);
                 return response;
             }
             catch
@@ -24,121 +25,121 @@
 
     public partial class Data
     {
-        [JsonProperty("trackings")]
+        [JsonPropertyName("trackings")]
         public List<Tracking> Trackings { get; set; }
     }
 
     public partial class Tracking
     {
-        [JsonProperty("tracker")]
+        [JsonPropertyName("tracker")]
         public Tracker Tracker { get; set; }
 
-        [JsonProperty("shipment")]
+        [JsonPropertyName("shipment")]
         public Shipment Shipment { get; set; }
 
-        [JsonProperty("events")]
+        [JsonPropertyName("events")]
         public List<Event> Events { get; set; }
     }
 
     public partial class Shipment
     {
-        [JsonProperty("shipmentId")]
+        [JsonPropertyName("shipmentId")]
         public string ShipmentId { get; set; }
 
-        [JsonProperty("statusCode")]
+        [JsonPropertyName("statusCode")]
         public string StatusCode { get; set; }
 
-        [JsonProperty("statusCategory")]
+        [JsonPropertyName("statusCategory")]
         public string StatusCategory { get; set; }
 
-        [JsonProperty("statusMilestone")]
+        [JsonPropertyName("statusMilestone")]
         public string StatusMilestone { get; set; }
 
-        [JsonProperty("originCountryCode")]
+        [JsonPropertyName("originCountryCode")]
         public string OriginCountryCode { get; set; }
 
-        [JsonProperty("destinationCountryCode")]
+        [JsonPropertyName("destinationCountryCode")]
         public string DestinationCountryCode { get; set; }
 
-        [JsonProperty("delivery")]
+        [JsonPropertyName("delivery")]
         public Delivery Delivery { get; set; }
     }
 
     public partial class Delivery
     {
-        [JsonProperty("estimatedDeliveryDate")]
+        [JsonPropertyName("estimatedDeliveryDate")]
         public string EstimatedDeliveryDate { get; set; }
 
-        [JsonProperty("service")]
+        [JsonPropertyName("service")]
         public string Service { get; set; }
 
-        [JsonProperty("signedBy")]
+        [JsonPropertyName("signedBy")]
         public string SignedBy { get; set; }
     }
 
     public partial class Tracker
     {
-        [JsonProperty("trackerId")]
+        [JsonPropertyName("trackerId")]
         public string TrackerId { get; set; }
 
-        [JsonProperty("trackingNumber")]
+        [JsonPropertyName("trackingNumber")]
         public string TrackingNumber { get; set; }
 
-        [JsonProperty("isSubscribed")]
+        [JsonPropertyName("isSubscribed")]
         public bool IsSubscribed { get; set; }
 
-        [JsonProperty("shipmentReference")]
+        [JsonPropertyName("shipmentReference")]
         public string ShipmentReference { get; set; }
 
-        [JsonProperty("createdAt")]
+        [JsonPropertyName("createdAt")]
         public string CreatedAt { get; set; }
     }
 
     public partial class Event
     {
-        [JsonProperty("eventId")]
+        [JsonPropertyName("eventId")]
         public string EventId { get; set; }
 
-        [JsonProperty("trackingNumber")]
+        [JsonPropertyName("trackingNumber")]
         public string TrackingNumber { get; set; }
 
-        [JsonProperty("eventTrackingNumber")]
+        [JsonPropertyName("eventTrackingNumber")]
         public string EventTrackingNumber { get; set; }
 
-        [JsonProperty("status")]
+        [JsonPropertyName("status")]
         public string Status { get; set; }
 
-        [JsonProperty("occurrenceDatetime")]
+        [JsonPropertyName("occurrenceDatetime")]
         public string OccurrenceDatetime { get; set; }
 
-        [JsonProperty("order")]
+        [JsonPropertyName("order")]
         public string Order { get; set; }
 
-        [JsonProperty("datetime")]
+        [JsonPropertyName("datetime")]
         public string Datetime { get; set; }
 
-        [JsonProperty("hasNoTime")]
+        [JsonPropertyName("hasNoTime")]
         public bool HasNoTime { get; set; }
 
-        [JsonProperty("utcOffset")]
+        [JsonPropertyName("utcOffset")]
         public string UtcOffset { get; set; }
 
-        [JsonProperty("location")]
+        [JsonPropertyName("location")]
         public string Location { get; set; }
 
-        [JsonProperty("sourceCode")]
+        [JsonPropertyName("sourceCode")]
         public string SourceCode { get; set; }
 
-        [JsonProperty("courierCode")]
+        [JsonPropertyName("courierCode")]
         public string CourierCode { get; set; }
 
-        [JsonProperty("statusCode")]
+        [JsonPropertyName("statusCode")]
         public string StatusCode { get; set; }
 
-        [JsonProperty("statusCategory")]
+        [JsonPropertyName("statusCategory")]
         public string StatusCategory { get; set; }
 
-        [JsonProperty("statusMilestone")]
+        [JsonPropertyName("statusMilestone")]
         public string StatusMilestone { get; set; }
     }
 }

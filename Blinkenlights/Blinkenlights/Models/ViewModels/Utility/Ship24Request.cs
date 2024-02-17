@@ -1,16 +1,16 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Blinkenlights.Models.ViewModels.Utility
 {
     public class Ship24Request
     {
-        [JsonProperty("trackingNumber")]
+        [JsonPropertyName("trackingNumber")]
         public string TrackingNumber { get; set; }
 
-        [JsonProperty("destinationCountryCode")]
+        [JsonPropertyName("destinationCountryCode")]
         public string DestinationCountryCode { get; set; }
 
-        [JsonProperty("destinationPostCode")]
+        [JsonPropertyName("destinationPostCode")]
         public string DestinationPostCode { get; set; }
 
         public Ship24Request(string trackingNumber)

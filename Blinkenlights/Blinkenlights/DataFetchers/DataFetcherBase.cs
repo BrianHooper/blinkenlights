@@ -39,13 +39,14 @@ namespace Blinkenlights.DataFetchers
 
         public void FetchRemoteData(bool overwrite = false)
         {
-            Console.WriteLine($"Fetch {typeof(T).Name} remote data");
             var existingData = this.DatabaseHandler.Get<T>();
-            if (!overwrite && existingData != null && (DateTime.Now - existingData.TimeStamp) < this.TimerInterval)
+            if (!overwrite && existingData != null && IsValid(existingData) && (DateTime.Now - existingData.TimeStamp) < this.TimerInterval)
             {
+                Console.WriteLine($"Skip remote fetch for {typeof(T).Name}");
                 return;
             }
 
+            Console.WriteLine($"Fetch {typeof(T).Name} remote data");
             var remoteData = GetRemoteData(existingData);
             if (remoteData != null)
             {
@@ -59,5 +60,7 @@ namespace Blinkenlights.DataFetchers
         }
 
         protected abstract T GetRemoteData(T existingData = default);
+
+        protected abstract bool IsValid(T existingData = default);
     }
 }

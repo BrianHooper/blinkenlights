@@ -3,7 +3,7 @@ using Blinkenlights.Dataschemas;
 using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.Api.ApiInfoTypes;
 using Blinkenlights.Models.ViewModels.Stock;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Blinkenlights.DataFetchers
 {
@@ -31,7 +31,7 @@ namespace Blinkenlights.DataFetchers
             StockJsonModel model;
             try
             {
-                model = JsonConvert.DeserializeObject<StockJsonModel>(response.Data);
+                model = JsonSerializer.Deserialize<StockJsonModel>(response.Data);
             }
             catch (JsonException)
             {
@@ -62,6 +62,11 @@ namespace Blinkenlights.DataFetchers
                 FinanceData = data,
                 Status = status,
             };
+        }
+
+        protected override bool IsValid(StockData existingData = null)
+        {
+            return existingData != null && existingData.FinanceData?.Any() == true && existingData.Status != null && !existingData.Status.Expired(TimeSpan.FromDays(1));
         }
     }
 }

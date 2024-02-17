@@ -4,6 +4,7 @@ using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.Api.ApiInfoTypes;
 using Blinkenlights.Models.ViewModels.Weather;
 using Blinkenlights.Utilities;
+using System.Text.Json;
 
 namespace Blinkenlights.DataFetchers
 {
@@ -32,7 +33,7 @@ namespace Blinkenlights.DataFetchers
             WeatherJsonModel weatherJsonModel;
             try
             {
-                weatherJsonModel = WeatherJsonModel.FromJson(response.Data);
+                weatherJsonModel = JsonSerializer.Deserialize<WeatherJsonModel>(response.Data);
             }
             catch (Exception)
             {
@@ -46,7 +47,7 @@ namespace Blinkenlights.DataFetchers
                 return WeatherData.Clone(existingData, errorStatus);
             }
 
-            var jsonDaysModel = weatherJsonModel.Days.Where(d => d?.DatetimeEpoch != null && Helpers.FromEpoch(d.DatetimeEpoch.Value, true, true, d.Tzoffset).Date >= DateTime.Now.Date).Take(5);
+            var jsonDaysModel = weatherJsonModel.Days.Where(d => d?.DatetimeEpoch != null && Helpers.FromEpoch(d.DatetimeEpoch.Value, true, true, weatherJsonModel.Tzoffset).Date >= DateTime.Now.Date).Take(5);
 
             var hoursFlattened = jsonDaysModel.SelectMany(d => d.Hours);
             var temperatureMin = hoursFlattened.Min(h => h.Temp);
@@ -67,7 +68,7 @@ namespace Blinkenlights.DataFetchers
                     continue;
                 }
 
-                var dayOfWeek = Helpers.FromEpoch(day.DatetimeEpoch.Value, true, true, day.Tzoffset).DayOfWeek.ToString();
+                var dayOfWeek = Helpers.FromEpoch(day.DatetimeEpoch.Value, true, true, weatherJsonModel.Tzoffset).DayOfWeek.ToString();
                 WeatherDayModel dayModel = weatherDayModels.FirstOrDefault(d => d.Key == dayOfWeek).Value;
                 if (dayModel == null)
                 {
@@ -81,7 +82,7 @@ namespace Blinkenlights.DataFetchers
                     {
                         continue;
                     }
-                    var dateTimePoint = Helpers.FromEpoch(hourModel.DatetimeEpoch.Value, true, true, hourModel.Tzoffset);
+                    var dateTimePoint = Helpers.FromEpoch(hourModel.DatetimeEpoch.Value, true, true, weatherJsonModel.Tzoffset);
                     var xHour = dateTimePoint.Hour;
                     var precipProb = (dateTimePoint >= DateTime.Now && hourModel.Precipprob > 0) ? hourModel.Precipprob : -1;
                     var weatherDataPoint = new WeatherDataModel()
@@ -166,6 +167,11 @@ namespace Blinkenlights.DataFetchers
         private string AsTime(long? sunsetEpoch)
         {
             return sunsetEpoch != null ? Helpers.FromEpoch(sunsetEpoch.Value, true, true).ToString("hh:mm") : string.Empty;
+        }
+
+        protected override bool IsValid(WeatherData existingData = null)
+        {
+            return existingData != null && existingData.DayModels?.Any() == true && existingData.Status != null && !existingData.Status.Expired(TimeSpan.FromDays(1));
         }
     }
 }

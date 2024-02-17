@@ -1,5 +1,5 @@
 ﻿using Blinkenlights.Models.Api.ApiHandler;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Blinkenlights.Models.ViewModels.Utility
 {
@@ -31,7 +31,7 @@ namespace Blinkenlights.Models.ViewModels.Utility
 
             try
             {
-                var cache = JsonConvert.DeserializeObject<Dictionary<string, Ship24Response>>(response.Data);
+                var cache = JsonSerializer.Deserialize<Dictionary<string, Ship24Response>>(response.Data);
                 return new Ship24Cache(cache, response.LastUpdateTime);
             }
             catch
@@ -43,7 +43,7 @@ namespace Blinkenlights.Models.ViewModels.Utility
 
         public string Serialize()
         {
-            return JsonConvert.SerializeObject(Responses);
+            return JsonSerializer.Serialize(Responses);
         }
     }
 }

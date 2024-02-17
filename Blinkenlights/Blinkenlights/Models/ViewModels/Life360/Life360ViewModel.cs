@@ -1,10 +1,9 @@
 ﻿using Blinkenlights.Dataschemas;
-using Blinkenlights.Models.Api.ApiResult;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Blinkenlights.Models.ViewModels.Life360
 {
-    public class Life360ViewModel : ApiResultBase
+    public class Life360ViewModel : ModuleViewModelBase
     {
         public List<string> Models { get; set; }
 
@@ -12,7 +11,7 @@ namespace Blinkenlights.Models.ViewModels.Life360
 
         public Life360ViewModel(List<Life360LocationData> models, ApiStatus status) : base("Life360", status)
         {
-            this.Models = models?.Select(x => JsonConvert.SerializeObject(x))?.ToList();
+            this.Models = models?.Select(x => JsonSerializer.Serialize(x))?.ToList();
             this.UpdateTimeStr = models?.FirstOrDefault()?.TimeStr ?? string.Empty;
         }
     }

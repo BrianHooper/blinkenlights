@@ -1,6 +1,6 @@
 ﻿using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.ViewModels.Authentication;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Blinkenlights.Models.Api.ApiInfoTypes
 {
@@ -330,7 +330,7 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
             OAuthApiResponse oathResponse;
             try
             {
-                oathResponse = JsonConvert.DeserializeObject<OAuthApiResponse>(apiResponse.Data);
+                oathResponse = JsonSerializer.Deserialize<OAuthApiResponse>(apiResponse.Data);
             }
             catch (Exception)
             {
@@ -441,21 +441,52 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
         }
     }
 
-	public class WikiPotdApiInfo : ApiInfoBase
-	{
-		public override bool ReportedInModule { get; } = true;
+    public class WikiPotdApiInfo : ApiInfoBase
+    {
+        public override bool ReportedInModule { get; } = true;
 
-		public override string ModuleRootName { get; } = "SlideshowRoot";
+        public override string ModuleRootName { get; } = "SlideshowRoot";
 
-		public override int? CacheTimeout { get; } = 120;
+        public override int? CacheTimeout { get; } = 120;
 
-		public override ApiServerType ServerType { get; } = ApiServerType.Remote;
+        public override ApiServerType ServerType { get; } = ApiServerType.Remote;
 
-		public override StringSecretsPair Endpoint(params string[] queryParameters)
-		{
-			var endpoint = "http://127.0.0.1:5001/wikipotd";
-			return new StringSecretsPair(endpoint);
-		}
-	}
+        public override StringSecretsPair Endpoint(params string[] queryParameters)
+        {
+            var endpoint = "http://127.0.0.1:5001/wikipotd";
+            return new StringSecretsPair(endpoint);
+        }
+    }
+
+    public class DistanceApiInfo : ApiInfoBase
+    {
+        public override bool ReportedInModule { get; } = true;
+
+        public override string ModuleRootName { get; } = "Life360Root";
+
+        public override int? CacheTimeout { get; } = 120;
+
+        public override ApiServerType ServerType { get; } = ApiServerType.Remote;
+
+        public override StringSecretsPair Endpoint(params string[] queryParameters)
+        {
+            var lat1str = queryParameters?.ElementAtOrDefault(0);
+            var long1str = queryParameters?.ElementAtOrDefault(1);
+            var lat2str = queryParameters?.ElementAtOrDefault(2);
+            var long2str = queryParameters?.ElementAtOrDefault(3);
+
+            var endpoint = string.Format("https://distance-calculator.p.rapidapi.com/distance/simple?lat_1={0}&long_1={1}&lat_2={2}&long_2={3}&unit=miles&decimal_places=2", lat1str, long1str, lat2str, long2str);
+            return new StringSecretsPair(endpoint);
+        }
+
+        public override Dictionary<string, StringSecretsPair> Headers()
+        {
+            return new Dictionary<string, StringSecretsPair>()
+            {
+                { "X-RapidAPI-Key", new StringSecretsPair(ApiSecretType.RapidApiKey) },
+                { "X-RapidAPI-Host", new StringSecretsPair("distance-calculator.p.rapidapi.com") }
+            };
+        }
+    }
 }
 

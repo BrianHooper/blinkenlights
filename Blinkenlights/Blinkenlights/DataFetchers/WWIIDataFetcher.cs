@@ -3,8 +3,8 @@ using Blinkenlights.Dataschemas;
 using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.Api.ApiInfoTypes;
 using Blinkenlights.Models.ViewModels.WWII;
+using System.Text.Json;
 using Humanizer;
-using Newtonsoft.Json;
 
 namespace Blinkenlights.DataFetchers
 {
@@ -27,7 +27,7 @@ namespace Blinkenlights.DataFetchers
             WWIIJsonModel wWIIViewModel = null;
             try
             {
-                wWIIViewModel = JsonConvert.DeserializeObject<WWIIJsonModel>(response.Data);
+                wWIIViewModel = JsonSerializer.Deserialize<WWIIJsonModel>(response.Data);
             }
             catch (JsonException)
             {
@@ -73,6 +73,12 @@ namespace Blinkenlights.DataFetchers
                 Status = status,
                 Days = dayData,
             };
+        }
+
+        protected override bool IsValid(WWIIData existingData = null)
+        {
+            var key = DateTime.Now.ToString("d MMM yyyy");
+            return existingData?.Days?.TryGetValue(key, out var currentDayData) == true && currentDayData?.GlobalEvents?.Any() == true;
         }
     }
 }

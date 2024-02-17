@@ -82,5 +82,10 @@ namespace Blinkenlights.DataFetchers
                 TimeStamp = DateTime.Now
             };
         }
+
+        protected override bool IsValid(IssTrackerData existingData = null)
+        {
+            return existingData != null && existingData.Latitude.HasValue && existingData.Longitude.HasValue && existingData.Status?.Expired(TimeSpan.FromMinutes(15)) == false;
+        }
     }
 }

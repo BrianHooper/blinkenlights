@@ -1,9 +1,8 @@
 ﻿using Blinkenlights.Dataschemas;
-using Blinkenlights.Models.Api.ApiResult;
 
 namespace Blinkenlights.Models.ViewModels.Stock
 {
-    public class StockViewModel : ApiResultBase
+    public class StockViewModel : ModuleViewModelBase
     {
         public List<FinanceData> Data { get; set; }
 

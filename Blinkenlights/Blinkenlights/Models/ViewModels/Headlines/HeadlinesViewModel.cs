@@ -1,9 +1,8 @@
 ﻿using Blinkenlights.Dataschemas;
-using Blinkenlights.Models.Api.ApiResult;
 
 namespace Blinkenlights.Models.ViewModels.Headlines
 {
-    public class HeadlinesViewModel : ApiResultBase
+    public class HeadlinesViewModel : ModuleViewModelBase
     {
         public List<HeadlinesContainer> Headlines { get; set; }
 

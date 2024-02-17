@@ -53,5 +53,15 @@ namespace Blinkenlights.Dataschemas
         {
             return Response(apiName, lastUpdateTime, ApiSource.Error, ApiState.Failed, statusMessage);
         }
+
+        public bool Expired(TimeSpan timeSpan)
+        {
+            if (this.LastUpdate == null)
+            {
+                return true;
+            }
+
+            return this.LastUpdate.Value <= DateTime.Now.Subtract(timeSpan);
+        }
     }
 }

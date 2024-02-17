@@ -48,7 +48,7 @@ namespace Blinkenlights.Transformers
             //         Life360JsonModel serverModel;
             //         try
             //         {
-            //             serverModel = JsonConvert.DeserializeObject<Life360JsonModel>(response.Data);
+            //             serverModel = JsonSerializer.Deserialize<Life360JsonModel>(response.Data);
             //         }
             //         catch (JsonException)
             //         {

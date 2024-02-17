@@ -3,7 +3,7 @@ using Blinkenlights.Dataschemas;
 using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.Api.ApiInfoTypes;
 using Blinkenlights.Models.ViewModels.Utility;
-using Newtonsoft.Json;
+using System.Text.Json;
 using System.Threading;
 
 namespace Blinkenlights.DataFetchers
@@ -17,6 +17,7 @@ namespace Blinkenlights.DataFetchers
 
         protected override UtilityData GetRemoteData(UtilityData existingData = null)
         {
+            // TODO Check expiration before calling individual APIs
             var mehData = GetMehData(existingData?.MehData);
             var packageTrakingData = GetPackageTrackingData(existingData?.PackageTrackingData);
             return new UtilityData()
@@ -43,7 +44,7 @@ namespace Blinkenlights.DataFetchers
             MehJsonModel model;
             try
             {
-                model = JsonConvert.DeserializeObject<MehJsonModel>(response.Data);
+                model = JsonSerializer.Deserialize<MehJsonModel>(response.Data);
             }
             catch (JsonException)
             {
@@ -69,11 +70,10 @@ namespace Blinkenlights.DataFetchers
             return new MehData($"Meh - ${price} - {title}", url, imageUrl, apiStatus);
         }
 
-
-        private PackageTrackingData GetPackageTrackingData(PackageTrackingData existingData)
+        private List<Package> GetPackages()
         {
             // TODO load from external source
-            var packages = new List<Package>()
+            return new List<Package>()
             {
                 new Package()
                 {
@@ -82,6 +82,16 @@ namespace Blinkenlights.DataFetchers
                     Url = "https://tools.usps.com/go/TrackConfirmAction_input?strOrigTrackNum=9434608205499799759287"
                 }
             };
+        }
+
+        private PackageTrackingData GetPackageTrackingData(PackageTrackingData existingData)
+        {
+
+            var packages = GetPackages();
+            if (packages?.Any() != true)
+            {
+                return new PackageTrackingData();
+            }
 
             var packageDataResponses = packages.Select(pkg => TrackPackage(pkg, existingData));
             return new PackageTrackingData()
@@ -100,7 +110,7 @@ namespace Blinkenlights.DataFetchers
             }
 
             var apiRequestData = new Ship24Request(package.TrackingNumber);
-            var serializedRequest = JsonConvert.SerializeObject(apiRequestData);
+            var serializedRequest = JsonSerializer.Serialize(apiRequestData);
             var response = await this.ApiHandler.Fetch(ApiType.Ship24, serializedRequest);
             if (response == null)
             {
@@ -164,6 +174,21 @@ namespace Blinkenlights.DataFetchers
                 "usps" => Path.Combine("images", "packagetracking", "usps.png"),
                 _ => null
             };
+        }
+
+        protected override bool IsValid(UtilityData existingData = null)
+        {
+            if (existingData == null)
+            {
+                return false;
+            }
+
+            if (existingData.MehData == null || existingData.MehData.ApiStatus == null || existingData.MehData.ApiStatus.Expired(TimeSpan.FromDays(1)))
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

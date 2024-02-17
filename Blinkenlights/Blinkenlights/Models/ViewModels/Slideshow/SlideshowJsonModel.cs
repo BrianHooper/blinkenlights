@@ -1,16 +1,16 @@
-﻿namespace Blinkenlights.Models.ViewModels.Slideshow
-{
-    using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
+namespace Blinkenlights.Models.ViewModels.Slideshow
+{
     public class SlideshowJsonModel
     {
-        [JsonProperty("Title", Required = Required.Always)]
+        [JsonPropertyName("Title")]
         public string Title { get; set; }
 
-        [JsonProperty("Source", Required = Required.Always)]
+        [JsonPropertyName("Source")]
         public string Source { get; set; }
 
-        [JsonProperty("Url", Required = Required.Always)]
+        [JsonPropertyName("Url")]
         public string Url { get; set; }
     }
 }

@@ -1,9 +1,8 @@
 ﻿using Blinkenlights.Dataschemas;
-using Blinkenlights.Models.Api.ApiResult;
 
 namespace Blinkenlights.Models.ViewModels.IssTracker
 {
-    public class IssTrackerViewModel : ApiResultBase
+    public class IssTrackerViewModel : ModuleViewModelBase
     {
         public string ImagePath { get; set; }
 

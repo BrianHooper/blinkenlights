@@ -1,9 +1,8 @@
 ﻿using Blinkenlights.Dataschemas;
-using Blinkenlights.Models.Api.ApiResult;
 
 namespace Blinkenlights.Models.ViewModels.Time
 {
-    public class TimeViewModel : ApiResultBase
+    public class TimeViewModel : ModuleViewModelBase
     {
         public TimeViewModel(ApiStatus status) : base("Time", status) { }
 

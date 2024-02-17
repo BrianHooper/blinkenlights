@@ -1,8 +1,8 @@
 ﻿using Blinkenlights.Dataschemas;
 using Blinkenlights.Models.Api.ApiInfoTypes;
-using Newtonsoft.Json;
 using RestSharp;
 using RestSharp.Authenticators;
+using System.Text.Json;
 
 namespace Blinkenlights.Models.Api.ApiHandler
 {
@@ -35,7 +35,7 @@ namespace Blinkenlights.Models.Api.ApiHandler
             try
             {
                 var instanceSecretsSerialized = File.ReadAllText(this.InstanceSecretsCachePath);
-                this.InstanceSecrets = JsonConvert.DeserializeObject<Dictionary<ApiSecretType, InstanceSecret>>(instanceSecretsSerialized);
+                this.InstanceSecrets = JsonSerializer.Deserialize<Dictionary<ApiSecretType, InstanceSecret>>(instanceSecretsSerialized);
             }
             catch (Exception)
             {
@@ -125,111 +125,8 @@ namespace Blinkenlights.Models.Api.ApiHandler
 
         private void UpdateInstanceSecretsCache()
         {
-            var settings = new JsonSerializerSettings()
-            {
-                NullValueHandling = NullValueHandling.Include,
-                Formatting = Formatting.Indented,
-            };
-            var instanceSecretsSerialized = JsonConvert.SerializeObject(this.InstanceSecrets, settings);
+            var instanceSecretsSerialized = JsonSerializer.Serialize(this.InstanceSecrets);
             File.WriteAllText(this.InstanceSecretsCachePath, instanceSecretsSerialized);
-        }
-
-        public bool TryGetCachedValue(ApiType apiType, out ApiResponse cachedValue)
-        {
-            Mutex.WaitOne();
-            var apiInfo = apiType.Info();
-            var cacheTimeout = apiInfo?.CacheTimeout;
-
-            if (!CACHE_ENABLED || cacheTimeout == null || cacheTimeout == 0 || !File.Exists(CachePath))
-            {
-                cachedValue = null;
-                Mutex.ReleaseMutex();
-                return false;
-            }
-
-            var stringData = File.ReadAllText(CachePath);
-            ApiCacheModel apiHandlerModel;
-            try
-            {
-                apiHandlerModel = JsonConvert.DeserializeObject<ApiCacheModel>(stringData);
-            }
-            catch (Exception)
-            {
-                cachedValue = null;
-                Mutex.ReleaseMutex();
-                return false;
-            }
-
-            if (apiHandlerModel?.Items?.TryGetValue(apiType.ToString(), out var apiHandlerModule) != true || apiHandlerModule is null)
-            {
-                cachedValue = null;
-                Mutex.ReleaseMutex();
-                return false;
-            }
-
-            var cacheStalenessMinutes = DateTime.Now.Subtract(apiHandlerModule.LastUpdateTime).TotalMinutes;
-            if (cacheTimeout > 0 && cacheStalenessMinutes >= cacheTimeout || string.IsNullOrWhiteSpace(apiHandlerModule.ApiData))
-            {
-                cachedValue = null;
-                Mutex.ReleaseMutex();
-                return false;
-            }
-
-            cachedValue = ApiResponse.Success(apiType, apiHandlerModule.ApiData, ApiSource.Cache, apiHandlerModule.LastUpdateTime);
-            Mutex.ReleaseMutex();
-            return true;
-        }
-
-        public bool TryUpdateCache(ApiResponse response)
-        {
-            var apiInfo = response?.ApiType.Info();
-            Mutex.WaitOne();
-            if (response is null || response.ApiType == ApiType.Unknown || response.ApiSource != ApiSource.Prod || string.IsNullOrWhiteSpace(response.Data) || apiInfo == null || apiInfo.ServerType == ApiServerType.Local)
-            {
-                Mutex.ReleaseMutex();
-                return false;
-            }
-
-            ApiCacheModel apiHandlerModel = null;
-            if (File.Exists(CachePath))
-            {
-                var stringData = File.ReadAllText(CachePath);
-                try
-                {
-                    apiHandlerModel = JsonConvert.DeserializeObject<ApiCacheModel>(stringData);
-                }
-                catch (Exception)
-                {
-                }
-            }
-
-            if (apiHandlerModel?.Items == null)
-            {
-                apiHandlerModel = new ApiCacheModel()
-                {
-                    Items = new Dictionary<string, ApiCacheItem>()
-                };
-            }
-
-            var apiHandlerModule = new ApiCacheItem()
-            {
-                LastUpdateTime = response.LastUpdateTime,
-                ApiData = response.Data
-            };
-            apiHandlerModel.Items[response.ApiType.ToString()] = apiHandlerModule;
-            var serializedCacheModel = JsonConvert.SerializeObject(apiHandlerModel, Formatting.Indented);
-
-            try
-            {
-                File.WriteAllText(CachePath, serializedCacheModel);
-                Mutex.ReleaseMutex();
-                return true;
-            }
-            catch (Exception)
-            {
-                Mutex.ReleaseMutex();
-                return false;
-            }
         }
 
         private ApiResponse GetLocalData(ApiType apiType, IApiInfo apiInfo)
@@ -364,11 +261,6 @@ namespace Blinkenlights.Models.Api.ApiHandler
             if (apiInfo is null)
             {
                 return null;
-            }
-
-            if (TryGetCachedValue(apiType, out var apiResponseCached))
-            {
-                return apiResponseCached;
             }
 
             return apiInfo.ServerType switch

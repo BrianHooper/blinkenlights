@@ -1,34 +1,32 @@
 ﻿using Blinkenlights.Models.ViewModels.Weather;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Blinkenlights.Models.ViewModels.Authentication
 {
     public class OAuthApiResponse
     {
-        [JsonProperty("token_type")]
+        [JsonPropertyName("token_type")]
         public string TokenType { get; set; }
 
-        [JsonProperty("issued_at")]
+        [JsonPropertyName("issued_at")]
         public string IssuedAt { get; set; }
 
-        [JsonProperty("client_id")]
+        [JsonPropertyName("client_id")]
         public string ClientId { get; set; }
 
-        [JsonProperty("access_token")]
+        [JsonPropertyName("access_token")]
         public string AccessToken { get; set; }
 
-        [JsonProperty("scope")]
+        [JsonPropertyName("scope")]
         public string Scope { get; set; }
 
-        [JsonProperty("expires_in")]
-        [JsonConverter(typeof(ParseStringConverter))]
+        [JsonPropertyName("expires_in")]
         public long ExpiresIn { get; set; }
 
-        [JsonProperty("refresh_count")]
-        [JsonConverter(typeof(ParseStringConverter))]
+        [JsonPropertyName("refresh_count")]
         public long RefreshCount { get; set; }
 
-        [JsonProperty("status")]
+        [JsonPropertyName("status")]
         public string Status { get; set; }
     }
 }

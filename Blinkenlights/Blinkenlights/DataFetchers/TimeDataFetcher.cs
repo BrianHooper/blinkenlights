@@ -55,5 +55,10 @@ namespace Blinkenlights.DataFetchers
                 CountdownInfos = countdownInfos
             };
         }
+
+        protected override bool IsValid(TimeData existingData = null)
+        {
+            return existingData != null && existingData.TimeZoneInfos?.Any() == true && existingData.Status != null && !existingData.Status.Expired(TimeSpan.FromDays(1));
+        }
     }
 }
