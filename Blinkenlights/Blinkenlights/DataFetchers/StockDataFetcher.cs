@@ -9,7 +9,7 @@ namespace Blinkenlights.DataFetchers
 {
     public class StockDataFetcher : DataFetcherBase<StockData>
     {
-        public StockDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler) : base(TimeSpan.FromMinutes(60), databaseHandler, apiHandler)
+        public StockDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler) : base(TimeSpan.FromHours(4), databaseHandler, apiHandler)
         {
             Start();
         }
@@ -27,6 +27,13 @@ namespace Blinkenlights.DataFetchers
                 var errorStatus = ApiStatus.Failed(ApiType.AlphaVantage.ToString(), "Api response is empty", response.LastUpdateTime);
                 return StockData.Clone(existingData, errorStatus);
             }
+
+            // TODO Handle rate limit
+            /*
+            {
+                "Information": "Thank you for using Alpha Vantage! Our standard API rate limit is 25 requests per day. Please subscribe to any of the premium plans at https://www.alphavantage.co/premium/ to instantly remove all daily rate limits."
+            } 
+            */
 
             StockJsonModel model;
             try
