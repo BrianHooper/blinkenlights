@@ -2,7 +2,7 @@
 
 namespace Blinkenlights.Dataschemas
 {
-    public class WWIIData : IModuleData
+    public class WWIIData : IDatabaseData
     {
         public string Key() => typeof(WWIIData).Name;
 

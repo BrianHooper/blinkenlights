@@ -95,7 +95,7 @@ namespace Blinkenlights.DatabaseHandler
             return WriteDatabase(data);
         }
 
-        public T Get<T>() where T : IModuleData
+        public T Get<T>() where T : IDatabaseData
         {
             var key = typeof(T).Name;
             if (!TryRead(key, out var value) || string.IsNullOrWhiteSpace(value))
@@ -113,7 +113,7 @@ namespace Blinkenlights.DatabaseHandler
             }
         }
 
-        public bool Set<T>(T moduleData) where T : IModuleData
+        public bool Set<T>(T moduleData) where T : IDatabaseData
         {
             var key = moduleData.GetType().Name;
             var data = JsonSerializer.Serialize<T>(moduleData, this.JsonSerializerOptions);

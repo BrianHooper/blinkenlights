@@ -1,9 +1,9 @@
-﻿@using Blinkenlights.Models.ViewModels.IssTracker;
-@model IssTrackerViewModel
+﻿@using Blinkenlights.Models.ViewModels.OuterSpace;
+@model OuterSpaceViewModel
 
 <partial name="ModuleStatus" model="@Model" />
 
-<link rel="stylesheet" href="~/css/iss.css" />
+<link rel="stylesheet" href="~/css/outerspace.css" />
 <div id="iss-root" class="status-report">
 	@if (!string.IsNullOrWhiteSpace(Model?.ImagePath))
 	{
@@ -17,4 +17,4 @@
 	}
 </div>
 
-<script type="module" src="~/ts-dist/IssTrackerModule.js"></script>
+<script type="module" src="~/ts-dist/OuterSpaceModule.js"></script>

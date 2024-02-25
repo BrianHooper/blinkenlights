@@ -2,7 +2,7 @@
 
 namespace Blinkenlights.Dataschemas
 {
-    public class WeatherData : IModuleData
+    public class WeatherData : IDatabaseData
     {
         public string Key() => typeof(WeatherData).Name;
 

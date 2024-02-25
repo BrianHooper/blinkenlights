@@ -4,22 +4,21 @@ using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.Api.ApiInfoTypes;
 using Blinkenlights.Models.ViewModels.Utility;
 using System.Text.Json;
-using System.Threading;
 
 namespace Blinkenlights.DataFetchers
 {
     public class UtilityDataFetcher : DataFetcherBase<UtilityData>
     {
-        public UtilityDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler) : base(TimeSpan.FromHours(4), databaseHandler, apiHandler)
+        public UtilityDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger<UtilityDataFetcher> logger) : base(databaseHandler, apiHandler, logger)
         {
             Start();
         }
 
-        protected override UtilityData GetRemoteData(UtilityData existingData = null)
+		public override UtilityData GetRemoteData(UtilityData existingData = null, bool overwrite = false)
         {
-            // TODO Check expiration before calling individual APIs
-            var mehData = GetMehData(existingData?.MehData);
-            var packageTrakingData = GetPackageTrackingData(existingData?.PackageTrackingData);
+            var mehData = GetMehData(existingData?.MehData, overwrite);
+            var packageTrakingData = GetPackageTrackingData(existingData?.PackageTrackingData, overwrite);
+
             return new UtilityData()
             {
                 MehData = mehData.Result,
@@ -28,9 +27,16 @@ namespace Blinkenlights.DataFetchers
             };
         }
 
-        private async Task<MehData> GetMehData(MehData existingData)
+        private async Task<MehData> GetMehData(MehData existingData, bool overwrite)
         {
-            var response = await this.ApiHandler.Fetch(ApiType.Meh);
+            //TODO Check if data is valid
+            if (!overwrite && !IsExpired(existingData?.ApiStatus, ApiType.Meh.Info()))
+            {
+                return existingData;
+            }
+
+			this.Logger.LogInformation($"Calling {ApiType.Meh} remote API");
+			var response = await this.ApiHandler.Fetch(ApiType.Meh);
             if (response is null)
             {
                 var errorStatus = ApiStatus.Failed(ApiType.Meh.ToString(), "Api response is null");
@@ -86,23 +92,22 @@ namespace Blinkenlights.DataFetchers
             };
         }
 
-        private PackageTrackingData GetPackageTrackingData(PackageTrackingData existingData)
+        private PackageTrackingData GetPackageTrackingData(PackageTrackingData existingData, bool overwrite)
         {
-
             var packages = GetPackages();
             if (packages?.Any() != true)
             {
                 return new PackageTrackingData();
             }
 
-            var packageDataResponses = packages.Select(pkg => TrackPackage(pkg, existingData));
+			var packageDataResponses = packages.Select(pkg => TrackPackage(pkg, existingData, overwrite));
             return new PackageTrackingData()
             {
                 Packages = packageDataResponses.Select(pkg => pkg.Result).ToList()
             };
         }
 
-        private async Task<PackageData> TrackPackage(Package package, PackageTrackingData existingData)
+        private async Task<PackageData> TrackPackage(Package package, PackageTrackingData existingData, bool overwrite)
         {
             var existingPackageData = existingData?.Packages?.FirstOrDefault(pkg => string.Equals(pkg?.Package?.TrackingNumber, package.TrackingNumber, StringComparison.OrdinalIgnoreCase));
 
@@ -111,7 +116,14 @@ namespace Blinkenlights.DataFetchers
                 return null;
             }
 
-            var apiRequestData = new Ship24Request(package.TrackingNumber);
+			if (!overwrite && !IsExpired(existingPackageData?.ApiStatus, ApiType.Ship24.Info()))
+			{
+				this.Logger.LogDebug($"Using cached data for {ApiType.Ship24} API");
+				return existingPackageData;
+			}
+
+			this.Logger.LogInformation($"Calling {ApiType.Ship24} remote API");
+			var apiRequestData = new Ship24Request(package.TrackingNumber);
             var serializedRequest = JsonSerializer.Serialize(apiRequestData);
             var response = await this.ApiHandler.Fetch(ApiType.Ship24, serializedRequest);
             if (response == null)
@@ -181,39 +193,6 @@ namespace Blinkenlights.DataFetchers
                 "usps" => Path.Combine("images", "packagetracking", "usps.png"),
                 _ => null
             };
-        }
-
-        protected override bool IsValid(UtilityData existingData = null)
-        {
-            if (existingData == null)
-            {
-                return false;
-            }
-
-            if (existingData.MehData == null || existingData.MehData.ApiStatus == null || existingData.MehData.ApiStatus.Expired(TimeSpan.FromDays(1)))
-            {
-                return false;
-            }
-
-            var packages = GetPackages();
-            if (packages?.Any() == true)
-            {
-                if (existingData.PackageTrackingData?.Packages?.Any() != true)
-                {
-                    return false;
-                }
-
-                foreach( var package in packages)
-                {
-                    var matchingPackage = existingData.PackageTrackingData.Packages.FirstOrDefault(otherOkg => string.Equals(package.TrackingNumber, otherOkg.Package?.TrackingNumber, StringComparison.OrdinalIgnoreCase));
-                    if (matchingPackage == null)
-                    {
-                        return false;
-                    }
-                }
-            }
-
-            return true;
         }
     }
 }

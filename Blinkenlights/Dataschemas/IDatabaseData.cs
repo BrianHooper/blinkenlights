@@ -1,6 +1,6 @@
 ﻿namespace Blinkenlights.Dataschemas
 {
-    public interface IModuleData
+    public interface IDatabaseData
     {
         public string Key();
 

@@ -142,13 +142,17 @@ export function UpdateResult(key: string) {
     SetApiResult(key, data);
 }
 
+export function GetModuleRoot(key: string): JQuery<HTMLElement> {
+    return $(`.index-module[data-module-name='${key}']`).find(".module-body").first();
+}
+
 export function RefreshModule(key: string, endpoint: string) {
     SetModuleStatus(key, "module-status-icon module-loading");
 
     $.ajax({
         url: endpoint,
         success: function (data) {
-            var root = $(`.index-module[data-module-name='${key}']`).find(".module-body").first();
+            var root = GetModuleRoot(key);
             if (!root) {
                 return;
             }

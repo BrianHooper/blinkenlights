@@ -8,13 +8,20 @@ namespace Blinkenlights.DataFetchers
 {
     public class TimeDataFetcher : DataFetcherBase<TimeData>
     {
-        public TimeDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler) : base(TimeSpan.FromHours(4), databaseHandler, apiHandler)
+        public TimeDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger<TimeDataFetcher> logger) : base(databaseHandler, apiHandler, logger)
         {
             Start();
         }
 
-        protected override TimeData GetRemoteData(TimeData existingData = null)
+        public override TimeData GetRemoteData(TimeData existingData = null, bool overwrite = false)
         {
+            if (!overwrite && !IsExpired(existingData?.Status, ApiType.TimeZone.Info()))
+			{
+				this.Logger.LogDebug($"Using cached data for {ApiType.TimeZone} API");
+				return existingData;
+            }
+
+            this.Logger.LogInformation($"Calling {ApiType.TimeZone} remote API");
             var timezones = new Dictionary<string, string>()
             {
                 { "Seattle", "America/Los_Angeles" },
@@ -55,11 +62,6 @@ namespace Blinkenlights.DataFetchers
                 CountdownInfos = countdownInfos,
                 TimeStamp = DateTime.Now,
             };
-        }
-
-        protected override bool IsValid(TimeData existingData = null)
-        {
-            return existingData != null && existingData.TimeZoneInfos?.Any() == true && existingData.Status != null && !existingData.Status.Expired(TimeSpan.FromDays(1));
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Blinkenlights.Dataschemas
 {
-    public class CalendarModuleData : IModuleData
+    public class CalendarModuleData : IDatabaseData
     {
         public string Key() => typeof(CalendarModuleData).Name;
 

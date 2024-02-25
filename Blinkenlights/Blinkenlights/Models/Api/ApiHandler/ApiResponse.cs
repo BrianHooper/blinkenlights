@@ -40,8 +40,9 @@ namespace Blinkenlights.Models.Api.ApiHandler
             };
         }
 
-        public static ApiResponse Error(ApiType apiType, string statusMessage, ApiSource source)
+        public static ApiResponse Error(ILogger logger, ApiType apiType, string statusMessage, ApiSource source)
         {
+            logger.LogError($"Api error {apiType}: {statusMessage}");
             return new ApiResponse()
             {
                 ApiType = apiType,

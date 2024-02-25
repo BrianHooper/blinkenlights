@@ -155,3 +155,26 @@ html, body, .index-root {
 .status-lastupdate {
     width: 60px;
 }
+
+.module-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.module-refresh-block {
+    margin-right: 2px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.module-refresh-block > img {
+    height: 16px;
+    width: 16px;
+}
+
+.module-loading {
+    opacity: 10%;
+}

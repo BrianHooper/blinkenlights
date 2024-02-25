@@ -10,14 +10,21 @@ namespace Blinkenlights.DataFetchers
 {
     public class WeatherDataFetcher : DataFetcherBase<WeatherData>
     {
-        public WeatherDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler) : base(TimeSpan.FromHours(4), databaseHandler, apiHandler)
+        public WeatherDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger<WeatherDataFetcher> logger) : base(databaseHandler, apiHandler, logger)
         {
             Start();
         }
 
-        protected override WeatherData GetRemoteData(WeatherData existingData = null)
+		public override WeatherData GetRemoteData(WeatherData existingData = null, bool overwrite = false)
         {
-            var response = this.ApiHandler.Fetch(ApiType.VisualCrossingWeather).Result;
+            if (!overwrite && !IsExpired(existingData?.Status, ApiType.VisualCrossingWeather.Info()) && IsValid(existingData))
+			{
+				this.Logger.LogDebug($"Using cached data for {ApiType.VisualCrossingWeather} API");
+				return existingData;
+            }
+
+			this.Logger.LogInformation($"Calling {ApiType.VisualCrossingWeather} remote API");
+			var response = this.ApiHandler.Fetch(ApiType.VisualCrossingWeather).Result;
             if (response is null)
             {
                 var errorStatus = ApiStatus.Failed(ApiType.VisualCrossingWeather.ToString(), "API Response is null");
@@ -169,9 +176,15 @@ namespace Blinkenlights.DataFetchers
             return sunsetEpoch != null ? Helpers.FromEpoch(sunsetEpoch.Value, true, true).ToString("hh:mm") : string.Empty;
         }
 
-        protected override bool IsValid(WeatherData existingData = null)
+        private bool IsValid(WeatherData existingData = null)
         {
-            return existingData != null && existingData.DayModels?.Any() == true && existingData.Status != null && !existingData.Status.Expired(TimeSpan.FromDays(1));
+            if (existingData.DayModels?.Any() != true)
+            {
+                this.Logger.LogInformation($"VisualCrossingWeather data invalid, missing required data");
+                return false;
+            }
+
+            return true;
         }
     }
 }

@@ -10,9 +10,22 @@ namespace Blinkenlights.Dataschemas
 
         public GraphDataPoint[] DataPoints { get; init; }
 
+        public ApiStatus Status { get; set; }
+
         public string SerializePoints()
         {
             return JsonSerializer.Serialize(this.DataPoints);
+        }
+
+        public static FinanceData Clone(FinanceData other, ApiStatus status)
+        {
+            return new FinanceData()
+            {
+                Symbol = other?.Symbol,
+                Price = other?.Price,
+                DataPoints = other?.DataPoints,
+                Status = status
+            };
         }
     }
 }

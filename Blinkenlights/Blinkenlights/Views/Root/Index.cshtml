@@ -6,7 +6,12 @@
     {
         <div class="index-module @module.Name" data-module-name="@module.Name" style="@module.GridStyle">
             <div class="module-container">
-                <div class="module-header"></div>
+                <div class="module-head">
+                    <div class="module-header"></div>
+                    <div class="module-refresh-block" data-module-name="@module.Name" data-module-endpoint="@module.Endpoint">
+                        <img src="/images/refresh_icon.png" />
+                    </div>
+                </div>
                 <div class="module-body">
                     <script type="module">
 	                    import { StartModule } from "./ts-dist/ModuleStatusCommon.js";
@@ -15,7 +20,6 @@
                     </script>
                 </div>
             </div>
-            <div class="module-name module-name-hide" name="@module.Name"></div>
         </div>
     }
 </div>

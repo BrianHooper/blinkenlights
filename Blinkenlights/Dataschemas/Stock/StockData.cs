@@ -2,7 +2,7 @@
 
 namespace Blinkenlights.Dataschemas
 {
-    public class StockData : IModuleData
+    public class StockData : IDatabaseData
     {
         public string Key() => typeof(StockData).Name;
 
@@ -10,17 +10,6 @@ namespace Blinkenlights.Dataschemas
 
         public DateTime? TimeStamp { get; init; }
 
-        public ApiStatus Status { get; init; }
-
         public List<FinanceData> FinanceData { get; init; }
-
-        public static StockData Clone(StockData other, ApiStatus status)
-        {
-            return new StockData()
-            {
-                Status = status,
-                TimeStamp = other?.TimeStamp
-            };
-        }
     }
 }

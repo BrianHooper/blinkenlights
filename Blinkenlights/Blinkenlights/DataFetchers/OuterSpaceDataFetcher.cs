@@ -3,25 +3,51 @@ using Blinkenlights.Dataschemas;
 using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.Api.ApiInfoTypes;
 using Blinkenlights.Models.Api.ApiResult;
-using Blinkenlights.Models.ViewModels.IssTracker;
+using Blinkenlights.Models.ViewModels.OuterSpace;
 using System.Text.Json;
 
 namespace Blinkenlights.DataFetchers
 {
-    public class IssDataFetcher : DataFetcherBase<IssTrackerData>
+    public class OuterSpaceDataFetcher : DataFetcherBase<OuterSpaceData>
     {
         IWebHostEnvironment WebHostEnvironment;
 
-        public IssDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, IWebHostEnvironment webHostEnvironment) : base(TimeSpan.FromMinutes(5), databaseHandler, apiHandler)
+        public OuterSpaceDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, IWebHostEnvironment webHostEnvironment, ILogger<OuterSpaceDataFetcher> logger) : base(databaseHandler, apiHandler, logger)
         {
             this.WebHostEnvironment = webHostEnvironment;
-
+            this.Logger = logger;
             this.Start();
         }
 
-        protected override IssTrackerData GetRemoteData(IssTrackerData existingData = null)
+        public override OuterSpaceData GetRemoteData(OuterSpaceData existingData = null, bool overwrite = false)
         {
-            var apiResponse = this.ApiHandler.Fetch(ApiType.IssTracker).Result;
+            var issTrackerData = GetTrackerData(existingData?.IssTrackerData, overwrite);
+            return new OuterSpaceData()
+            {
+                IssTrackerData = issTrackerData.Result
+            };
+        }
+
+        private async Task<IssTrackerData> GetTrackerData(IssTrackerData existingData, bool overwrite)
+        { 
+            if (!overwrite && !IsExpired(existingData?.Status, ApiType.IssTracker.Info()))
+			{
+				this.Logger.LogDebug($"Using cached data for {ApiType.IssTracker} API");
+				return existingData;
+            }
+
+			this.Logger.LogInformation($"Calling {ApiType.IssTracker} remote API");
+			var apiResponse = this.ApiHandler.Fetch(ApiType.IssTracker).Result;
+            //var peopleResponse = this.ApiHandler.Fetch(ApiType.PeopleInSpace).Result;
+
+            //PeopleInSpaceJsonModel people;
+            //try
+            //{
+            //    people = JsonSerializer.Deserialize<PeopleInSpaceJsonModel>(peopleResponse.Data);
+            //}
+            //catch (JsonException)
+            //{
+            //}
 
             if (apiResponse is null)
             {
@@ -79,13 +105,7 @@ namespace Blinkenlights.DataFetchers
                 FilePath = relativePath,
                 Latitude = trackerData.Latitude,
                 Longitude = trackerData.Longitude,
-                TimeStamp = DateTime.Now
             };
-        }
-
-        protected override bool IsValid(IssTrackerData existingData = null)
-        {
-            return existingData != null && existingData.Latitude.HasValue && existingData.Longitude.HasValue && existingData.Status?.Expired(TimeSpan.FromMinutes(15)) == false;
         }
     }
 }

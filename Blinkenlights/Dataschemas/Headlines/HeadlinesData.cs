@@ -2,7 +2,7 @@
 
 namespace Blinkenlights.Dataschemas
 {
-    public class HeadlinesData : IModuleData
+    public class HeadlinesData : IDatabaseData
     {
         public string Key() => typeof(HeadlinesData).Name;
 
@@ -24,17 +24,23 @@ namespace Blinkenlights.Dataschemas
 
     public class HeadlinesContainer
     {
+        public string Key { get; set; }
+
         public List<HeadlinesCategory> Categories { get; set; }
 
         public ApiStatus Status { get; set; }
 
-        public HeadlinesContainer(List<HeadlinesCategory> categories, ApiStatus status)
-        {
-            Categories = categories;
-            Status = status;
-        }
-
         public HeadlinesContainer() { }
+
+        public static HeadlinesContainer Clone(HeadlinesContainer other, ApiStatus status) 
+        {
+            return new HeadlinesContainer()
+            {
+                Key = other?.Key,
+                Categories = other?.Categories,
+                Status = status
+            };
+        }
     }
 
     public class HeadlinesCategory

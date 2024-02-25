@@ -2,7 +2,7 @@
 
 namespace Blinkenlights.Dataschemas
 {
-    public class IndexModuleData : IModuleData
+    public class IndexModuleData : IDatabaseData
     {
         public string Key() => typeof(IndexModuleData).Name;
 

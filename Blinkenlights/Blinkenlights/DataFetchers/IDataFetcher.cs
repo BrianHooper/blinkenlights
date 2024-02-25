@@ -2,12 +2,14 @@
 
 namespace Blinkenlights.DataFetchers
 {
-    public interface IDataFetcher<T> where T : IModuleData
+    public interface IDataFetcher<T> where T : IDatabaseData
     {
         public void Start();
 
-        public void FetchRemoteData(bool overwrite = false);
+		public T GetRemoteData(T existingData = default, bool overwrite = false);
 
-        public T GetLocalData();
+        public T FetchRemoteData(bool overwrite = false);
+
+		public T GetLocalData();
     }
 }
