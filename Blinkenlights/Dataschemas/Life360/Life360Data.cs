@@ -2,7 +2,7 @@
 
 namespace Blinkenlights.Dataschemas
 {
-    public class Life360Data : IModuleData
+    public class Life360Data : IDatabaseData
     {
         public string Key() => typeof(Life360Data).Name;
 

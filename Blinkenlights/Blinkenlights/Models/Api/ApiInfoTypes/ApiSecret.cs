@@ -49,5 +49,8 @@
 
         [SecretKey("RapidApi:ApiKey")]
         RapidApiKey = 15,
+
+        [SecretKey("FlightAware:ApiKey")]
+        FlightAwareApiKey = 16,
     }
 }

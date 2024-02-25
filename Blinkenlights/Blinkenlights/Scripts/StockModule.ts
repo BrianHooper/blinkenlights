@@ -4,22 +4,16 @@
 }
 
 const financeGraphSizes = {
-    height: 150,
+    height: 80,
     graphWidth: 350,
     axisWidth: 40,
     translateTop: 0,
     axisTranslateLeft: 30
 };
 
-function drawAxis(chartYMin, chartYMax, parent: JQuery<HTMLElement>) {
-    const childDiv = jQuery("<div/>", {
-        "class": "finance-axis",
-        "id": "abcd",
-    });
+function drawAxis(chartYMin, chartYMax, symbol: string) {
 
-    childDiv.appendTo(parent);
-
-    const svg = d3.select("#" + "abcd")
+    const svg = d3.select("#finance-axis-" + symbol)
         .append("svg")
         .attr("width", financeGraphSizes.axisWidth)
         .attr("height", financeGraphSizes.height)
@@ -60,8 +54,6 @@ function drawGraph(points: FinanceData[], chartYMin: number, chartYMax: number, 
         .domain([chartYMin, chartYMax])
         .range([financeGraphSizes.height, 0]);
 
-    const tempColor = "#3095FF";
-
     const area = d3.area()
         .x(d => xScale(d[0]))
         .y0(function (d: any) { return yScale(d[0]); })
@@ -75,7 +67,7 @@ function drawGraph(points: FinanceData[], chartYMin: number, chartYMax: number, 
 
     var gradient = defs.append("linearGradient")
         .attr("id", "svgGradient")
-        .attr("x1", "0%")
+        .attr("x1", "100%")
         .attr("x2", "100%")
         .attr("y1", "0%")
         .attr("y2", "100%");
@@ -83,13 +75,13 @@ function drawGraph(points: FinanceData[], chartYMin: number, chartYMax: number, 
     gradient.append("stop")
         .attr("class", "start")
         .attr("offset", "0%")
-        .attr("stop-color", "red")
+        .attr("stop-color", "#00FFFF")
         .attr("stop-opacity", 1);
 
     gradient.append("stop")
         .attr("class", "end")
-        .attr("offset", "20%")
-        .attr("stop-color", "blue")
+        .attr("offset", "6%")
+        .attr("stop-color", "#000000")
         .attr("stop-opacity", 0);
 
     svg.append("path")
@@ -101,8 +93,8 @@ function drawGraph(points: FinanceData[], chartYMin: number, chartYMax: number, 
 
     svg.append("path")
         .datum(priceData)
-        .attr("stroke", "#333333")
-        .attr("stroke-width", 2)
+        .attr("stroke", "#cccccc")
+        .attr("stroke-width", 1.5)
         .attr("fill-opacity", 0)
         .attr("d", line)
         .attr("transform", translate);
@@ -118,6 +110,7 @@ function drawGraph(points: FinanceData[], chartYMin: number, chartYMax: number, 
 export function RefreshStockModule() {
     $(".finance-block").each(function (d) {
         const modelData = $(this).attr("data-finance-graph");
+        const symbol = $(this).attr("data-finance-symbol");
         const points: FinanceData[] = JSON.parse(modelData);
         const yValues: number[] = points.map(p => p.Y);
         var chartYMin = Math.min(...yValues);
@@ -126,7 +119,7 @@ export function RefreshStockModule() {
         chartYMin -= chartYOffset;
         chartYMax += chartYOffset;
 
-        drawAxis(chartYMin, chartYMax, $(this));
+        drawAxis(chartYMin, chartYMax, symbol);
         drawGraph(points, chartYMin, chartYMax, $(this));
     });
 }

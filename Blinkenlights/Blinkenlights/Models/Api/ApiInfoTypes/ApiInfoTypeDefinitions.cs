@@ -1,6 +1,7 @@
 ﻿using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.ViewModels.Authentication;
 using System.Text.Json;
+using static System.Net.WebRequestMethods;
 
 namespace Blinkenlights.Models.Api.ApiInfoTypes
 {
@@ -12,15 +13,14 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 
     public interface IApiInfo
     {
-        public bool ReportedInModule { get; }
-
-        public string ModuleRootName { get; }
 
         public ApiServerType ServerType { get; }
 
         public ApiRestType ApiRestType { get; }
 
-        public int? CacheTimeout { get; }
+        public int? DailyRateLimit { get; }
+
+        public TimeSpan Timeout { get; }
 
         public StringSecretsPair Endpoint(params string[] queryParameters);
 
@@ -37,15 +37,14 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 
     public abstract class ApiInfoBase : IApiInfo
     {
-        public virtual bool ReportedInModule { get; } = false;
-
-        public virtual string ModuleRootName { get; } = null;
 
         public virtual ApiRestType ApiRestType { get; } = ApiRestType.Get;
 
-        public virtual int? CacheTimeout { get; } = null;
-
         public virtual ApiServerType ServerType { get; } = ApiServerType.Unknown;
+
+        public virtual int? DailyRateLimit { get; } = 25;
+
+        public virtual TimeSpan Timeout { get; } = TimeSpan.FromHours(24);
 
         public abstract StringSecretsPair Endpoint(params string[] queryParameters);
 
@@ -64,9 +63,9 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
     {
         public override ApiServerType ServerType { get; } = ApiServerType.Local;
 
-        public override string ModuleRootName { get; } = "TimeRoot";
+		public override TimeSpan Timeout { get; } = TimeSpan.FromHours(2);
 
-        public override StringSecretsPair Endpoint(params string[] queryParameters)
+		public override StringSecretsPair Endpoint(params string[] queryParameters)
         {
             var endpoint = Path.Combine("DataSources", "TimeZoneInfo.json");
             return new StringSecretsPair(endpoint);
@@ -75,9 +74,11 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 
     public class WWIIApiInfo : ApiInfoBase
     {
-        public override ApiServerType ServerType { get; } = ApiServerType.Local;
+        public override int? DailyRateLimit { get; } = 25;
 
-        public override string ModuleRootName { get; } = "WWIIRoot";
+		public override TimeSpan Timeout { get; } = TimeSpan.FromHours(2);
+
+		public override ApiServerType ServerType { get; } = ApiServerType.Local;
 
         public override StringSecretsPair Endpoint(params string[] queryParameters)
         {
@@ -88,15 +89,13 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 
     public class NewYorkTimesApiInfo : ApiInfoBase
     {
-        public override bool ReportedInModule { get; } = true;
-
-        public override string ModuleRootName { get; } = "HeadlinesRoot";
-
-        public override int? CacheTimeout { get; } = 120;
+        public override int? DailyRateLimit { get; } = 25;
 
         public override ApiServerType ServerType { get; } = ApiServerType.Remote;
 
-        public override StringSecretsPair Endpoint(params string[] queryParameters)
+		public override TimeSpan Timeout { get; } = TimeSpan.FromHours(1);
+
+		public override StringSecretsPair Endpoint(params string[] queryParameters)
         {
             var endpoint = "https://api.nytimes.com/svc/topstories/v2/home.json?api-key={0}";
             return new StringSecretsPair(endpoint, ApiSecretType.NewYorkTimesServiceApiKey);
@@ -105,15 +104,13 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 
     public class WeatherApiInfo : ApiInfoBase
     {
-        public override bool ReportedInModule { get; } = true;
-
-        public override string ModuleRootName { get; } = "WeatherRoot";
-
-        public override int? CacheTimeout { get; } = 60;
+        public override int? DailyRateLimit { get; } = 25;
 
         public override ApiServerType ServerType { get; } = ApiServerType.Remote;
 
-        public override StringSecretsPair Endpoint(params string[] queryParameters)
+		public override TimeSpan Timeout { get; } = TimeSpan.FromHours(4);
+
+		public override StringSecretsPair Endpoint(params string[] queryParameters)
         {
             var endpoint = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/98148?unitGroup=us&key={0}&contentType=json";
             return new StringSecretsPair(endpoint, ApiSecretType.VisualCrossingServiceApiKey);
@@ -122,15 +119,13 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 
     public class MehApiInfo : ApiInfoBase
     {
-        public override bool ReportedInModule { get; } = true;
-
-        public override string ModuleRootName { get; } = "UtilityRoot";
-
-        public override int? CacheTimeout { get; } = 60;
+        public override int? DailyRateLimit { get; } = 25;
 
         public override ApiServerType ServerType { get; } = ApiServerType.Remote;
 
-        public override StringSecretsPair Endpoint(params string[] queryParameters)
+		public override TimeSpan Timeout { get; } = TimeSpan.FromHours(4);
+
+		public override StringSecretsPair Endpoint(params string[] queryParameters)
         {
             var endpoint = "https://meh.com/api/1/current.json?apikey={0}";
             return new StringSecretsPair(endpoint, ApiSecretType.MehServiceApiKey);
@@ -139,15 +134,13 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 
     public class WikipediaApiInfo : ApiInfoBase
     {
-        public override bool ReportedInModule { get; } = true;
-
-        public override string ModuleRootName { get; } = "HeadlinesRoot";
-
-        public override int? CacheTimeout { get; } = 120;
+        public override int? DailyRateLimit { get; } = 25;
 
         public override ApiServerType ServerType { get; } = ApiServerType.Remote;
 
-        public override StringSecretsPair Endpoint(params string[] queryParameters)
+		public override TimeSpan Timeout { get; } = TimeSpan.FromHours(4);
+
+		public override StringSecretsPair Endpoint(params string[] queryParameters)
         {
             var endpoint = "http://127.0.0.1:5001/wikipedia";
             return new StringSecretsPair(endpoint);
@@ -156,15 +149,13 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 
     public class GoogleCalendarApiInfo : ApiInfoBase
     {
-        public override bool ReportedInModule { get; } = true;
-
-        public override string ModuleRootName { get; } = "CalendarRoot";
-
-        public override int? CacheTimeout { get; } = 120;
+        public override int? DailyRateLimit { get; } = 25;
 
         public override ApiServerType ServerType { get; } = ApiServerType.Remote;
 
-        public override StringSecretsPair Endpoint(params string[] queryParameters)
+		public override TimeSpan Timeout { get; } = TimeSpan.FromHours(4);
+
+		public override StringSecretsPair Endpoint(params string[] queryParameters)
         {
             var endpoint = "http://127.0.0.1:5001/googlecalendar";
             return new StringSecretsPair(endpoint);
@@ -182,15 +173,13 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 
     public class RocketLaunchesApiInfo : ApiInfoBase
     {
-        public override bool ReportedInModule { get; } = true;
-
-        public override string ModuleRootName { get; } = "HeadlinesRoot";
-
-        public override int? CacheTimeout { get; } = 120;
+        public override int? DailyRateLimit { get; } = 60;
 
         public override ApiServerType ServerType { get; } = ApiServerType.Remote;
 
-        public override StringSecretsPair Endpoint(params string[] queryParameters)
+		public override TimeSpan Timeout { get; } = TimeSpan.FromHours(1);
+
+		public override StringSecretsPair Endpoint(params string[] queryParameters)
         {
             var endpoint = "http://127.0.0.1:5001/rockets";
             return new StringSecretsPair(endpoint);
@@ -199,15 +188,13 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 
     public class YCombinatorApiInfo : ApiInfoBase
     {
-        public override bool ReportedInModule { get; } = true;
-
-        public override string ModuleRootName { get; } = "HeadlinesRoot";
-
-        public override int? CacheTimeout { get; } = 120;
+        public override int? DailyRateLimit { get; } = 25;
 
         public override ApiServerType ServerType { get; } = ApiServerType.Remote;
 
-        public override StringSecretsPair Endpoint(params string[] queryParameters)
+		public override TimeSpan Timeout { get; } = TimeSpan.FromHours(4);
+
+		public override StringSecretsPair Endpoint(params string[] queryParameters)
         {
             var endpoint = "http://127.0.0.1:5001/ycombinator";
             return new StringSecretsPair(endpoint);
@@ -216,15 +203,13 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 
     public class Life360ApiInfo : ApiInfoBase
     {
-        public override bool ReportedInModule { get; } = true;
-
-        public override string ModuleRootName { get; } = "Life360Root";
-
-        public override int? CacheTimeout { get; } = 2;
+        public override int? DailyRateLimit { get; } = 200;
 
         public override ApiServerType ServerType { get; } = ApiServerType.Remote;
 
-        public override StringSecretsPair Endpoint(params string[] queryParameters)
+		public override TimeSpan Timeout { get; } = TimeSpan.FromMinutes(5);
+
+		public override StringSecretsPair Endpoint(params string[] queryParameters)
         {
             var endpoint = "https://www.life360.com/v3/circles/{0}/members";
             return new StringSecretsPair(endpoint, ApiSecretType.Life360CircleId);
@@ -241,15 +226,13 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 
     public class AstronomyApiInfo : ApiInfoBase
     {
-        public override bool ReportedInModule { get; } = true;
-
-        public override string ModuleRootName { get; } = "SlideshowRoot";
-
-        public override int? CacheTimeout { get; } = 120;
+        public override int? DailyRateLimit { get; } = 25;
 
         public override ApiServerType ServerType { get; } = ApiServerType.Remote;
 
-        public override StringSecretsPair Endpoint(params string[] queryParameters)
+		public override TimeSpan Timeout { get; } = TimeSpan.FromHours(4);
+
+		public override StringSecretsPair Endpoint(params string[] queryParameters)
         {
             var endpoint = "http://127.0.0.1:5001/astronomypotd";
             return new StringSecretsPair(endpoint);
@@ -257,12 +240,9 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
     }
 
     public class UpsPackageTrackingApiInfo : ApiInfoBase
-    {
-        public override int? CacheTimeout { get; } = 120;
-
-        public override string ModuleRootName { get; } = "UtilityRoot";
-
-        public override ApiServerType ServerType { get; } = ApiServerType.Remote;
+	{
+		public override int? DailyRateLimit { get; } = 25;
+		public override ApiServerType ServerType { get; } = ApiServerType.Remote;
 
         public override List<ApiSecretType> InstanceSecrets { get; } =
             new List<ApiSecretType>()
@@ -295,10 +275,10 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
     }
 
     public class UpsOAuthApiInfo : ApiInfoBase
-    {
-        public override ApiServerType ServerType { get; } = ApiServerType.Remote;
+	{
+		public override int? DailyRateLimit { get; } = 25;
 
-        public override string ModuleRootName { get; } = "UtilityRoot";
+		public override ApiServerType ServerType { get; } = ApiServerType.Remote;
 
         public override ApiRestType ApiRestType { get; } = ApiRestType.Post;
 
@@ -354,12 +334,10 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
     }
 
     public class PackageTrackingApiInfo : ApiInfoBase
-    {
-        public override bool ReportedInModule { get; } = false;
+	{
+		public override int? DailyRateLimit { get; } = 25;
 
-        public override string ModuleRootName { get; } = "UtilityRoot";
-
-        public override ApiServerType ServerType { get; } = ApiServerType.Remote;
+		public override ApiServerType ServerType { get; } = ApiServerType.Remote;
 
         public override ApiRestType ApiRestType { get; } = ApiRestType.Post;
 
@@ -382,16 +360,16 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
     }
 
     public class Ship24ApiInfo : ApiInfoBase
-    {
-        public override bool ReportedInModule { get; } = false;
+	{
+		public override int? DailyRateLimit { get; } = 25;
 
-        public override string ModuleRootName { get; } = "UtilityRoot";
-
-        public override ApiServerType ServerType { get; } = ApiServerType.Remote;
+		public override ApiServerType ServerType { get; } = ApiServerType.Remote;
 
         public override ApiRestType ApiRestType { get; } = ApiRestType.Post;
 
-        public override StringSecretsPair Endpoint(params string[] queryParameters)
+		public override TimeSpan Timeout { get; } = TimeSpan.FromHours(4);
+
+		public override StringSecretsPair Endpoint(params string[] queryParameters)
         {
             var endpoint = string.Format("https://api.ship24.com/public/v1/trackers/track");
             return new StringSecretsPair(endpoint);
@@ -408,16 +386,14 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
     }
 
     public class IssTrackerApiInfo : ApiInfoBase
-    {
-        public override bool ReportedInModule { get; } = true;
+	{
+		public override int? DailyRateLimit { get; } = 250;
 
-        public override string ModuleRootName { get; } = "IssTrackerRoot";
+		public override ApiServerType ServerType { get; } = ApiServerType.Remote;
 
-        public override int? CacheTimeout { get; } = 120;
+		public override TimeSpan Timeout { get; } = TimeSpan.FromMinutes(5);
 
-        public override ApiServerType ServerType { get; } = ApiServerType.Remote;
-
-        public override StringSecretsPair Endpoint(params string[] queryParameters)
+		public override StringSecretsPair Endpoint(params string[] queryParameters)
         {
             var endpoint = "http://127.0.0.1:5001/isstracker";
             return new StringSecretsPair(endpoint);
@@ -425,33 +401,31 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
     }
 
     public class AlphaVantageApiInfo : ApiInfoBase
-    {
-        public override bool ReportedInModule { get; } = true;
+	{
+		public override int? DailyRateLimit { get; } = 25;
 
-        public override string ModuleRootName { get; } = "StockRoot";
+		public override ApiServerType ServerType { get; } = ApiServerType.Remote;
 
-        public override int? CacheTimeout { get; } = 120;
+		public override TimeSpan Timeout { get; } = TimeSpan.FromHours(4);
 
-        public override ApiServerType ServerType { get; } = ApiServerType.Remote;
-
-        public override StringSecretsPair Endpoint(params string[] queryParameters)
+		public override StringSecretsPair Endpoint(params string[] queryParameters)
         {
-            var endpoint = "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=MSFT&interval=60min&apikey={0}";
+            var symbol = queryParameters?.ElementAtOrDefault(0);
+
+            var endpoint = "https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=" + symbol + "&interval=60min&apikey={0}";
             return new StringSecretsPair(endpoint, ApiSecretType.FinanceApiKey);
         }
     }
 
     public class WikiPotdApiInfo : ApiInfoBase
-    {
-        public override bool ReportedInModule { get; } = true;
+	{
+		public override int? DailyRateLimit { get; } = 100;
 
-        public override string ModuleRootName { get; } = "SlideshowRoot";
+		public override ApiServerType ServerType { get; } = ApiServerType.Remote;
 
-        public override int? CacheTimeout { get; } = 120;
+		public override TimeSpan Timeout { get; } = TimeSpan.FromHours(4);
 
-        public override ApiServerType ServerType { get; } = ApiServerType.Remote;
-
-        public override StringSecretsPair Endpoint(params string[] queryParameters)
+		public override StringSecretsPair Endpoint(params string[] queryParameters)
         {
             var endpoint = "http://127.0.0.1:5001/wikipotd";
             return new StringSecretsPair(endpoint);
@@ -459,16 +433,14 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
     }
 
     public class DistanceApiInfo : ApiInfoBase
-    {
-        public override bool ReportedInModule { get; } = true;
+	{
+		public override int? DailyRateLimit { get; } = 200;
 
-        public override string ModuleRootName { get; } = "Life360Root";
+		public override ApiServerType ServerType { get; } = ApiServerType.Remote;
 
-        public override int? CacheTimeout { get; } = 120;
+		public override TimeSpan Timeout { get; } = TimeSpan.FromMinutes(5);
 
-        public override ApiServerType ServerType { get; } = ApiServerType.Remote;
-
-        public override StringSecretsPair Endpoint(params string[] queryParameters)
+		public override StringSecretsPair Endpoint(params string[] queryParameters)
         {
             var lat1str = queryParameters?.ElementAtOrDefault(0);
             var long1str = queryParameters?.ElementAtOrDefault(1);
@@ -488,5 +460,61 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
             };
         }
     }
+
+    public class FlightAwareApiInfo : ApiInfoBase
+	{
+		public override int? DailyRateLimit { get; } = 200;
+
+		public override ApiServerType ServerType { get; } = ApiServerType.Remote;
+
+		public override TimeSpan Timeout { get; } = TimeSpan.FromMinutes(15);
+
+		public override StringSecretsPair Endpoint(params string[] queryParameters)
+        {
+            var endpoint = "https://aeroapi.flightaware.com/aeroapi/flights/search?query=-latlong %2245.67 -122.50 47.30 -122.08%22";
+            return new StringSecretsPair(endpoint);
+        }
+
+        public override Dictionary<string, StringSecretsPair> Headers()
+        {
+            return new Dictionary<string, StringSecretsPair>()
+            {
+                { "x-apikey", new StringSecretsPair(ApiSecretType.FlightAwareApiKey) },
+            };
+        }
+    }
+
+    public class PeopleInSpaceApiInfo : ApiInfoBase
+	{
+		public override int? DailyRateLimit { get; } = 200;
+
+		public override ApiServerType ServerType { get; } = ApiServerType.Remote;
+
+		public override TimeSpan Timeout { get; } = TimeSpan.FromHours(4);
+
+		public override StringSecretsPair Endpoint(params string[] queryParameters)
+        {
+            var endpoint = "http://api.open-notify.org/astros.json";
+            return new StringSecretsPair(endpoint);
+        }
+	}
+
+	public class AlphaVantageCurrencyApiInfo : ApiInfoBase
+	{
+		public override int? DailyRateLimit { get; } = 25;
+
+		public override ApiServerType ServerType { get; } = ApiServerType.Remote;
+
+		public override TimeSpan Timeout { get; } = TimeSpan.FromHours(4);
+
+		public override StringSecretsPair Endpoint(params string[] queryParameters)
+		{
+			var from_currency = queryParameters?.ElementAtOrDefault(0);
+			var to_currency = queryParameters?.ElementAtOrDefault(1);
+
+            var endpoint = "https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=" + from_currency + "&to_currency=" + to_currency + "&apikey={0}";
+			return new StringSecretsPair(endpoint, ApiSecretType.FinanceApiKey);
+		}
+	}
 }
 

@@ -3,37 +3,43 @@ using Blinkenlights.Dataschemas;
 using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.Api.ApiInfoTypes;
 using Blinkenlights.Models.ViewModels;
-using Blinkenlights.Models.ViewModels.IssTracker;
+using Blinkenlights.Models.ViewModels.OuterSpace;
 
 namespace Blinkenlights.Transformers
 {
-    public class IssTrackerTransformer : TransformerBase
+    public class OuterSpaceTransformer : TransformerBase
     {
-        private IDataFetcher<IssTrackerData> dataFetcher { get; init; }
+        private IDataFetcher<OuterSpaceData> dataFetcher { get; init; }
 
-        public IssTrackerTransformer(IApiHandler apiHandler, IDataFetcher<IssTrackerData> dataFetcher) : base(apiHandler)
+        public OuterSpaceTransformer(IApiHandler apiHandler, IDataFetcher<OuterSpaceData> dataFetcher) : base(apiHandler)
         {
             this.dataFetcher = dataFetcher;
         }
 
         public override IModuleViewModel Transform()
         {
-            var trackerData = this.dataFetcher.GetLocalData();
-            if (trackerData == null)
+            var outerSpaceData = this.dataFetcher.GetLocalData();
+            if (outerSpaceData == null)
             {
                 var errorStatus = ApiStatus.Failed(ApiType.IssTracker.ToString(), "Database lookup failed");
-                return new IssTrackerViewModel(errorStatus);
+                return new OuterSpaceViewModel(errorStatus);
             }
 
+            if (outerSpaceData.IssTrackerData == null)
+            {
+				var errorStatus = ApiStatus.Failed(ApiType.IssTracker.ToString(), "Database data is empty");
+				return new OuterSpaceViewModel(errorStatus);
+			}
+            var trackerData = outerSpaceData.IssTrackerData;
             var latitude = trackerData.Latitude >= 0.0 ? $"{Math.Round(trackerData.Latitude.Value, 2)}° N" : $"{Math.Round(trackerData.Latitude.Value, 2) * -1}° S";
             var longitude = trackerData.Longitude >= 0.0 ? $"{Math.Round(trackerData.Longitude.Value, 2)}° E" : $"{Math.Round(trackerData.Longitude.Value, 2) * -1}° W";
             var report = $"{latitude}, {longitude}";
 
-            return new IssTrackerViewModel
+            return new OuterSpaceViewModel
             (
                 imagePath: trackerData.FilePath,
                 report: report,
-                status: ApiStatus.Success(ApiType.IssTracker.ToString(), trackerData.TimeStamp, ApiSource.Prod)
+                status: trackerData.Status
             );
         }
     }

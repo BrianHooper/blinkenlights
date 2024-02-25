@@ -1,4 +1,5 @@
-﻿using Blinkenlights.Dataschemas;
+﻿using Blinkenlights.DatabaseHandler;
+using Blinkenlights.Dataschemas;
 using Blinkenlights.Models.Api.ApiInfoTypes;
 using RestSharp;
 using RestSharp.Authenticators;
@@ -8,9 +9,6 @@ namespace Blinkenlights.Models.Api.ApiHandler
 {
     public class ApiHandler : IApiHandler
     {
-        private const bool CACHE_ENABLED = true;
-
-        private string CachePath { get; init; }
 
         private string InstanceSecretsCachePath { get; init; }
 
@@ -22,14 +20,19 @@ namespace Blinkenlights.Models.Api.ApiHandler
 
         private Dictionary<ApiSecretType, InstanceSecret> InstanceSecrets { get; init; }
 
+        private IDatabaseHandler DatabaseHandler { get; init; }
 
-        public ApiHandler(IWebHostEnvironment environment, IConfiguration config)
+        private ILogger<ApiHandler> Logger { get; init; }
+
+
+        public ApiHandler(IWebHostEnvironment environment, IConfiguration config, IDatabaseHandler databaseHandler, ILogger<ApiHandler> logger)
         {
             this.WebHostEnvironment = environment;
+            this.DatabaseHandler = databaseHandler;
+            this.Logger = logger;
             this.Mutex = new Mutex();
             this.Config = config;
 
-            this.CachePath = Path.Combine(environment.WebRootPath, "DataSources", "ApiCache.json");
             this.InstanceSecretsCachePath = Path.Combine(environment.WebRootPath, "DataSources", "InstanceSecretsApiCache.json");
 
             try
@@ -41,6 +44,7 @@ namespace Blinkenlights.Models.Api.ApiHandler
             {
                 this.InstanceSecrets = new Dictionary<ApiSecretType, InstanceSecret>();
             }
+            Logger = logger;
         }
 
         public bool CheckForInvalidSecrets(out List<string> invalidSecretsOut)
@@ -133,7 +137,7 @@ namespace Blinkenlights.Models.Api.ApiHandler
         {
             if (!TryBuildString(apiInfo?.Endpoint(), out var relativePath))
             {
-                return ApiResponse.Error(apiType, "Invalid request", ApiSource.Prod);
+                return ApiResponse.Error(this.Logger, apiType, "Invalid request", ApiSource.Prod);
             }
 
             var pathParts = new string[] { WebHostEnvironment.WebRootPath, relativePath };
@@ -141,7 +145,7 @@ namespace Blinkenlights.Models.Api.ApiHandler
 
             if (!File.Exists(path))
             {
-                return ApiResponse.Error(apiType, "Local file does not exist", ApiSource.Prod);
+                return ApiResponse.Error(this.Logger, apiType, "Local file does not exist", ApiSource.Prod);
             }
 
             string content = null;
@@ -159,7 +163,7 @@ namespace Blinkenlights.Models.Api.ApiHandler
             }
             else
             {
-                return ApiResponse.Error(apiType, "Exception while reading local data file", ApiSource.Prod);
+                return ApiResponse.Error(this.Logger, apiType, "Exception while reading local data file", ApiSource.Prod);
             }
         }
 
@@ -167,7 +171,7 @@ namespace Blinkenlights.Models.Api.ApiHandler
         {
             if (!TryBuildString(apiInfo?.Endpoint(queryParameters), out var endpointUrl))
             {
-                return ApiResponse.Error(apiType, "Invalid request", ApiSource.Prod);
+                return ApiResponse.Error(this.Logger, apiType, "Invalid request", ApiSource.Prod);
             }
 
             var client = new RestClient(endpointUrl);
@@ -181,7 +185,7 @@ namespace Blinkenlights.Models.Api.ApiHandler
                 }
                 else
                 {
-                    return ApiResponse.Error(apiType, $"Failed to get authentication keys", ApiSource.Prod);
+                    return ApiResponse.Error(this.Logger, apiType, $"Failed to get authentication keys", ApiSource.Prod);
                 }
             }
 
@@ -206,7 +210,7 @@ namespace Blinkenlights.Models.Api.ApiHandler
                     }
                     else
                     {
-                        return ApiResponse.Error(apiType, $"Failed to build header: {header.Key}", ApiSource.Prod);
+                        return ApiResponse.Error(this.Logger, apiType, $"Failed to build header: {header.Key}", ApiSource.Prod);
                     }
                 }
             }
@@ -216,7 +220,13 @@ namespace Blinkenlights.Models.Api.ApiHandler
                 request.AddBody(obj: body, contentType: "application/json");
             }
 
-            Console.WriteLine($"Calling remote API...: {apiType}");
+            if (!HandleRateLimit(apiType, apiInfo, out var remainingApiCalls))
+            {
+                this.Logger.LogWarning($"{apiType} is rate-limited.");
+                return ApiResponse.Error(this.Logger, apiType, $"{apiType} is rate-limited.", ApiSource.Prod);
+            }
+
+            this.Logger.LogInformation($"Calling remote API...: {apiType}, remaninng API calls: {remainingApiCalls}");
             RestResponse response;
             try
             {
@@ -228,20 +238,59 @@ namespace Blinkenlights.Models.Api.ApiHandler
                 {
                     DeleteInstanceSecrets(apiInfo.InstanceSecrets);
                 }
-                return ApiResponse.Error(apiType, $"Api exception: {ex.Message}", ApiSource.Prod);
+                return ApiResponse.Error(this.Logger, apiType, $"Api exception: {ex.Message}", ApiSource.Prod);
             }
 
             if (response == null)
             {
-                return ApiResponse.Error(apiType, "Api call returned null", ApiSource.Prod);
+                return ApiResponse.Error(this.Logger, apiType, "Api call returned null", ApiSource.Prod);
             }
 
             if (!response.IsSuccessful || string.IsNullOrWhiteSpace(response?.Content))
             {
-                return ApiResponse.Error(apiType, response.StatusDescription, ApiSource.Prod);
+                return ApiResponse.Error(this.Logger, apiType, response.StatusDescription, ApiSource.Prod);
             }
 
             return ApiResponse.Success(apiType, response.Content, ApiSource.Prod, DateTime.Now);
+        }
+
+        private bool HandleRateLimit(ApiType apiType, IApiInfo apiInfo, out int remainingApiCalls)
+        {
+            var apiRateLimitData = this.DatabaseHandler.Get<ApiRateLimit>();
+            if (apiRateLimitData?.ApiCalls == null) 
+            {
+                var apiCalls = new List<DateTime>() { DateTime.Now };
+                apiRateLimitData = new ApiRateLimit();
+                apiRateLimitData.ApiCalls.Add(apiType.ToString(), apiCalls);
+                this.DatabaseHandler.Set(apiRateLimitData);
+                remainingApiCalls = (apiInfo.DailyRateLimit ?? 0) - 1;
+                return true;
+            }
+
+            if (!apiRateLimitData.ApiCalls.TryGetValue(apiType.ToString(), out var previousApiCallCount)) 
+            {
+                var apiCalls = new List<DateTime>() { DateTime.Now };
+                apiRateLimitData.ApiCalls.Add(apiType.ToString(), apiCalls);
+                this.DatabaseHandler.Set(apiRateLimitData);
+                remainingApiCalls = (apiInfo.DailyRateLimit ?? 0) - 1;
+                return true;
+            }
+
+			
+			var validPrevApiCalls = previousApiCallCount.Where(dt => (DateTime.Now - dt).TotalHours < 24).ToList();
+            apiRateLimitData.ApiCalls[apiType.ToString()] = validPrevApiCalls;
+
+			if (validPrevApiCalls.Count() < apiInfo.DailyRateLimit)
+            {
+				validPrevApiCalls.Add(DateTime.Now);
+                this.DatabaseHandler.Set(apiRateLimitData);
+                remainingApiCalls = (apiInfo.DailyRateLimit ?? 0) - validPrevApiCalls.Count;
+                return true;
+            }
+
+			this.DatabaseHandler.Set(apiRateLimitData);
+			remainingApiCalls = 0;
+            return false;
         }
 
         private void DeleteInstanceSecrets(List<ApiSecretType> instanceSecrets)

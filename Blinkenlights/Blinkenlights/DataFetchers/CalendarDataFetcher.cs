@@ -10,14 +10,21 @@ namespace Blinkenlights.DataFetchers
 {
     public class CalendarDataFetcher : DataFetcherBase<CalendarModuleData>
     {
-        public CalendarDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler) : base(TimeSpan.FromMinutes(60), databaseHandler, apiHandler)
+        public CalendarDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger<CalendarDataFetcher> logger) : base(databaseHandler, apiHandler, logger)
         {
             this.Start();
         }
 
-        protected override CalendarModuleData GetRemoteData(CalendarModuleData existingData = null)
+        public override CalendarModuleData GetRemoteData(CalendarModuleData existingData = null, bool overwrite = false)
         {
-            var apiResponse = this.ApiHandler.Fetch(ApiType.GoogleCalendar).Result;
+            if (!overwrite && !IsExpired(existingData?.Status, ApiType.GoogleCalendar.Info()) && IsValid(existingData))
+			{
+				this.Logger.LogDebug($"Using cached data for {ApiType.GoogleCalendar} API");
+				return existingData;
+            }
+
+			this.Logger.LogInformation($"Calling {ApiType.GoogleCalendar} remote API");
+			var apiResponse = this.ApiHandler.Fetch(ApiType.GoogleCalendar).Result;
 
             if (apiResponse is null)
             {
@@ -72,14 +79,15 @@ namespace Blinkenlights.DataFetchers
             };
         }
 
-        protected override bool IsValid(CalendarModuleData existingData = null)
+        protected bool IsValid(CalendarModuleData existingData = null)
         {
-            if (existingData?.Events?.Any() != true || existingData.Status == null)
+            if (existingData.Events?.Any() != true)
             {
+                this.Logger.LogInformation($"GoogleCalendar data invalid, missing required data");
                 return false;
             }
 
-            return !existingData.Status.Expired(TimeSpan.FromHours(4));
+            return true;
         }
     }
 }

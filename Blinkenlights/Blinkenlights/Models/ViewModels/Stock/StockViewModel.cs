@@ -6,9 +6,14 @@ namespace Blinkenlights.Models.ViewModels.Stock
     {
         public List<FinanceData> Data { get; set; }
 
-        public StockViewModel(ApiStatus status, List<FinanceData> data = null) : base("Stock", status)
-        {
-            this.Data = data;
-        }
-    }
+
+		public StockViewModel(ApiStatus status) : base("Stock", status)
+		{
+		}
+
+		public StockViewModel(List<FinanceData> data) : base("Stock", data.Select(h => h.Status).ToArray())
+		{
+			this.Data = data;
+		}
+	}
 }

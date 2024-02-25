@@ -1,23 +1,25 @@
 ﻿using Blinkenlights.DatabaseHandler;
 using Blinkenlights.Dataschemas;
 using Blinkenlights.Models.Api.ApiHandler;
+using Blinkenlights.Models.Api.ApiInfoTypes;
 using System.Timers;
 
 namespace Blinkenlights.DataFetchers
 {
-    public abstract class DataFetcherBase<T> : IDataFetcher<T> where T : IModuleData
+    public abstract class DataFetcherBase<T> : IDataFetcher<T> where T : IDatabaseData
     {
-        protected TimeSpan TimerInterval { get; init; }
-        public IDatabaseHandler DatabaseHandler { get; }
-        public IApiHandler ApiHandler { get; }
+        protected IDatabaseHandler DatabaseHandler { get; }
+        protected IApiHandler ApiHandler { get; }
+        protected ILogger Logger { get; init; }
+
         protected System.Timers.Timer FetchTimer { get; init; }
 
-        public DataFetcherBase(TimeSpan timerInterval, IDatabaseHandler databaseHandler, IApiHandler apiHandler)
+        public DataFetcherBase(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger logger)
         {
             this.DatabaseHandler = databaseHandler;
             this.ApiHandler = apiHandler;
+            this.Logger = logger;
 
-            this.TimerInterval = timerInterval;
             this.FetchTimer = new System.Timers.Timer();
 
             this.FetchTimer.Elapsed += OnTimer;
@@ -33,26 +35,8 @@ namespace Blinkenlights.DataFetchers
         {
             this.FetchRemoteData();
             this.FetchTimer.Stop();
-            this.FetchTimer.Interval = this.TimerInterval.TotalMilliseconds;
+            this.FetchTimer.Interval = TimeSpan.FromMinutes(1).TotalMilliseconds;
             this.FetchTimer.Start();
-        }
-
-        public void FetchRemoteData(bool overwrite = false)
-        {
-            var existingData = this.DatabaseHandler.Get<T>();
-            if (!overwrite && existingData != null && IsValid(existingData) && (DateTime.Now - existingData.TimeStamp) < this.TimerInterval)
-            {
-                Console.WriteLine($"Skip remote fetch for {typeof(T).Name}");
-                return;
-            }
-
-            Console.WriteLine($"Fetch {typeof(T).Name} remote data");
-            var remoteData = GetRemoteData(existingData);
-            if (remoteData != null)
-            {
-                Console.WriteLine($"Retrived {typeof(T).Name} remote data");
-                this.DatabaseHandler.Set(remoteData);
-            }
         }
 
         public T GetLocalData()
@@ -60,8 +44,25 @@ namespace Blinkenlights.DataFetchers
             return this.DatabaseHandler.Get<T>();
         }
 
-        protected abstract T GetRemoteData(T existingData = default);
+		public T FetchRemoteData(bool overwrite = false)
+        {
+            var existingData = GetLocalData();
+            var updatedData = GetRemoteData(existingData, overwrite);
+            this.DatabaseHandler.Set(updatedData);
+            return updatedData;
+        }
 
-        protected abstract bool IsValid(T existingData = default);
+		public abstract T GetRemoteData(T existingData = default, bool overwrite = false);
+
+        public static bool IsExpired(ApiStatus status, IApiInfo apiInfo)
+        {
+            if (status?.LastUpdate == null || apiInfo == null)
+            {
+                return true;
+            }
+
+            var timeDelta = DateTime.Now - status.LastUpdate;
+			return timeDelta > apiInfo.Timeout;
+        }
     }
 }

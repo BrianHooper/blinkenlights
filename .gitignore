@@ -21,3 +21,4 @@ logfile.tsv
 iss_location.png
 secrets.json
 BlinkenLights_Db_Prod.json
+LogFiles/

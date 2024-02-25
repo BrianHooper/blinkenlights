@@ -9,18 +9,17 @@ namespace Blinkenlights.DataFetchers
 {
     public class HeadlinesDataFetcher : DataFetcherBase<HeadlinesData>
     {
-        public HeadlinesDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler) : base(TimeSpan.FromMinutes(120), databaseHandler, apiHandler)
+        public HeadlinesDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger<HeadlinesDataFetcher> logger) : base(databaseHandler, apiHandler, logger)
         {
             Start();
         }
 
-        protected override HeadlinesData GetRemoteData(HeadlinesData existingData = null)
+        public override HeadlinesData GetRemoteData(HeadlinesData existingData = null, bool overwrite = false)
         {
-            // TODO Check expiration before calling individual APIs
-            var nytModel = ProcessNytResponse();
-            var wikipediaModel = ProcessPageParseApiResponse(ApiType.Wikipedia, "Wikipedia - In the news");
-            var ycombinatorModel = ProcessPageParseApiResponse(ApiType.YCombinator, "YCombinator");
-            var rocketModel = ProcessPageParseApiResponse(ApiType.RocketLaunches, "Upcoming rocket launches");
+            var nytModel = ProcessNytResponse(existingData?.Headlines?.FirstOrDefault(h => string.Equals("NYT", h?.Key)), overwrite);
+            var wikipediaModel = ProcessPageParseApiResponse(existingData?.Headlines?.FirstOrDefault(h => string.Equals("WIKI", h?.Key)), "WIKI", ApiType.Wikipedia, "Wikipedia - In the news", overwrite);
+            var ycombinatorModel = ProcessPageParseApiResponse(existingData?.Headlines?.FirstOrDefault(h => string.Equals("YCOMB", h?.Key)), "YCOMB", ApiType.YCombinator, "YCombinator", overwrite);
+            var rocketModel = ProcessPageParseApiResponse(existingData?.Headlines?.FirstOrDefault(h => string.Equals("ROCKET", h?.Key)), "ROCKET", ApiType.RocketLaunches, "Upcoming rocket launches", overwrite);
             return new HeadlinesData()
             {
                 Headlines = new List<HeadlinesContainer>()
@@ -88,13 +87,20 @@ namespace Blinkenlights.DataFetchers
             return new HeadlinesArticle(title, article.Url);
         }
 
-        private async Task<HeadlinesContainer> ProcessNytResponse()
+        private async Task<HeadlinesContainer> ProcessNytResponse(HeadlinesContainer existingData, bool overwrite)
         {
-            var response = await this.ApiHandler.Fetch(ApiType.NewYorkTimes);
+            if (!overwrite && !IsExpired(existingData?.Status, ApiType.NewYorkTimes.Info()))
+			{
+				this.Logger.LogDebug($"Using cached data for {ApiType.NewYorkTimes} API");
+				return existingData;
+            }
+
+			this.Logger.LogInformation($"Calling {ApiType.NewYorkTimes} remote API");
+			var response = await this.ApiHandler.Fetch(ApiType.NewYorkTimes);
             if (response is null)
             {
                 var errorStatus = ApiStatus.Failed(ApiType.NewYorkTimes.ToString(), "Api response is null");
-                return new HeadlinesContainer(null, errorStatus);
+                return HeadlinesContainer.Clone(existingData, errorStatus);
             }
 
             var nytModel = !string.IsNullOrWhiteSpace(response?.Data) ? JsonSerializer.Deserialize<NewYorkTimesModel>(response.Data) : default;
@@ -115,35 +121,47 @@ namespace Blinkenlights.DataFetchers
             if (categories.Any())
             {
                 var status = ApiStatus.Success(ApiType.NewYorkTimes.ToString(), response.LastUpdateTime, response.ApiSource);
-                return new HeadlinesContainer(categories, status);
+                return new HeadlinesContainer()
+                {
+                    Status = status,
+                    Key = "NYT",
+                    Categories = categories
+                };
             }
             else
             {
                 var errorStatus = ApiStatus.Failed(ApiType.NewYorkTimes.ToString(), "No Results", response.LastUpdateTime);
-                return new HeadlinesContainer(null, errorStatus);
-            }
+				return HeadlinesContainer.Clone(existingData, errorStatus);
+			}
         }
 
-        public async Task<HeadlinesContainer> ProcessPageParseApiResponse(ApiType apiType, string title)
+        public async Task<HeadlinesContainer> ProcessPageParseApiResponse(HeadlinesContainer existingData, string key, ApiType apiType, string title, bool overwrite)
         {
-            var response = await this.ApiHandler.Fetch(apiType);
+			if (!overwrite && !IsExpired(existingData?.Status, apiType.Info()))
+			{
+				this.Logger.LogDebug($"Using cached data for {apiType} API");
+				return existingData;
+			}
+
+			this.Logger.LogInformation($"Calling {apiType} remote API");
+			var response = await this.ApiHandler.Fetch(apiType);
             if (response is null)
             {
                 var errorStatus = ApiStatus.Failed(apiType.ToString(), "Api response is null", response.LastUpdateTime);
-                return new HeadlinesContainer(null, errorStatus);
-            }
+				return HeadlinesContainer.Clone(existingData, errorStatus);
+			}
 
             if (ApiError.IsApiError(response.Data, out var errorMessage))
             {
                 var errorStatus = ApiStatus.Failed(apiType.ToString(), errorMessage, response.LastUpdateTime);
-                return new HeadlinesContainer(null, errorStatus);
-            }
+				return HeadlinesContainer.Clone(existingData, errorStatus);
+			}
 
             if (string.IsNullOrWhiteSpace(response?.Data))
             {
                 var errorStatus = ApiStatus.Failed(apiType.ToString(), "Response data is null", response.LastUpdateTime);
-                return new HeadlinesContainer(null, errorStatus);
-            }
+				return HeadlinesContainer.Clone(existingData, errorStatus);
+			}
 
             PageParseApiModel model;
             try
@@ -153,15 +171,20 @@ namespace Blinkenlights.DataFetchers
             catch (JsonException)
             {
                 var errorStatus = ApiStatus.Failed(apiType.ToString(), "Exception deserializing response", response.LastUpdateTime);
-                return new HeadlinesContainer(null, errorStatus);
-            }
+				return HeadlinesContainer.Clone(existingData, errorStatus);
+			}
 
             var articles = model?.stories?.Select(a => new HeadlinesArticle(a))?.Take(3)?.ToList();
             if (articles?.Any() == true)
             {
                 var status = ApiStatus.Success(apiType.ToString(), response.LastUpdateTime, response.ApiSource);
                 var categories = new List<HeadlinesCategory>() { new HeadlinesCategory(title, articles) };
-                var headlinesContatiner = new HeadlinesContainer(categories, status);
+                var headlinesContatiner = new HeadlinesContainer()
+                {
+                    Categories = categories,
+                    Status = status,
+                    Key = key
+                };
 
                 // TODO Process this on the python api side
                 if (apiType == ApiType.Wikipedia)
@@ -174,18 +197,8 @@ namespace Blinkenlights.DataFetchers
             else
             {
                 var errorStatus = ApiStatus.Failed(apiType.ToString(), "No headlines created", response.LastUpdateTime);
-                return new HeadlinesContainer(null, errorStatus);
-            }
-        }
-
-        protected override bool IsValid(HeadlinesData existingData = null)
-        {
-            if (existingData?.Headlines?.Any() != true)
-            {
-                return false;
-            }
-
-            return !existingData.Headlines.Any(hl => hl?.Status?.Expired(TimeSpan.FromHours(4)) == true);
+				return HeadlinesContainer.Clone(existingData, errorStatus);
+			}
         }
     }
 }

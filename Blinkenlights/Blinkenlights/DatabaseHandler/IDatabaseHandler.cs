@@ -10,8 +10,8 @@ namespace Blinkenlights.DatabaseHandler
 
         public void Delete(string key);
 
-        public T Get<T>() where T : IModuleData;
+        public T Get<T>() where T : IDatabaseData;
 
-        public bool Set<T>(T moduleData) where T : IModuleData;
+        public bool Set<T>(T moduleData) where T : IDatabaseData;
     }
 }

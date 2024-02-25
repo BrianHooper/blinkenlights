@@ -59,6 +59,15 @@
         WikiPotd = 18,
 
         [ApiInfo(typeof(DistanceApiInfo))]
-        Distance = 19
-    }
+        Distance = 19,
+
+        [ApiInfo(typeof(FlightAwareApiInfo))]
+        FlightAware = 20,
+
+		[ApiInfo(typeof(PeopleInSpaceApiInfo))]
+		PeopleInSpace = 21,
+
+		[ApiInfo(typeof(AlphaVantageCurrencyApiInfo))]
+		AlphaVantageCurrency = 22
+	}
 }

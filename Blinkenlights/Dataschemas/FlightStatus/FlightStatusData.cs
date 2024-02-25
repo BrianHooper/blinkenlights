@@ -2,9 +2,9 @@
 
 namespace Blinkenlights.Dataschemas
 {
-    public class TimeData : IDatabaseData
+    public class FlightStatusData : IDatabaseData
     {
-        public string Key() => typeof(TimeData).Name;
+        public string Key() => typeof(FlightStatusData).Name;
 
         public string Value() => JsonSerializer.Serialize(this);
 
@@ -12,13 +12,9 @@ namespace Blinkenlights.Dataschemas
 
         public ApiStatus Status { get; init; }
 
-        public Dictionary<string, int> TimeZoneInfos { get; set; }
-
-        public SortedDictionary<string, string> CountdownInfos { get; set; }
-
-        public static TimeData Clone(TimeData other, ApiStatus status)
+        public static FlightStatusData Clone(Life360Data other, ApiStatus status)
         {
-            return new TimeData()
+            return new FlightStatusData()
             {
                 Status = status,
                 TimeStamp = other?.TimeStamp

@@ -1,7 +1,7 @@
-﻿using Blinkenlights.Transformers;
+﻿using Blinkenlights.DataFetchers;
+using Blinkenlights.Dataschemas;
+using Blinkenlights.Transformers;
 using Microsoft.AspNetCore.Mvc;
-
-// TODO Stock/Currency graphs
 
 namespace Blinkenlights.Controllers
 {
@@ -9,6 +9,36 @@ namespace Blinkenlights.Controllers
     {
         public ModulesController(IServiceProvider serviceProvider) : base(serviceProvider)
         {
+        }
+
+
+        private IActionResult FetchRemoteData<T>() where T : IDatabaseData
+        {
+            var dataFetcher = this.ServiceProvider.GetService<IDataFetcher<T>>();
+            if (dataFetcher != null)
+            {
+                dataFetcher.FetchRemoteData(true);
+                return Ok("Success");
+            }
+            return Problem($"Failed to get DataFetcher<{typeof(T).Name}>");
+        }
+
+        public IActionResult GetData(string id)
+        {
+            return id switch
+            {
+                "Calendar" => FetchRemoteData<CalendarModuleData>(),
+                "Headlines" => FetchRemoteData<HeadlinesData>(),
+                "OuterSpace" => FetchRemoteData<OuterSpaceData>(),
+                "Life360" => FetchRemoteData<Life360Data>(),
+                "Slideshow" => FetchRemoteData<SlideshowData>(),
+                "Stock" => FetchRemoteData<StockData>(),
+                "Time" => FetchRemoteData<TimeData>(),
+                "Utility" => FetchRemoteData<UtilityData>(),
+                "Weather" => FetchRemoteData<WeatherData>(),
+                "WWII" => FetchRemoteData<WWIIData>(),
+                _ => Problem($"Failed to match {id}")
+            };
         }
 
         public IActionResult GetCalendarModule()
@@ -51,9 +81,9 @@ namespace Blinkenlights.Controllers
             return GetPartialView<SlideshowTransformer>("SlideshowModule");
         }
 
-        public IActionResult GetIssTrackerModule()
+        public IActionResult GetOuterSpaceModule()
         {
-            return GetPartialView<IssTrackerTransformer>("IssTrackerModule");
+            return GetPartialView<OuterSpaceTransformer>("OuterSpaceModule");
         }
 
         public IActionResult GetStockModule()

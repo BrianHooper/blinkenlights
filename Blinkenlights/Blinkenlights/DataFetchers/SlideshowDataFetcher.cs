@@ -10,15 +10,15 @@ namespace Blinkenlights.DataFetchers
 {
     public class SlideshowDataFetcher : DataFetcherBase<SlideshowData>
     {
-        public SlideshowDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler) : base(TimeSpan.FromHours(4), databaseHandler, apiHandler)
+        public SlideshowDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger<SlideshowDataFetcher> logger) : base(databaseHandler, apiHandler, logger)
         {
             Start();
         }
 
-        protected override SlideshowData GetRemoteData(SlideshowData existingData = null)
+        public override SlideshowData GetRemoteData(SlideshowData existingData = null, bool overwrite = false)
 		{
-			var apod = GetPageParsePicOfTheDay(ApiType.Astronomy, "NASA Picture of the Day");
-			var wiki = GetPageParsePicOfTheDay(ApiType.WikiPotd, "Wikipedia Picture of the Day");
+			var apod = GetPageParsePicOfTheDay(existingData, ApiType.Astronomy, "NASA", "NASA Picture of the Day", overwrite);
+			var wiki = GetPageParsePicOfTheDay(existingData, ApiType.WikiPotd, "WIKI", "Wikipedia Picture of the Day", overwrite);
 
 			// NASA POTD https://apod.nasa.gov/apod/astropix.html
 			// WIKIPEDIA POTD https://en.wikipedia.org/wiki/Wikipedia:Picture_of_the_day
@@ -34,10 +34,17 @@ namespace Blinkenlights.DataFetchers
             };
         }
 
-        public async Task<SlideshowFrame> GetPageParsePicOfTheDay(ApiType apiType, string title)
+        public async Task<SlideshowFrame> GetPageParsePicOfTheDay(SlideshowData existingData, ApiType apiType, string key, string title, bool overwrite)
         {
-            var apiResponse = await this.ApiHandler.Fetch(apiType);
+            var existingFrameData = existingData?.Frames?.FirstOrDefault(f => string.Equals(key, f?.Key));
+            if (!overwrite && !IsExpired(existingFrameData?.Status, apiType.Info()))
+			{
+				this.Logger.LogDebug($"Using cached data for {apiType} API");
+				return existingFrameData;
+            }
 
+			this.Logger.LogInformation($"Calling {apiType} remote API");
+			var apiResponse = await this.ApiHandler.Fetch(apiType);
             if (apiResponse is null)
             {
                 return new SlideshowFrame(ApiStatus.Failed(apiType.ToString(), "API Response is null"));
@@ -77,18 +84,9 @@ namespace Blinkenlights.DataFetchers
 				Subtitle = slideshowData.Title ,
                 Source = slideshowData.Source,
                 Url = slideshowData.Url,
-				Status = status
+				Status = status,
+                Key = key
             };
-        }
-
-        protected override bool IsValid(SlideshowData existingData = null)
-        {
-            if (existingData?.Frames?.Any() != true)
-            {
-                return false;
-            }
-
-            return !existingData.Frames.Any(f => f?.Status?.Expired(TimeSpan.FromDays(1)) == true);        
         }
     }
 }

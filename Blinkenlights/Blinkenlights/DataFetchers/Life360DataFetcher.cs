@@ -9,14 +9,21 @@ namespace Blinkenlights.DataFetchers
 {
     public class Life360DataFetcher : DataFetcherBase<Life360Data>
     {
-        public Life360DataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler) : base(TimeSpan.FromMinutes(5), databaseHandler, apiHandler)
+        public Life360DataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger<Life360DataFetcher> logger) : base(databaseHandler, apiHandler, logger)
         {
             Start();
         }
 
-        protected override Life360Data GetRemoteData(Life360Data existingData = null)
+        public override Life360Data GetRemoteData(Life360Data existingData = null, bool overwrite = false)
         {
-            var response = this.ApiHandler.Fetch(ApiType.Life360).Result;
+            if (!overwrite && !IsExpired(existingData?.Status, ApiType.Life360.Info()) && IsValid(existingData))
+			{
+				this.Logger.LogDebug($"Using cached data for {ApiType.Life360} API");
+				return existingData;
+            }
+
+			this.Logger.LogInformation($"Calling {ApiType.Life360} remote API");
+			var response = this.ApiHandler.Fetch(ApiType.Life360).Result;
             if (response == null)
             {
                 var errorStatus = ApiStatus.Failed(ApiType.Life360.ToString(), "Api response is null");
@@ -68,7 +75,8 @@ namespace Blinkenlights.DataFetchers
                 return Life360DistanceData.Clone(existingData, errorStatus);
             }
 
-            var response = this.ApiHandler.Fetch(ApiType.Distance, "", locA.Latitude.ToString(), locA.Longitude.ToString(), locB.Latitude.ToString(), locB.Longitude.ToString()).Result;
+			this.Logger.LogInformation($"Calling {ApiType.Distance} remote API");
+			var response = this.ApiHandler.Fetch(ApiType.Distance, "", locA.Latitude.ToString(), locA.Longitude.ToString(), locB.Latitude.ToString(), locB.Longitude.ToString()).Result;
             if (response == null)
             {
                 var errorStatus = ApiStatus.Failed(ApiType.Distance.ToString(), $"API response was null");
@@ -102,9 +110,29 @@ namespace Blinkenlights.DataFetchers
             return Life360LocationData.Parse(member?.FirstName, member?.Location?.Timestamp?.ToString(), member?.Location?.Latitude?.ToString(), member?.Location?.Longitude?.ToString());
         }
 
-        protected override bool IsValid(Life360Data existingData = null)
+        protected bool IsValid(Life360Data existingData = null)
         {
-            return existingData?.Locations?.Any() == true && existingData.Status?.Expired(TimeSpan.FromMinutes(10)) == false;
+            var apiInfo = ApiType.Life360.Info();
+            if (existingData?.Status?.LastUpdate == null)
+            {
+                this.Logger.LogInformation($"Life360 data invalid, previous data is null or empty");
+                return false;
+            }
+
+            var lastUpdateDelta = DateTime.Now - existingData.Status.LastUpdate;
+            if (lastUpdateDelta > apiInfo.Timeout)
+            {
+                this.Logger.LogInformation($"Life360 data invalid, previous data is expired");
+                return false;
+            }
+
+            if (existingData.Locations?.Any() != true)
+            {
+                this.Logger.LogInformation($"Life360 data invalid, missing required data");
+                return false;
+            }
+
+            return true;
         }
     }
 }

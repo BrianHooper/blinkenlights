@@ -18,7 +18,11 @@
 						@dataRow.Price
 					</div>
 				</div>
-				<div class="finance-block" data-finance-graph="@dataRow.SerializePoints()"></div>
+				<div class="fin-graph-block">
+					<div class="finance-block" data-finance-symbol="@dataRow.Symbol" data-finance-graph="@dataRow.SerializePoints()">
+						<div class="finance-axis" id="finance-axis-@dataRow.Symbol"></div>
+					</div>
+				</div>
 			</div>
 		}
 

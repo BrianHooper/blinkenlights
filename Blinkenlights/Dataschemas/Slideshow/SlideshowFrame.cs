@@ -20,6 +20,8 @@
 
 		public string Subtitle { get; set; }
 
+		public string Key { get; set; }
+
 		public ApiStatus Status { get; set; }
     }
 }

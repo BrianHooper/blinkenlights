@@ -31,7 +31,7 @@ namespace Blinkenlights.Transformers
                 return new StockViewModel(errorStatus);
             }
 
-            return new StockViewModel(response.Status) { Data = response.FinanceData };
+			return new StockViewModel(response.FinanceData);
         }
     }
 }

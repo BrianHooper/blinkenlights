@@ -17,7 +17,7 @@ namespace Blinkenlights.Transformers
 
         public override IModuleViewModel Transform()
         {
-            this.dataFetcher.FetchRemoteData();
+            this.dataFetcher.FetchRemoteData(true);
             var indexModuleData = this.dataFetcher.GetLocalData();
             if (indexModuleData?.Modules?.Any() != true)
             {

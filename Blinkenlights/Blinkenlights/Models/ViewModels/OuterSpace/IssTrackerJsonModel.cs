@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Blinkenlights.Models.ViewModels.IssTracker
+namespace Blinkenlights.Models.ViewModels.OuterSpace
 {
     public class IssTrackerJsonModel
     {

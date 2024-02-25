@@ -10,14 +10,21 @@ namespace Blinkenlights.DataFetchers
 {
     public class WWIIDataFetcher : DataFetcherBase<WWIIData>
     {
-        public WWIIDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler) : base(TimeSpan.FromHours(24), databaseHandler, apiHandler)
+        public WWIIDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger<WWIIDataFetcher> logger) : base(databaseHandler, apiHandler, logger)
         {
             Start();
-        }
+		}
 
-        protected override WWIIData GetRemoteData(WWIIData existingData)
-        {
-            var response = this.ApiHandler.Fetch(ApiType.WWII).Result;
+		public override WWIIData GetRemoteData(WWIIData existingData = null, bool overwrite = false)
+		{
+			if (!overwrite && !IsExpired(existingData?.Status, ApiType.Life360.Info()) && IsValid(existingData))
+			{
+				this.Logger.LogDebug($"Using cached data for {ApiType.WWII} API");
+				return existingData;
+			}
+
+			this.Logger.LogInformation($"Calling {ApiType.WWII} remote API");
+			var response = this.ApiHandler.Fetch(ApiType.WWII).Result;
             if (string.IsNullOrWhiteSpace(response?.Data))
             {
                 var errorStatus = ApiStatus.Failed(ApiType.WWII.ToString(), "Failed to get local data");
@@ -76,7 +83,7 @@ namespace Blinkenlights.DataFetchers
             };
         }
 
-        protected override bool IsValid(WWIIData existingData = null)
+        protected bool IsValid(WWIIData existingData = null)
         {
             var key = DateTime.Now.ToString("d MMM yyyy");
             return existingData?.Days?.TryGetValue(key, out var currentDayData) == true && currentDayData?.GlobalEvents?.Any() == true;
