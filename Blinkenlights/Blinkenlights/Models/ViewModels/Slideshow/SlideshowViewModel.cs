@@ -4,6 +4,10 @@ namespace Blinkenlights.Models.ViewModels.Slideshow
 {
     public class SlideshowViewModel : ModuleViewModelBase
 	{
+		public SlideshowViewModel() : base("Slideshow")
+		{
+		}
+
 		public SlideshowViewModel(List<SlideshowFrame> frames) : base("Slideshow", frames.Select(h => h.Status).ToArray())
 		{
 			this.Frames = frames;

@@ -21,8 +21,8 @@ namespace Blinkenlights.Transformers
             var response = this.DataFetcher.GetLocalData();
             if (response == null)
             {
-                var errorStatus = ApiStatus.Failed(ApiType.VisualCrossingWeather.ToString(), "Api response is null");
-                return new WeatherViewModel(errorStatus);
+                //var errorStatus = this.ApiStatusFactory.Failed(ApiType.VisualCrossingWeather, "Api response is null");
+                return new WeatherViewModel();
             }
 
             var viewModel = new WeatherViewModel(response.Description, response.DayModels, response.GraphModel, response.CurrentConditions, response.Status);

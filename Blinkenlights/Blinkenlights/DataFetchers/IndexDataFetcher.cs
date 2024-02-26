@@ -1,4 +1,5 @@
-﻿using Blinkenlights.DatabaseHandler;
+﻿using Blinkenlights.ApiHandlers;
+using Blinkenlights.DatabaseHandler;
 using Blinkenlights.Dataschemas;
 using Blinkenlights.Models.Api.ApiHandler;
 
@@ -6,7 +7,7 @@ namespace Blinkenlights.DataFetchers
 {
     public class IndexDataFetcher : DataFetcherBase<IndexModuleData>
     {
-        public IndexDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger<IndexDataFetcher> logger) : base(databaseHandler, apiHandler, logger)
+        public IndexDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger<IndexDataFetcher> logger, IApiStatusFactory apiStatusFactory) : base(databaseHandler, apiHandler, logger, apiStatusFactory)
         {
         }
 
@@ -37,7 +38,7 @@ namespace Blinkenlights.DataFetchers
                 ModulePlacementData.Create(name : "Calendar", endpoint : "/Modules/GetCalendarModule", refreshRateMs : 60 * 5 * 1000, row : 3, col : 1, colSpan : 3),
                 ModulePlacementData.Create(name : "Utility", endpoint : "/Modules/GetUtilityData", refreshRateMs : 60 * 5 * 1000, row : 3, col : 4, colSpan : 3),
                 //ModulePlacementData.Create(name : "Life360", endpoint : "/Modules/GetLife360Module", refreshRateMs : 2 * 60 * 1000, row : 3, col : 5, colSpan : 2),
-                ModulePlacementData.Create(name : "Slideshow", endpoint : "/Modules/GetSlideshowModule", refreshRateMs : 60 * 1000, row : 3, col : 7, colSpan : 2),
+                ModulePlacementData.Create(name : "Slideshow", endpoint : "/Modules/GetSlideshowModule", refreshRateMs : 10 * 60 * 1000, row : 3, col : 7, colSpan : 2),
             };
         }
     }

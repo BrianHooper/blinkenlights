@@ -17,11 +17,11 @@ namespace Blinkenlights.Dataschemas
             return JsonSerializer.Serialize(this.DataPoints);
         }
 
-        public static FinanceData Clone(FinanceData other, ApiStatus status)
+        public static FinanceData Clone(FinanceData other, string symbol, ApiStatus status)
         {
             return new FinanceData()
             {
-                Symbol = other?.Symbol,
+                Symbol = symbol,
                 Price = other?.Price,
                 DataPoints = other?.DataPoints,
                 Status = status

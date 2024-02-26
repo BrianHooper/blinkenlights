@@ -159,7 +159,7 @@ namespace Blinkenlights.Models.Api.ApiHandler
 
             if (!string.IsNullOrWhiteSpace(content))
             {
-                return ApiResponse.Success(apiType, content, ApiSource.Prod, DateTime.Now);
+                return ApiResponse.Success(this.Logger, apiType, content, ApiSource.Prod, DateTime.Now);
             }
             else
             {
@@ -222,7 +222,6 @@ namespace Blinkenlights.Models.Api.ApiHandler
 
             if (!HandleRateLimit(apiType, apiInfo, out var remainingApiCalls))
             {
-                this.Logger.LogWarning($"{apiType} is rate-limited.");
                 return ApiResponse.Error(this.Logger, apiType, $"{apiType} is rate-limited.", ApiSource.Prod);
             }
 
@@ -238,7 +237,7 @@ namespace Blinkenlights.Models.Api.ApiHandler
                 {
                     DeleteInstanceSecrets(apiInfo.InstanceSecrets);
                 }
-                return ApiResponse.Error(this.Logger, apiType, $"Api exception: {ex.Message}", ApiSource.Prod);
+                return ApiResponse.Error(this.Logger, apiType, $"Api exception: {ex.Message}", ApiSource.Prod, ex.StatusCode.ToString());
             }
 
             if (response == null)
@@ -251,7 +250,7 @@ namespace Blinkenlights.Models.Api.ApiHandler
                 return ApiResponse.Error(this.Logger, apiType, response.StatusDescription, ApiSource.Prod);
             }
 
-            return ApiResponse.Success(apiType, response.Content, ApiSource.Prod, DateTime.Now);
+            return ApiResponse.Success(this.Logger, apiType, response.Content, ApiSource.Prod, DateTime.Now);
         }
 
         private bool HandleRateLimit(ApiType apiType, IApiInfo apiInfo, out int remainingApiCalls)

@@ -21,26 +21,27 @@ namespace Blinkenlights.Transformers
             var outerSpaceData = this.dataFetcher.GetLocalData();
             if (outerSpaceData == null)
             {
-                var errorStatus = ApiStatus.Failed(ApiType.IssTracker.ToString(), "Database lookup failed");
-                return new OuterSpaceViewModel(errorStatus);
+                //var errorStatus = this.ApiStatusFactory.Failed(ApiType.IssTracker, "Database lookup failed");
+                return new OuterSpaceViewModel();
             }
 
             if (outerSpaceData.IssTrackerData == null)
             {
-				var errorStatus = ApiStatus.Failed(ApiType.IssTracker.ToString(), "Database data is empty");
-				return new OuterSpaceViewModel(errorStatus);
+				//var errorStatus = this.ApiStatusFactory.Failed(ApiType.IssTracker, "Database data is empty");
+				return new OuterSpaceViewModel();
 			}
             var trackerData = outerSpaceData.IssTrackerData;
             var latitude = trackerData.Latitude >= 0.0 ? $"{Math.Round(trackerData.Latitude.Value, 2)}° N" : $"{Math.Round(trackerData.Latitude.Value, 2) * -1}° S";
             var longitude = trackerData.Longitude >= 0.0 ? $"{Math.Round(trackerData.Longitude.Value, 2)}° E" : $"{Math.Round(trackerData.Longitude.Value, 2) * -1}° W";
             var report = $"{latitude}, {longitude}";
 
-            return new OuterSpaceViewModel
-            (
-                imagePath: trackerData.FilePath,
-                report: report,
-                status: trackerData.Status
-            );
+            return new OuterSpaceViewModel(trackerData.Status, outerSpaceData.PeopleInSpace?.Status, outerSpaceData.RocketLaunches?.Status)
+            {
+                ImagePath = trackerData.FilePath,
+                Report = report,
+                PeopleInSpace = outerSpaceData.PeopleInSpace?.People,
+                UpcomingRocketLaunches = outerSpaceData.RocketLaunches?.Launches
+            };
         }
     }
 }

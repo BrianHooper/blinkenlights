@@ -1,11 +1,8 @@
 ﻿using Blinkenlights.DataFetchers;
 using Blinkenlights.Dataschemas;
 using Blinkenlights.Models.Api.ApiHandler;
-using Blinkenlights.Models.Api.ApiInfoTypes;
 using Blinkenlights.Models.ViewModels;
 using Blinkenlights.Models.ViewModels.Utility;
-using Microsoft.Net.Http.Headers;
-using System.Net.NetworkInformation;
 
 namespace Blinkenlights.Transformers
 {
@@ -26,8 +23,8 @@ namespace Blinkenlights.Transformers
             var response = this.DataFetcher.GetLocalData();
             if (response == null)
             {
-                var errorStatus = ApiStatus.Failed("Utility", "Database lookup failed");
-                return new UtilityViewModel(errorStatus);
+                //var errorStatus = ApiStatus.Failed("Utility", "Database lookup failed");
+                return new UtilityViewModel();
             }
 
             var life360Data = GetLife360Data(out var life360Status);
@@ -45,7 +42,8 @@ namespace Blinkenlights.Transformers
             var life360data = this.Life360DataFetcher.GetLocalData();
             if (life360data == null)
             {
-                apiStatus = ApiStatus.Failed(ApiType.Life360.ToString(), "Database lookup failed");
+                //apiStatus = this.ApiStatusFactory.Failed(ApiType.Life360, "Database lookup failed");
+                apiStatus = null;
                 return null;
             }
 

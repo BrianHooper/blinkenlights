@@ -1,4 +1,5 @@
-﻿using Blinkenlights.DatabaseHandler;
+﻿using Blinkenlights.ApiHandlers;
+using Blinkenlights.DatabaseHandler;
 using Blinkenlights.Dataschemas;
 using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.Api.ApiInfoTypes;
@@ -9,8 +10,8 @@ namespace Blinkenlights.DataFetchers
 {
     public class Life360DataFetcher : DataFetcherBase<Life360Data>
     {
-        public Life360DataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger<Life360DataFetcher> logger) : base(databaseHandler, apiHandler, logger)
-        {
+        public Life360DataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger<Life360DataFetcher> logger, IApiStatusFactory apiStatusFactory) : base(databaseHandler, apiHandler, logger, apiStatusFactory)
+		{
             Start();
         }
 
@@ -18,7 +19,6 @@ namespace Blinkenlights.DataFetchers
         {
             if (!overwrite && !IsExpired(existingData?.Status, ApiType.Life360.Info()) && IsValid(existingData))
 			{
-				this.Logger.LogDebug($"Using cached data for {ApiType.Life360} API");
 				return existingData;
             }
 
@@ -26,12 +26,12 @@ namespace Blinkenlights.DataFetchers
 			var response = this.ApiHandler.Fetch(ApiType.Life360).Result;
             if (response == null)
             {
-                var errorStatus = ApiStatus.Failed(ApiType.Life360.ToString(), "Api response is null");
+                var errorStatus = this.ApiStatusFactory.Failed(ApiType.Life360, "Api response is null");
                 return Life360Data.Clone(existingData, errorStatus);
             }
             else if (response.ResultStatus != ApiResultStatus.Success)
             {
-                var errorStatus = ApiStatus.Failed(ApiType.Life360.ToString(), response.StatusMessage, response.LastUpdateTime);
+                var errorStatus = this.ApiStatusFactory.Failed(ApiType.Life360, response.StatusMessage, response.LastUpdateTime);
                 return Life360Data.Clone(existingData, errorStatus);
             }
 
@@ -42,14 +42,14 @@ namespace Blinkenlights.DataFetchers
             }
             catch (JsonException e)
             {
-                var errorStatus = ApiStatus.Failed(ApiType.Life360.ToString(), $"Exception while deserializing API response: {e.Message}");
+                var errorStatus = this.ApiStatusFactory.Failed(ApiType.Life360, $"Exception while deserializing API response: {e.Message}");
                 return Life360Data.Clone(existingData, errorStatus);
             }
 
             var models = serverModel?.Members?.Select(m => Parse(m))?.Where(m => m != null)?.ToList();
             if (models?.Any() != true)
             {
-                var errorStatus = ApiStatus.Failed(ApiType.Life360.ToString(), "Models list was empty", response.LastUpdateTime);
+                var errorStatus = this.ApiStatusFactory.Failed(ApiType.Life360, "Models list was empty", response.LastUpdateTime);
                 return Life360Data.Clone(existingData, errorStatus);
             }
 
@@ -57,7 +57,7 @@ namespace Blinkenlights.DataFetchers
             var locB = models.ElementAtOrDefault(1);
             var distance = FetchDistance(existingData?.DistanceData, locA, locB);
 
-            var status = ApiStatus.Success(ApiType.Life360.ToString(), response.LastUpdateTime, response.ApiSource);
+            var status = this.ApiStatusFactory.Success(ApiType.Life360, response.LastUpdateTime, response.ApiSource);
             return new Life360Data()
             {
                 Status = status,
@@ -71,7 +71,7 @@ namespace Blinkenlights.DataFetchers
         {
             if (locA == null || locB == null)
             {
-                var errorStatus = ApiStatus.Failed(ApiType.Distance.ToString(), $"Insufficient data to call api");
+                var errorStatus = this.ApiStatusFactory.Failed(ApiType.Distance, $"Insufficient data to call api");
                 return Life360DistanceData.Clone(existingData, errorStatus);
             }
 
@@ -79,7 +79,7 @@ namespace Blinkenlights.DataFetchers
 			var response = this.ApiHandler.Fetch(ApiType.Distance, "", locA.Latitude.ToString(), locA.Longitude.ToString(), locB.Latitude.ToString(), locB.Longitude.ToString()).Result;
             if (response == null)
             {
-                var errorStatus = ApiStatus.Failed(ApiType.Distance.ToString(), $"API response was null");
+                var errorStatus = this.ApiStatusFactory.Failed(ApiType.Distance, $"API response was null");
                 return Life360DistanceData.Clone(existingData, errorStatus);
             }
 
@@ -90,13 +90,13 @@ namespace Blinkenlights.DataFetchers
             }
             catch (JsonException e)
             {
-                var errorStatus = ApiStatus.Failed(ApiType.Distance.ToString(), $"Exception while deserializing API response: {e.Message}");
+                var errorStatus = this.ApiStatusFactory.Failed(ApiType.Distance, $"Exception while deserializing API response: {e.Message}");
                 return Life360DistanceData.Clone(existingData, errorStatus);
             }
 
             var timeDelta = locA.TimeDeltaSeconds < locB.TimeDeltaSeconds ? locA.TimeDeltaStr : locB.TimeDeltaStr;
 
-            var status = ApiStatus.Success(ApiType.Distance.ToString(), DateTime.Now, ApiSource.Prod);
+            var status = this.ApiStatusFactory.Success(ApiType.Distance, DateTime.Now, ApiSource.Prod);
             return new Life360DistanceData()
             {
                 Distance = serverModel.distance.ToString(),

@@ -1,17 +1,62 @@
-#iss-root {
-    height: 100%;
-    width: 100%;
+#outerspace-root {
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    height: 100%;
+    gap: 10px;
+}
+
+.outerspace-top {
+    display: flex;
+    flex-grow: 1;
+}
+
+.title {
+    font-weight: bold;
+}
+
+.outerspace-bottom {
+    display: flex;
+}
+
+.outerspace-url {
+    color: #ddd;
+    text-decoration: none;
+}
+
+.iss-root {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
 }
 
 .iss-content {
     display: flex;
-    min-height: 0;
-    justify-content: center;
+    flex-grow: 1;
+    justify-content: space-around;
 }
 
 .iss-content > img {
     object-fit: contain;
+    height: 200px;
+}
+
+.outerspace-launches {
+    display: flex;
+    flex-direction: column;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+.outerspace-people {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.outerspace-person {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
 }

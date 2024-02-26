@@ -21,14 +21,14 @@ namespace Blinkenlights.Transformers
             var response = this.DataFetcher.GetLocalData();
             if (response == null)
             {
-                var errorStatus = ApiStatus.Failed("Headlines data", "Database Lookup failed");
-                return new HeadlinesViewModel(errorStatus);
+                //var errorStatus = ApiStatus.Failed("Headlines data", "Database Lookup failed");
+                return new HeadlinesViewModel();
             }
 
             if (response.Headlines?.Any() != true)
             {
-                var errorStatus = ApiStatus.Failed("Headlines data", "No headlines in local data");
-                return new HeadlinesViewModel(errorStatus);
+                //var errorStatus = ApiStatus.Failed("Headlines data", "No headlines in local data");
+                return new HeadlinesViewModel();
             }
 
             return new HeadlinesViewModel(response.Headlines);

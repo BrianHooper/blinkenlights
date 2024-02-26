@@ -4,17 +4,47 @@
 <partial name="ModuleStatus" model="@Model" />
 
 <link rel="stylesheet" href="~/css/outerspace.css" />
-<div id="iss-root" class="status-report">
-	@if (!string.IsNullOrWhiteSpace(Model?.ImagePath))
+<div id="outerspace-root">
+	<div class="outerspace-top">
+		<div class="iss-root">
+			@if (!string.IsNullOrWhiteSpace(Model?.ImagePath))
+			{
+				<div class="iss-content">
+					<img src="@Model.ImagePath" />
+				</div>
+				<div class="iss-update">
+					ISS Current Coordinates: @Model.Report
+				</div>
+			}
+		</div>
+		@if(Model?.PeopleInSpace?.Any() == true)
+		{
+			<div class="outerspace-people">
+				<div class="outerspace-person title">
+					People currently in space:
+				</div>
+				@foreach (var person in Model.PeopleInSpace)
+				{
+					<div class="outerspace-person">
+						<div class="outerspace-person-name">@person.Name</div>
+						<div class="outerspace-person-craft">@person.Craft</div>
+					</div>
+				}
+			</div>
+		}
+	</div>
+	@if(Model?.UpcomingRocketLaunches?.Any() == true)
 	{
-		<div class="iss-content">
-			<img src="@Model.ImagePath" />
+		<div class="outerspace-bottom">
+			<div class="outerspace-launches">
+				@foreach(var launch in Model.UpcomingRocketLaunches)
+				{
+					<a class="outerspace-url" href="@launch.Url" target="_blank">
+						<div class="outerspace-launch">@launch.Title</div>
+					</a>
+				}
+			</div>
 		</div>
-		<div class="iss-update">
-			@Model.Report
-		</div>
-
 	}
 </div>
-
 <script type="module" src="~/ts-dist/OuterSpaceModule.js"></script>

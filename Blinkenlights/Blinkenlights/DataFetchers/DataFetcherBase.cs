@@ -1,4 +1,5 @@
-﻿using Blinkenlights.DatabaseHandler;
+﻿using Blinkenlights.ApiHandlers;
+using Blinkenlights.DatabaseHandler;
 using Blinkenlights.Dataschemas;
 using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.Api.ApiInfoTypes;
@@ -10,15 +11,17 @@ namespace Blinkenlights.DataFetchers
     {
         protected IDatabaseHandler DatabaseHandler { get; }
         protected IApiHandler ApiHandler { get; }
-        protected ILogger Logger { get; init; }
+		protected ILogger Logger { get; init; }
+		protected IApiStatusFactory ApiStatusFactory { get; init; }
 
-        protected System.Timers.Timer FetchTimer { get; init; }
+		protected System.Timers.Timer FetchTimer { get; init; }
 
-        public DataFetcherBase(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger logger)
+        public DataFetcherBase(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger logger, IApiStatusFactory apiStatusFactory)
         {
             this.DatabaseHandler = databaseHandler;
             this.ApiHandler = apiHandler;
             this.Logger = logger;
+            this.ApiStatusFactory = apiStatusFactory;
 
             this.FetchTimer = new System.Timers.Timer();
 

@@ -28,9 +28,10 @@ namespace Blinkenlights.Models.Api.ApiHandler
 
         }
 
-        public static ApiResponse Success(ApiType apiType, string data, ApiSource source, DateTime lastUpdateTime)
-        {
-            return new ApiResponse()
+        public static ApiResponse Success(ILogger logger, ApiType apiType, string data, ApiSource source, DateTime lastUpdateTime)
+		{
+			logger.LogInformation($"Api Success {apiType}");
+			return new ApiResponse()
             {
                 ApiType = apiType,
                 Data = data,
@@ -40,9 +41,17 @@ namespace Blinkenlights.Models.Api.ApiHandler
             };
         }
 
-        public static ApiResponse Error(ILogger logger, ApiType apiType, string statusMessage, ApiSource source)
+        public static ApiResponse Error(ILogger logger, ApiType apiType, string statusMessage, ApiSource source, string errorCode = null)
         {
-            logger.LogError($"Api error {apiType}: {statusMessage}");
+            if (!string.IsNullOrWhiteSpace(errorCode))
+			{
+				logger.LogError($"Api error {apiType}: Error {errorCode}: {statusMessage}");
+			}
+            else
+			{
+				logger.LogError($"Api error {apiType}: {statusMessage}");
+			}
+
             return new ApiResponse()
             {
                 ApiType = apiType,

@@ -27,6 +27,22 @@
 		}
 
 	}
+	@if (Model.CurrencyData?.Any() == true)
+	{
+		foreach (var dataRow in Model.CurrencyData)
+		{
+			<div class="cur-data">
+				<div class="cur-table">
+					<div class="fin-symbol">
+						@dataRow.Symbol
+					</div>
+					<div class="fin-price">
+						@dataRow.Price
+					</div>
+				</div>
+			</div>
+		}
+	}
 </div>
 
 <script type="module">
