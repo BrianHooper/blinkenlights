@@ -1,4 +1,5 @@
-﻿using Blinkenlights.DatabaseHandler;
+﻿using Blinkenlights.ApiHandlers;
+using Blinkenlights.DatabaseHandler;
 using Blinkenlights.Dataschemas;
 using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.Api.ApiInfoTypes;
@@ -8,7 +9,7 @@ namespace Blinkenlights.DataFetchers
 {
     public class TimeDataFetcher : DataFetcherBase<TimeData>
     {
-        public TimeDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger<TimeDataFetcher> logger) : base(databaseHandler, apiHandler, logger)
+        public TimeDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger<TimeDataFetcher> logger, IApiStatusFactory apiStatusFactory) : base(databaseHandler, apiHandler, logger, apiStatusFactory)
         {
             Start();
         }
@@ -17,7 +18,6 @@ namespace Blinkenlights.DataFetchers
         {
             if (!overwrite && !IsExpired(existingData?.Status, ApiType.TimeZone.Info()))
 			{
-				this.Logger.LogDebug($"Using cached data for {ApiType.TimeZone} API");
 				return existingData;
             }
 
@@ -57,7 +57,7 @@ namespace Blinkenlights.DataFetchers
 
             return new TimeData()
             {
-                Status = ApiStatus.Success(ApiType.TimeZone.ToString(), DateTime.Now, ApiSource.Prod),
+                Status = this.ApiStatusFactory.Success(ApiType.TimeZone, DateTime.Now, ApiSource.Prod),
                 TimeZoneInfos = tzInfos,
                 CountdownInfos = countdownInfos,
                 TimeStamp = DateTime.Now,

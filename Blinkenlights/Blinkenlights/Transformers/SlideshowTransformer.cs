@@ -20,14 +20,14 @@ namespace Blinkenlights.Transformers
             var response = this.DataFetcher.GetLocalData();
             if (response == null)
             {
-                var errorStatus = ApiStatus.Failed("Slideshow data", "Database lookup failed");
-                return new SlideshowViewModel(errorStatus);
+                //var errorStatus = ApiStatus.Failed("Slideshow data", "Database lookup failed");
+                return new SlideshowViewModel();
             }
 
             if (response.Frames?.Any() != true)
             {
-                var errorStatus = ApiStatus.Failed("Slideshow data", "No frames in local data");
-                return new SlideshowViewModel(errorStatus);
+                //var errorStatus = ApiStatus.Failed("Slideshow data", "No frames in local data");
+                return new SlideshowViewModel();
             }
 
             return new SlideshowViewModel(response.Frames);

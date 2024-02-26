@@ -8,10 +8,10 @@ namespace Blinkenlights.Models.ViewModels.OuterSpace
         public string Message { get; set; }
 
         [JsonPropertyName("people")]
-        public List<PersonInSpace> People { get; set; }
+        public List<PersonInSpaceJsonModel> People { get; set; }
     }
 
-    public class PersonInSpace
+    public class PersonInSpaceJsonModel
     {
         [JsonPropertyName("name")]
         public string Name { get; set; }

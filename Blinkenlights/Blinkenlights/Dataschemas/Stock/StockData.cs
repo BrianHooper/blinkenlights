@@ -10,6 +10,8 @@ namespace Blinkenlights.Dataschemas
 
         public DateTime? TimeStamp { get; init; }
 
-        public List<FinanceData> FinanceData { get; init; }
-    }
+		public List<FinanceData> FinanceData { get; init; }
+
+		public List<CurrencyData> CurrencyData { get; init; }
+	}
 }

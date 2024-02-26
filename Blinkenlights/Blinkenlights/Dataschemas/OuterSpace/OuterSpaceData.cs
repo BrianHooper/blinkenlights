@@ -12,12 +12,18 @@ namespace Blinkenlights.Dataschemas
 
 		public IssTrackerData IssTrackerData { get; init; }
 
+		public RocketLaunches RocketLaunches { get; init; }
+
+		public PeopleInSpace PeopleInSpace { get; init; }
+
 		public static OuterSpaceData Clone(OuterSpaceData other)
 		{
 			return new OuterSpaceData()
 			{
 				TimeStamp = other?.TimeStamp,
 				IssTrackerData = other?.IssTrackerData,
+				RocketLaunches = other?.RocketLaunches,
+				PeopleInSpace = other?.PeopleInSpace,
 			};
 		}
 	}

@@ -1,4 +1,5 @@
-﻿using Blinkenlights.DatabaseHandler;
+﻿using Blinkenlights.ApiHandlers;
+using Blinkenlights.DatabaseHandler;
 using Blinkenlights.Dataschemas;
 using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.Api.ApiInfoTypes;
@@ -10,7 +11,7 @@ namespace Blinkenlights.DataFetchers
 {
     public class SlideshowDataFetcher : DataFetcherBase<SlideshowData>
     {
-        public SlideshowDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger<SlideshowDataFetcher> logger) : base(databaseHandler, apiHandler, logger)
+        public SlideshowDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger<SlideshowDataFetcher> logger, IApiStatusFactory apiStatusFactory) : base(databaseHandler, apiHandler, logger, apiStatusFactory)
         {
             Start();
         }
@@ -39,7 +40,6 @@ namespace Blinkenlights.DataFetchers
             var existingFrameData = existingData?.Frames?.FirstOrDefault(f => string.Equals(key, f?.Key));
             if (!overwrite && !IsExpired(existingFrameData?.Status, apiType.Info()))
 			{
-				this.Logger.LogDebug($"Using cached data for {apiType} API");
 				return existingFrameData;
             }
 
@@ -47,17 +47,17 @@ namespace Blinkenlights.DataFetchers
 			var apiResponse = await this.ApiHandler.Fetch(apiType);
             if (apiResponse is null)
             {
-                return new SlideshowFrame(ApiStatus.Failed(apiType.ToString(), "API Response is null"));
+                return new SlideshowFrame(this.ApiStatusFactory.Failed(apiType, "API Response is null"));
             }
 
             if (string.IsNullOrWhiteSpace(apiResponse.Data))
             {
-                return new SlideshowFrame(ApiStatus.Failed(apiType.ToString(), "API Response data is empty", apiResponse.LastUpdateTime));
+                return new SlideshowFrame(this.ApiStatusFactory.Failed(apiType, "API Response data is empty", apiResponse.LastUpdateTime));
             }
 
             if (ApiError.IsApiError(apiResponse.Data, out var errorMessage))
             {
-                return new SlideshowFrame(ApiStatus.Failed(apiType.ToString(), errorMessage, apiResponse.LastUpdateTime));
+                return new SlideshowFrame(this.ApiStatusFactory.Failed(apiType, errorMessage, apiResponse.LastUpdateTime));
             }
 
             SlideshowJsonModel slideshowData;
@@ -67,17 +67,17 @@ namespace Blinkenlights.DataFetchers
             }
             catch (JsonException)
             {
-                return new SlideshowFrame(ApiStatus.Failed(apiType.ToString(), "Exception while deserializing API response", apiResponse.LastUpdateTime));
+                return new SlideshowFrame(this.ApiStatusFactory.Failed(apiType, "Exception while deserializing API response", apiResponse.LastUpdateTime));
             }
 
             if (string.IsNullOrWhiteSpace(slideshowData?.Title)
                 || string.IsNullOrWhiteSpace(slideshowData?.Source)
                 || string.IsNullOrWhiteSpace(slideshowData?.Url))
             {
-                return new SlideshowFrame(ApiStatus.Failed(apiType.ToString(), "Missing required data from api", apiResponse.LastUpdateTime));
+                return new SlideshowFrame(this.ApiStatusFactory.Failed(apiType, "Missing required data from api", apiResponse.LastUpdateTime));
             }
 
-            var status = ApiStatus.Success(apiType.ToString(), DateTime.Now, ApiSource.Prod);
+            var status = this.ApiStatusFactory.Success(apiType, DateTime.Now, ApiSource.Prod);
             return new SlideshowFrame() 
             {
                 Title = title,

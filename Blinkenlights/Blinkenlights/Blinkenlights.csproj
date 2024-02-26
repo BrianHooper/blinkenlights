@@ -36,9 +36,6 @@
 	<Target Name="NpmRunBuild" DependsOnTargets="NpmInstall" BeforeTargets="BeforeBuild">
 		<Exec Command="npm run build" />
 	</Target>
-	<ItemGroup>
-	  <ProjectReference Include="..\Dataschemas\Blinkenlights.Dataschemas.csproj" />
-	</ItemGroup>
     <ItemGroup>
         <Content Update="DataSources\WWII_DayByDay.json">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>

@@ -11,12 +11,17 @@
 		@foreach (var frame in Model.Frames)
 		{
 			<div class="frame">
-				@if (!string.IsNullOrWhiteSpace(frame.Source))
-				{
-					var url = string.IsNullOrWhiteSpace(frame.Url) ? frame.Source : frame.Source;
-					<img src="@frame.Source" alt="@frame.Subtitle">
-					<a class="frame-url" href="@url" target="_blank"></a>
-				}
+				<a class="frame-url" href="@frame.Url" target="_blank">
+					<div class="frame-inner">
+						<div class="frame-image">
+							<img src="@frame.Source" alt="@frame.Subtitle">
+						</div>
+						<div class="frame-caption">
+							<div>@frame.Title</div>
+							<div>@frame.Subtitle</div>
+						</div>
+					</div>
+				</a>
 			</div>
 		}
 	}

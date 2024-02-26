@@ -9,10 +9,14 @@ namespace Blinkenlights.Models.ViewModels.Life360
 
         public string UpdateTimeStr { get; set; }
 
-        public Life360ViewModel(List<Life360LocationData> models, ApiStatus status) : base("Life360", status)
-        {
-            this.Models = models?.Select(x => JsonSerializer.Serialize(x))?.ToList();
-            this.UpdateTimeStr = models?.FirstOrDefault()?.TimeStr ?? string.Empty;
-        }
-    }
+		public Life360ViewModel() : base("Life360")
+		{
+		}
+
+		public Life360ViewModel(List<Life360LocationData> models, ApiStatus status) : base("Life360", status)
+		{
+			this.Models = models?.Select(x => JsonSerializer.Serialize(x))?.ToList();
+			this.UpdateTimeStr = models?.FirstOrDefault()?.TimeStr ?? string.Empty;
+		}
+	}
 }

@@ -1,4 +1,5 @@
-﻿using Blinkenlights.DatabaseHandler;
+﻿using Blinkenlights.ApiHandlers;
+using Blinkenlights.DatabaseHandler;
 using Blinkenlights.Dataschemas;
 using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.Api.ApiInfoTypes;
@@ -9,7 +10,7 @@ namespace Blinkenlights.DataFetchers
 {
     public class UtilityDataFetcher : DataFetcherBase<UtilityData>
     {
-        public UtilityDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger<UtilityDataFetcher> logger) : base(databaseHandler, apiHandler, logger)
+        public UtilityDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger<UtilityDataFetcher> logger, IApiStatusFactory apiStatusFactory) : base(databaseHandler, apiHandler, logger, apiStatusFactory)
         {
             Start();
         }
@@ -39,12 +40,12 @@ namespace Blinkenlights.DataFetchers
 			var response = await this.ApiHandler.Fetch(ApiType.Meh);
             if (response is null)
             {
-                var errorStatus = ApiStatus.Failed(ApiType.Meh.ToString(), "Api response is null");
+                var errorStatus = this.ApiStatusFactory.Failed(ApiType.Meh, "Api response is null");
                 return MehData.Clone(existingData, errorStatus);
             }
             else if (string.IsNullOrWhiteSpace(response.Data))
             {
-                var errorStatus = ApiStatus.Failed(ApiType.Meh.ToString(), "Api response is empty", response.LastUpdateTime);
+                var errorStatus = this.ApiStatusFactory.Failed(ApiType.Meh, "Api response is empty", response.LastUpdateTime);
                 return MehData.Clone(existingData, errorStatus);
             }
 
@@ -55,7 +56,7 @@ namespace Blinkenlights.DataFetchers
             }
             catch (JsonException)
             {
-                var errorStatus = ApiStatus.Failed(ApiType.Meh.ToString(), "Error deserializing api response", response.LastUpdateTime);
+                var errorStatus = this.ApiStatusFactory.Failed(ApiType.Meh, "Error deserializing api response", response.LastUpdateTime);
                 return MehData.Clone(existingData, errorStatus);
             }
 
@@ -69,11 +70,11 @@ namespace Blinkenlights.DataFetchers
                 || string.IsNullOrWhiteSpace(imageUrl)
                 || string.IsNullOrWhiteSpace(price))
             {
-                var errorStatus = ApiStatus.Failed(ApiType.Meh.ToString(), "Required data missing in api response", response.LastUpdateTime);
+                var errorStatus = this.ApiStatusFactory.Failed(ApiType.Meh, "Required data missing in api response", response.LastUpdateTime);
                 return MehData.Clone(existingData, errorStatus);
             }
 
-            var apiStatus = ApiStatus.Success(ApiType.Meh.ToString(), response.LastUpdateTime, response.ApiSource);
+            var apiStatus = this.ApiStatusFactory.Success(ApiType.Meh, response.LastUpdateTime, response.ApiSource);
             return new MehData($"Meh - ${price} - {title}", url, imageUrl, apiStatus);
         }
 
@@ -118,7 +119,6 @@ namespace Blinkenlights.DataFetchers
 
 			if (!overwrite && !IsExpired(existingPackageData?.ApiStatus, ApiType.Ship24.Info()))
 			{
-				this.Logger.LogDebug($"Using cached data for {ApiType.Ship24} API");
 				return existingPackageData;
 			}
 
@@ -128,33 +128,33 @@ namespace Blinkenlights.DataFetchers
             var response = await this.ApiHandler.Fetch(ApiType.Ship24, serializedRequest);
             if (response == null)
             {
-                var errorStatus = ApiStatus.Failed(ApiType.Ship24.ToString(), "Api response was null");
+                var errorStatus = this.ApiStatusFactory.Failed(ApiType.Ship24, "Api response was null");
                 return PackageData.Clone(package, existingPackageData, errorStatus);
             }
 
             if (response.ResultStatus != ApiResultStatus.Success)
             {
-                var errorStatus = ApiStatus.Failed(ApiType.Ship24.ToString(), $"Api failed with response {response.ResultStatus}");
+                var errorStatus = this.ApiStatusFactory.Failed(ApiType.Ship24, $"Api failed with response {response.ResultStatus}");
                 return PackageData.Clone(package, existingPackageData, errorStatus);
             }
 
             if (string.IsNullOrWhiteSpace(response.Data))
             {
-                var errorStatus = ApiStatus.Failed(ApiType.Ship24.ToString(), $"Api response was empty");
+                var errorStatus = this.ApiStatusFactory.Failed(ApiType.Ship24, $"Api response was empty");
                 return PackageData.Clone(package, existingPackageData, errorStatus);
             }
 
             var ship24Response = Ship24Response.Deserialize(response.Data);
             if (ship24Response == null)
             {
-                var errorStatus = ApiStatus.Failed(ApiType.Ship24.ToString(), $"Failed to deserialize api response");
+                var errorStatus = this.ApiStatusFactory.Failed(ApiType.Ship24, $"Failed to deserialize api response");
                 return PackageData.Clone(package, existingPackageData, errorStatus);
             }
 
             var trackingResponse = ship24Response?.Data?.Trackings?.FirstOrDefault();
             if (trackingResponse == null)
             {
-                var errorStatus = ApiStatus.Failed(ApiType.Ship24.ToString(), $"No trackings in api response");
+                var errorStatus = this.ApiStatusFactory.Failed(ApiType.Ship24, $"No trackings in api response");
                 return PackageData.Clone(package, existingPackageData, errorStatus);
             }
 
@@ -176,7 +176,7 @@ namespace Blinkenlights.DataFetchers
                 Eta = eta,
                 Location = location,
                 Icon = icon,
-                ApiStatus = ApiStatus.Success(ApiType.Ship24.ToString(), DateTime.Now, ApiSource.Prod),
+                ApiStatus = this.ApiStatusFactory.Success(ApiType.Ship24, DateTime.Now, ApiSource.Prod),
             };
         }
 

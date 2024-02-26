@@ -11,7 +11,7 @@ namespace Blinkenlights.Models.ViewModels
 
         public ModuleViewModelBase(string moduleName, params ApiStatus[] apiStatuses)
         {
-            var validStatuses = apiStatuses.Where(s => !string.IsNullOrEmpty(s?.Name)).ToArray();
+            var validStatuses = apiStatuses.Where(s => s != null).ToArray();
 
             Status = ApiStatusList.Serialize(validStatuses);
             ModuleName = moduleName;

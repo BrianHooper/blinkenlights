@@ -22,14 +22,14 @@ namespace Blinkenlights.Transformers
 
             if (calendarDataRsp == null)
             {
-                var errorStatus = ApiStatus.Failed(ApiType.GoogleCalendar.ToString(), "Database lookup failed");
-                return new CalendarViewModel(null, errorStatus);
+                //var errorStatus = this.ApiStatusFactory.Failed(ApiType.GoogleCalendar, "Database lookup failed");
+                return new CalendarViewModel();
             }
 
             if (calendarDataRsp.Events?.Any() != true)
             {
-                var errorStatus = ApiStatus.Failed(ApiType.GoogleCalendar.ToString(), "No events in local database");
-                return new CalendarViewModel(null, errorStatus);
+                //var errorStatus = this.ApiStatusFactory.Failed(ApiType.GoogleCalendar, "No events in local database");
+                return new CalendarViewModel();
             }
 
             return new CalendarViewModel(calendarDataRsp.Events, calendarDataRsp.Status);

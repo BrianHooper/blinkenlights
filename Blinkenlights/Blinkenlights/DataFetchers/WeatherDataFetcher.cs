@@ -1,4 +1,5 @@
-﻿using Blinkenlights.DatabaseHandler;
+﻿using Blinkenlights.ApiHandlers;
+using Blinkenlights.DatabaseHandler;
 using Blinkenlights.Dataschemas;
 using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.Api.ApiInfoTypes;
@@ -10,7 +11,7 @@ namespace Blinkenlights.DataFetchers
 {
     public class WeatherDataFetcher : DataFetcherBase<WeatherData>
     {
-        public WeatherDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger<WeatherDataFetcher> logger) : base(databaseHandler, apiHandler, logger)
+        public WeatherDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger<WeatherDataFetcher> logger, IApiStatusFactory apiStatusFactory) : base(databaseHandler, apiHandler, logger, apiStatusFactory)
         {
             Start();
         }
@@ -19,7 +20,6 @@ namespace Blinkenlights.DataFetchers
         {
             if (!overwrite && !IsExpired(existingData?.Status, ApiType.VisualCrossingWeather.Info()) && IsValid(existingData))
 			{
-				this.Logger.LogDebug($"Using cached data for {ApiType.VisualCrossingWeather} API");
 				return existingData;
             }
 
@@ -27,13 +27,13 @@ namespace Blinkenlights.DataFetchers
 			var response = this.ApiHandler.Fetch(ApiType.VisualCrossingWeather).Result;
             if (response is null)
             {
-                var errorStatus = ApiStatus.Failed(ApiType.VisualCrossingWeather.ToString(), "API Response is null");
+                var errorStatus = this.ApiStatusFactory.Failed(ApiType.VisualCrossingWeather, "API Response is null");
                 return WeatherData.Clone(existingData, errorStatus);
             }
 
             if (string.IsNullOrWhiteSpace(response.Data))
             {
-                var errorStatus = ApiStatus.Failed(ApiType.VisualCrossingWeather.ToString(), "API Response data is empty", response.LastUpdateTime);
+                var errorStatus = this.ApiStatusFactory.Failed(ApiType.VisualCrossingWeather, "API Response data is empty", response.LastUpdateTime);
                 return WeatherData.Clone(existingData, errorStatus);
             }
 
@@ -44,13 +44,13 @@ namespace Blinkenlights.DataFetchers
             }
             catch (Exception)
             {
-                var errorStatus = ApiStatus.Failed(ApiType.VisualCrossingWeather.ToString(), "Deserialization error", response.LastUpdateTime);
+                var errorStatus = this.ApiStatusFactory.Failed(ApiType.VisualCrossingWeather, "Deserialization error", response.LastUpdateTime);
                 return WeatherData.Clone(existingData, errorStatus);
             }
 
             if (weatherJsonModel?.Days?.Any() != true)
             {
-                var errorStatus = ApiStatus.Failed(ApiType.VisualCrossingWeather.ToString(), "Deserialized response is empty", response.LastUpdateTime);
+                var errorStatus = this.ApiStatusFactory.Failed(ApiType.VisualCrossingWeather, "Deserialized response is empty", response.LastUpdateTime);
                 return WeatherData.Clone(existingData, errorStatus);
             }
 
@@ -127,7 +127,7 @@ namespace Blinkenlights.DataFetchers
                 CurrentCondition.Create("Wind Direction", AsDirection(weatherJsonModel.CurrentConditions.Winddir ?? 0.0), "windsock.png", $"Wind Direction: {weatherJsonModel.CurrentConditions.Winddir} degrees"),
             };
 
-            var status = ApiStatus.Success(ApiType.VisualCrossingWeather.ToString(), response.LastUpdateTime, response.ApiSource);
+            var status = this.ApiStatusFactory.Success(ApiType.VisualCrossingWeather, response.LastUpdateTime, response.ApiSource);
             return new WeatherData()
             {
                 Status = status,

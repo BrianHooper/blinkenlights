@@ -1,3 +1,4 @@
+using Blinkenlights.ApiHandlers;
 using Blinkenlights.Data;
 using Blinkenlights.DataFetchers;
 using Blinkenlights.Dataschemas;
@@ -6,7 +7,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
-using System.Configuration;
 
 namespace Blinkenlights.DatabaseHandler
 {
@@ -37,9 +37,10 @@ namespace Blinkenlights.DatabaseHandler
             builder.Services.AddControllersWithViews();
 
             builder.Services.AddSingleton<IDatabaseHandler, DatabaseHandler>();
-            builder.Services.AddSingleton<IApiHandler, ApiHandler>();
+			builder.Services.AddSingleton<IApiHandler, ApiHandler>();
+			builder.Services.AddSingleton<IApiStatusFactory, ApiStatusFactory>();
 
-            builder.Services.AddSingleton<IDataFetcher<CalendarModuleData>, CalendarDataFetcher>();
+			builder.Services.AddSingleton<IDataFetcher<CalendarModuleData>, CalendarDataFetcher>();
             builder.Services.AddSingleton<IDataFetcher<HeadlinesData>, HeadlinesDataFetcher>();
             builder.Services.AddSingleton<IDataFetcher<IndexModuleData>, IndexDataFetcher>();
             builder.Services.AddSingleton<IDataFetcher<OuterSpaceData>, OuterSpaceDataFetcher>();

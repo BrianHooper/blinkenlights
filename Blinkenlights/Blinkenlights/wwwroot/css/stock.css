@@ -38,3 +38,10 @@
 
 .finance-axis {
 }
+
+.cur-table {
+    display: flex;
+    font-size: 18px;
+    gap: 80px;
+    justify-content: center;
+}

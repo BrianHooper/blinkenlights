@@ -5,12 +5,13 @@ using Blinkenlights.Models.Api.ApiInfoTypes;
 using Blinkenlights.Models.ViewModels.WWII;
 using System.Text.Json;
 using Humanizer;
+using Blinkenlights.ApiHandlers;
 
 namespace Blinkenlights.DataFetchers
 {
     public class WWIIDataFetcher : DataFetcherBase<WWIIData>
     {
-        public WWIIDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger<WWIIDataFetcher> logger) : base(databaseHandler, apiHandler, logger)
+        public WWIIDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger<WWIIDataFetcher> logger, IApiStatusFactory apiStatusFactory) : base(databaseHandler, apiHandler, logger, apiStatusFactory)
         {
             Start();
 		}
@@ -19,7 +20,6 @@ namespace Blinkenlights.DataFetchers
 		{
 			if (!overwrite && !IsExpired(existingData?.Status, ApiType.Life360.Info()) && IsValid(existingData))
 			{
-				this.Logger.LogDebug($"Using cached data for {ApiType.WWII} API");
 				return existingData;
 			}
 
@@ -27,7 +27,7 @@ namespace Blinkenlights.DataFetchers
 			var response = this.ApiHandler.Fetch(ApiType.WWII).Result;
             if (string.IsNullOrWhiteSpace(response?.Data))
             {
-                var errorStatus = ApiStatus.Failed(ApiType.WWII.ToString(), "Failed to get local data");
+                var errorStatus = this.ApiStatusFactory.Failed(ApiType.WWII, "Failed to get local data");
                 return WWIIData.Clone(existingData, errorStatus);
             }
 
@@ -38,7 +38,7 @@ namespace Blinkenlights.DataFetchers
             }
             catch (JsonException)
             {
-                var errorStatus = ApiStatus.Failed(ApiType.WWII.ToString(), "Failed to deserialize data");
+                var errorStatus = this.ApiStatusFactory.Failed(ApiType.WWII, "Failed to deserialize data");
                 return WWIIData.Clone(existingData, errorStatus);
             }
 
@@ -70,11 +70,11 @@ namespace Blinkenlights.DataFetchers
 
             if (!dayData.Any())
             {
-                var errorStatus = ApiStatus.Failed(ApiType.WWII.ToString(), "Failed to parse any day data");
+                var errorStatus = this.ApiStatusFactory.Failed(ApiType.WWII, "Failed to parse any day data");
                 return WWIIData.Clone(existingData, errorStatus);
             }
 
-            var status = ApiStatus.Success(ApiType.WWII.ToString(), DateTime.Now, ApiSource.Prod);
+            var status = this.ApiStatusFactory.Success(ApiType.WWII, DateTime.Now, ApiSource.Prod);
             return new WWIIData()
             {
                 Status = status,

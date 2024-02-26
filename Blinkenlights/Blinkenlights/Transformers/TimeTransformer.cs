@@ -21,18 +21,18 @@ namespace Blinkenlights.Transformers
             var response = this.DataFetcher.GetLocalData();
             if (response is null)
             {
-                var errorStatus = ApiStatus.Failed(ApiType.TimeZone.ToString(), "Failed to get local data");
-                return new TimeViewModel(errorStatus);
+                //var errorStatus = this.ApiStatusFactory.Failed(ApiType.TimeZone, "Failed to get local data");
+                return new TimeViewModel();
             }
 
             if (response.TimeZoneInfos?.Any() != true && response.CountdownInfos?.Any() != true)
             {
-                var errorStatus = ApiStatus.Failed(ApiType.TimeZone.ToString(), "Database response was empty");
-                return new TimeViewModel(errorStatus);
+                //var errorStatus = this.ApiStatusFactory.Failed(ApiType.TimeZone, "Database response was empty");
+                return new TimeViewModel();
             }
 
-            var status = ApiStatus.Success(ApiType.TimeZone.ToString(), response.TimeStamp, ApiSource.Prod);
-            var viewModel = new TimeViewModel(status)
+            //var status = this.ApiStatusFactory.Success(ApiType.TimeZone, response.TimeStamp, ApiSource.Prod);
+            var viewModel = new TimeViewModel(response.Status)
             {
                 TimeZoneInfos = response.TimeZoneInfos,
                 CountdownInfos = response.CountdownInfos
