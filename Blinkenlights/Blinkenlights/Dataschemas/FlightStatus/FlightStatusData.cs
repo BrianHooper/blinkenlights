@@ -12,7 +12,7 @@ namespace Blinkenlights.Dataschemas
 
         public ApiStatus Status { get; init; }
 
-        public static FlightStatusData Clone(Life360Data other, ApiStatus status)
+        public static FlightStatusData Clone(FlightStatusData other, ApiStatus status)
         {
             return new FlightStatusData()
             {

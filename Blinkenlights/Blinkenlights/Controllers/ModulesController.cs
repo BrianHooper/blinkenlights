@@ -84,11 +84,16 @@ namespace Blinkenlights.Controllers
         public IActionResult GetOuterSpaceModule()
         {
             return GetPartialView<OuterSpaceTransformer>("OuterSpaceModule");
-        }
+		}
 
-        public IActionResult GetStockModule()
-        {
-            return GetPartialView<StockTransformer>("StockModule");
-        }
-    }
+		public IActionResult GetStockModule()
+		{
+			return GetPartialView<StockTransformer>("StockModule");
+		}
+
+		public IActionResult GetFlightStatusModule()
+		{
+			return GetPartialView<FlightStatusTransformer>("FlightStatusModule");
+		}
+	}
 }

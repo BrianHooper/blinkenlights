@@ -6,18 +6,22 @@ using System.Diagnostics;
 namespace Blinkenlights.Controllers
 {
     public class RootController : BlinkenController
-    {
-        private readonly IApiHandler apiHandler;
+	{
+		private readonly IApiHandler apiHandler;
+		private readonly ILogger<RootController> Logger;
 
-        public RootController(IApiHandler apiHandler, IServiceProvider serviceProvider) : base(serviceProvider)
+		public RootController(IApiHandler apiHandler, IServiceProvider serviceProvider, ILogger<RootController> logger) : base(serviceProvider)
         {
             this.apiHandler = apiHandler;
+            this.Logger = logger;
         }
 
         public IActionResult Index()
         {
             if (this.apiHandler.CheckForInvalidSecrets(out var invalidSecrets))
             {
+                var secretsStr = string.Join(", ", invalidSecrets);
+                this.Logger.LogError($"Cannot start due to invalid secrets: {secretsStr}");
                 var errorModel = new ErrorViewModel()
                 {
                     RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier,

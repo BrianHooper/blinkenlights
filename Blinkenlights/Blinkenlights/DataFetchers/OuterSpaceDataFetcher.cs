@@ -109,23 +109,9 @@ namespace Blinkenlights.DataFetchers
                 return IssTrackerData.Clone(existingData, errorStatus);
             }
 
-            if (string.IsNullOrWhiteSpace(trackerData?.ImagePath) || !File.Exists(trackerData.ImagePath))
+            if (string.IsNullOrWhiteSpace(trackerData.ImageEncoded))
             {
-                var errorStatus = this.ApiStatusFactory.Failed(ApiType.IssTracker, "ISS Image does not exist on disk");
-                return IssTrackerData.Clone(existingData, errorStatus);
-            }
-
-            var filename = Path.GetFileName(trackerData?.ImagePath);
-            var relativePath = Path.Combine("images", filename);
-            var destination = Path.Combine(this.WebHostEnvironment.WebRootPath, "images", filename);
-
-            try
-            {
-                File.Copy(trackerData.ImagePath, destination, true);
-            }
-            catch (Exception ex)
-            {
-                var errorStatus = this.ApiStatusFactory.Failed(ApiType.IssTracker, ex.Message);
+                var errorStatus = this.ApiStatusFactory.Failed(ApiType.IssTracker, "ISS Image does not exist");
                 return IssTrackerData.Clone(existingData, errorStatus);
             }
 
@@ -133,9 +119,9 @@ namespace Blinkenlights.DataFetchers
             return new IssTrackerData()
             {
                 Status = status,
-                FilePath = relativePath,
                 Latitude = trackerData.Latitude,
                 Longitude = trackerData.Longitude,
+				ImageData = trackerData.ImageEncoded
             };
         }
 

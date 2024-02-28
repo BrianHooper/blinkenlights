@@ -33,9 +33,10 @@ namespace Blinkenlights.Models.Api.ApiHandler
             this.Mutex = new Mutex();
             this.Config = config;
 
-            this.InstanceSecretsCachePath = Path.Combine(environment.WebRootPath, "DataSources", "InstanceSecretsApiCache.json");
-
-            try
+            this.InstanceSecretsCachePath = Path.Combine(environment.ContentRootPath, "DataSources", "InstanceSecretsApiCache.json");
+			this.Logger.LogInformation($"Loaded API handler, content path: {this.WebHostEnvironment.ContentRootPath}");
+			this.Logger.LogInformation($"Loaded API handler, web root path: {this.WebHostEnvironment.WebRootPath}");
+			try
             {
                 var instanceSecretsSerialized = File.ReadAllText(this.InstanceSecretsCachePath);
                 this.InstanceSecrets = JsonSerializer.Deserialize<Dictionary<ApiSecretType, InstanceSecret>>(instanceSecretsSerialized);
@@ -145,7 +146,7 @@ namespace Blinkenlights.Models.Api.ApiHandler
 
             if (!File.Exists(path))
             {
-                return ApiResponse.Error(this.Logger, apiType, "Local file does not exist", ApiSource.Prod);
+                return ApiResponse.Error(this.Logger, apiType, $"Local file does not exist: {path}", ApiSource.Prod);
             }
 
             string content = null;
@@ -163,7 +164,7 @@ namespace Blinkenlights.Models.Api.ApiHandler
             }
             else
             {
-                return ApiResponse.Error(this.Logger, apiType, "Exception while reading local data file", ApiSource.Prod);
+                return ApiResponse.Error(this.Logger, apiType, $"Exception while reading local data file: {path}", ApiSource.Prod);
             }
         }
 

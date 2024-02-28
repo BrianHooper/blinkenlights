@@ -43,6 +43,9 @@
         <Content Update="DataSources\TimeZoneInfo.json">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
+        <Content Update="wwwroot\DataSources\WWII_DayByDay.json">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
     <ItemGroup>
       <Folder Include="wwwroot\ts-dist\" />

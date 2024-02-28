@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
+using System.Net;
 
 namespace Blinkenlights.DatabaseHandler
 {
@@ -27,7 +28,9 @@ namespace Blinkenlights.DatabaseHandler
 
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Host.UseSerilog();
+
+
+			builder.Host.UseSerilog();
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
@@ -50,9 +53,10 @@ namespace Blinkenlights.DatabaseHandler
             builder.Services.AddSingleton<IDataFetcher<TimeData>, TimeDataFetcher>();
             builder.Services.AddSingleton<IDataFetcher<UtilityData>, UtilityDataFetcher>();
             builder.Services.AddSingleton<IDataFetcher<WeatherData>, WeatherDataFetcher>();
-            builder.Services.AddSingleton<IDataFetcher<WWIIData>, WWIIDataFetcher>();
+			builder.Services.AddSingleton<IDataFetcher<WWIIData>, WWIIDataFetcher>();
+			builder.Services.AddSingleton<IDataFetcher<FlightStatusData>, FlightStatusDataFetcher>();
 
-            var app = builder.Build();
+			var app = builder.Build();
 
             var webHostEnv = app.Services.GetService<IWebHostEnvironment>();
 
@@ -60,8 +64,9 @@ namespace Blinkenlights.DatabaseHandler
             var loggerBootstrap = app.Environment.IsDevelopment() ? new LoggerConfiguration().MinimumLevel.Debug() : new LoggerConfiguration().MinimumLevel.Information();
             loggerBootstrap
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-                .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
-                .Enrich.FromLogContext()
+				.MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
+				.MinimumLevel.Override("Microsoft.Hosting", LogEventLevel.Information)
+				.Enrich.FromLogContext()
                 .WriteTo.Console(outputTemplate: logOutputTemplate)
                 .WriteTo.File(
                     System.IO.Path.Combine(webHostEnv.ContentRootPath, "LogFiles", "diagnostics.txt"),
@@ -86,7 +91,7 @@ namespace Blinkenlights.DatabaseHandler
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();

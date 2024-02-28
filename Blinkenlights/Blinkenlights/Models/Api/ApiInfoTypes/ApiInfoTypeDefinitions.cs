@@ -1,7 +1,6 @@
 ﻿using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.ViewModels.Authentication;
 using System.Text.Json;
-using static System.Net.WebRequestMethods;
 
 namespace Blinkenlights.Models.Api.ApiInfoTypes
 {
@@ -37,8 +36,10 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 
     public abstract class ApiInfoBase : IApiInfo
     {
+		protected const string PAGE_PARSE_API_HOST = "http://127.0.0.1:5001";
+		//protected const string PAGE_PARSE_API_HOST = "http://192.168.1.20:5001";
 
-        public virtual ApiRestType ApiRestType { get; } = ApiRestType.Get;
+		public virtual ApiRestType ApiRestType { get; } = ApiRestType.Get;
 
         public virtual ApiServerType ServerType { get; } = ApiServerType.Unknown;
 
@@ -142,7 +143,7 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 
 		public override StringSecretsPair Endpoint(params string[] queryParameters)
         {
-            var endpoint = "http://127.0.0.1:5001/wikipedia";
+            var endpoint = $"{PAGE_PARSE_API_HOST}/wikipedia";
             return new StringSecretsPair(endpoint);
         }
     }
@@ -156,8 +157,8 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 		public override TimeSpan Timeout { get; } = TimeSpan.FromHours(4);
 
 		public override StringSecretsPair Endpoint(params string[] queryParameters)
-        {
-            var endpoint = "http://127.0.0.1:5001/googlecalendar";
+		{
+			var endpoint = $"{PAGE_PARSE_API_HOST}/googlecalendar";
             return new StringSecretsPair(endpoint);
         }
 
@@ -180,8 +181,8 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 		public override TimeSpan Timeout { get; } = TimeSpan.FromHours(1);
 
 		public override StringSecretsPair Endpoint(params string[] queryParameters)
-        {
-            var endpoint = "http://127.0.0.1:5001/rockets";
+		{
+			var endpoint = $"{PAGE_PARSE_API_HOST}/rockets";
             return new StringSecretsPair(endpoint);
         }
     }
@@ -195,8 +196,8 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 		public override TimeSpan Timeout { get; } = TimeSpan.FromHours(4);
 
 		public override StringSecretsPair Endpoint(params string[] queryParameters)
-        {
-            var endpoint = "http://127.0.0.1:5001/ycombinator";
+		{
+			var endpoint = $"{PAGE_PARSE_API_HOST}/ycombinator";
             return new StringSecretsPair(endpoint);
         }
     }
@@ -233,8 +234,8 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 		public override TimeSpan Timeout { get; } = TimeSpan.FromHours(4);
 
 		public override StringSecretsPair Endpoint(params string[] queryParameters)
-        {
-            var endpoint = "http://127.0.0.1:5001/astronomypotd";
+		{
+			var endpoint = $"{PAGE_PARSE_API_HOST}/astronomypotd";
             return new StringSecretsPair(endpoint);
         }
     }
@@ -342,8 +343,8 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
         public override ApiRestType ApiRestType { get; } = ApiRestType.Post;
 
         public override StringSecretsPair Endpoint(params string[] queryParameters)
-        {
-            var endpoint = "http://127.0.0.1:5001/packagetracking";
+		{
+			var endpoint = $"{PAGE_PARSE_API_HOST}/packagetracking";
             return new StringSecretsPair(endpoint);
         }
 
@@ -394,8 +395,8 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 		public override TimeSpan Timeout { get; } = TimeSpan.FromMinutes(5);
 
 		public override StringSecretsPair Endpoint(params string[] queryParameters)
-        {
-            var endpoint = "http://127.0.0.1:5001/isstracker";
+		{
+			var endpoint = $"{PAGE_PARSE_API_HOST}/isstracker";
             return new StringSecretsPair(endpoint);
         }
     }
@@ -426,8 +427,8 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 		public override TimeSpan Timeout { get; } = TimeSpan.FromHours(4);
 
 		public override StringSecretsPair Endpoint(params string[] queryParameters)
-        {
-            var endpoint = "http://127.0.0.1:5001/wikipotd";
+		{
+			var endpoint = $"{PAGE_PARSE_API_HOST}/wikipotd";
             return new StringSecretsPair(endpoint);
         }
     }

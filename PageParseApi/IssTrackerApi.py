@@ -10,6 +10,7 @@ import cartopy.crs as ccrs
 import cartopy.feature as cfeature
 from pathlib import Path
 from datetime import datetime
+import base64
 
 API_URL = "http://api.open-notify.org/iss-now.json"
 API_HEADERS = {
@@ -80,11 +81,16 @@ def GetIssLocationImage(headless=True):
     if not headless:
         plt.show()
     update_datetime = datetime.now().strftime("%m/%d/%Y %I:%M%p")
+
+    with open(image_path, "rb") as image_file:
+        image_encoded = base64.b64encode(image_file.read())
+
     return { 
         "image_path": image_path,
         "last_update_time": update_datetime,
         "latitude": iss_coordinates.latitude,
-        "longitude": iss_coordinates.longitude
+        "longitude": iss_coordinates.longitude,
+        "image_encoded": image_encoded
     }
 
 if __name__ == "__main__":

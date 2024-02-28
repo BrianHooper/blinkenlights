@@ -37,7 +37,7 @@ namespace Blinkenlights.Transformers
 
             return new OuterSpaceViewModel(trackerData.Status, outerSpaceData.PeopleInSpace?.Status, outerSpaceData.RocketLaunches?.Status)
             {
-                ImagePath = trackerData.FilePath,
+                ImagePath = $"data:image/png;base64, {trackerData.ImageData}",
                 Report = report,
                 PeopleInSpace = outerSpaceData.PeopleInSpace?.People,
                 UpcomingRocketLaunches = outerSpaceData.RocketLaunches?.Launches

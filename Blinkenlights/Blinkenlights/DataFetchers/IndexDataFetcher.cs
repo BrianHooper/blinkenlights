@@ -36,8 +36,8 @@ namespace Blinkenlights.DataFetchers
 
                 // Row 3
                 ModulePlacementData.Create(name : "Calendar", endpoint : "/Modules/GetCalendarModule", refreshRateMs : 60 * 5 * 1000, row : 3, col : 1, colSpan : 3),
-                ModulePlacementData.Create(name : "Utility", endpoint : "/Modules/GetUtilityData", refreshRateMs : 60 * 5 * 1000, row : 3, col : 4, colSpan : 3),
-                //ModulePlacementData.Create(name : "Life360", endpoint : "/Modules/GetLife360Module", refreshRateMs : 2 * 60 * 1000, row : 3, col : 5, colSpan : 2),
+                ModulePlacementData.Create(name : "Utility", endpoint : "/Modules/GetUtilityData", refreshRateMs : 60 * 5 * 1000, row : 3, col : 4),
+                ModulePlacementData.Create(name : "FlightStatus", endpoint : "/Modules/GetFlightStatusModule", refreshRateMs : 5 * 60 * 1000, row : 3, col : 5, colSpan : 2),
                 ModulePlacementData.Create(name : "Slideshow", endpoint : "/Modules/GetSlideshowModule", refreshRateMs : 10 * 60 * 1000, row : 3, col : 7, colSpan : 2),
             };
         }
