@@ -13,16 +13,15 @@ namespace Blinkenlights.DataFetchers
     {
         public WWIIDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger<WWIIDataFetcher> logger, IApiStatusFactory apiStatusFactory) : base(databaseHandler, apiHandler, logger, apiStatusFactory)
         {
-            Start();
 		}
 
-		public override WWIIData GetRemoteData(WWIIData existingData = null, bool overwrite = false)
+		protected override WWIIData GetRemoteData(WWIIData existingData = null, bool overwrite = false)
 		{
-			if (!overwrite && !IsExpired(existingData?.Status, ApiType.Life360.Info()) && IsValid(existingData))
+			if (!overwrite && !IsExpired(existingData?.Status, ApiType.WWII.Info()) && IsValid(existingData))
 			{
 				return existingData;
 			}
-
+             
 			this.Logger.LogInformation($"Calling {ApiType.WWII} remote API");
 			var response = this.ApiHandler.Fetch(ApiType.WWII).Result;
             if (string.IsNullOrWhiteSpace(response?.Data))

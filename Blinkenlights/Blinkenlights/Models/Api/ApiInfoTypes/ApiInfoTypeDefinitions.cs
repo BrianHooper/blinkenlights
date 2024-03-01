@@ -513,8 +513,23 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 			var from_currency = queryParameters?.ElementAtOrDefault(0);
 			var to_currency = queryParameters?.ElementAtOrDefault(1);
 
-            var endpoint = "https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=" + from_currency + "&to_currency=" + to_currency + "&apikey={0}";
+			var endpoint = "https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=" + from_currency + "&to_currency=" + to_currency + "&apikey={0}";
 			return new StringSecretsPair(endpoint, ApiSecretType.FinanceApiKey);
+		}
+	}
+
+	public class RocketLaunchLiveApiInfo : ApiInfoBase
+	{
+		public override int? DailyRateLimit { get; } = 25;
+
+		public override ApiServerType ServerType { get; } = ApiServerType.Remote;
+
+		public override TimeSpan Timeout { get; } = TimeSpan.FromHours(4);
+
+		public override StringSecretsPair Endpoint(params string[] queryParameters)
+		{
+			var endpoint = "https://fdo.rocketlaunch.live/json/launches/next/5";
+			return new StringSecretsPair(endpoint);
 		}
 	}
 }

@@ -68,6 +68,9 @@
 		PeopleInSpace = 21,
 
 		[ApiInfo(typeof(AlphaVantageCurrencyApiInfo))]
-		AlphaVantageCurrency = 22
+		AlphaVantageCurrency = 22,
+
+		[ApiInfo(typeof(RocketLaunchLiveApiInfo))]
+		RocketLaunchLive = 23
 	}
 }

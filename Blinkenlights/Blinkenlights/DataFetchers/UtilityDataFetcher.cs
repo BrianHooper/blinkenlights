@@ -12,10 +12,9 @@ namespace Blinkenlights.DataFetchers
     {
         public UtilityDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger<UtilityDataFetcher> logger, IApiStatusFactory apiStatusFactory) : base(databaseHandler, apiHandler, logger, apiStatusFactory)
         {
-            Start();
         }
 
-		public override UtilityData GetRemoteData(UtilityData existingData = null, bool overwrite = false)
+		protected override UtilityData GetRemoteData(UtilityData existingData = null, bool overwrite = false)
         {
             var mehData = GetMehData(existingData?.MehData, overwrite);
             var packageTrakingData = GetPackageTrackingData(existingData?.PackageTrackingData, overwrite);

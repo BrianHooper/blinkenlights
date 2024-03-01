@@ -13,10 +13,9 @@ namespace Blinkenlights.DataFetchers
     {
         public SlideshowDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger<SlideshowDataFetcher> logger, IApiStatusFactory apiStatusFactory) : base(databaseHandler, apiHandler, logger, apiStatusFactory)
         {
-            Start();
         }
 
-        public override SlideshowData GetRemoteData(SlideshowData existingData = null, bool overwrite = false)
+		protected override SlideshowData GetRemoteData(SlideshowData existingData = null, bool overwrite = false)
 		{
 			var apod = GetPageParsePicOfTheDay(existingData, ApiType.Astronomy, "NASA", "NASA Picture of the Day", overwrite);
 			var wiki = GetPageParsePicOfTheDay(existingData, ApiType.WikiPotd, "WIKI", "Wikipedia Picture of the Day", overwrite);

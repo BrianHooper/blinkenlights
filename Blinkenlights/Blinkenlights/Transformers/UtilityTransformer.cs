@@ -20,7 +20,7 @@ namespace Blinkenlights.Transformers
 
         public override IModuleViewModel Transform()
         {
-            var response = this.DataFetcher.GetLocalData();
+            var response = this.DataFetcher.FetchRemoteData();
             if (response == null)
             {
                 //var errorStatus = ApiStatus.Failed("Utility", "Database lookup failed");
@@ -39,7 +39,7 @@ namespace Blinkenlights.Transformers
 
         private Life360UtilityModel GetLife360Data(out ApiStatus apiStatus)
         {
-            var life360data = this.Life360DataFetcher.GetLocalData();
+            var life360data = this.Life360DataFetcher.FetchRemoteData();
             if (life360data == null)
             {
                 //apiStatus = this.ApiStatusFactory.Failed(ApiType.Life360, "Database lookup failed");

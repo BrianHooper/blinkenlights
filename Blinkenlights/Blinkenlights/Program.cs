@@ -10,25 +10,12 @@ using Serilog.Events;
 using System.Net;
 
 namespace Blinkenlights.DatabaseHandler
-{
-    public static class BuilderServicesExtensions
-    {
-        public static T Get<T>(this IServiceCollection services) where T : class
-        {
-            return services.FirstOrDefault(s => s.ServiceType == typeof(T))?.ImplementationInstance as T;
-        }
-    }
-
+{ 
     public class Program
     {
         public static void Main(string[] args)
         {
-
-
-
             var builder = WebApplication.CreateBuilder(args);
-
-
 
 			builder.Host.UseSerilog();
 

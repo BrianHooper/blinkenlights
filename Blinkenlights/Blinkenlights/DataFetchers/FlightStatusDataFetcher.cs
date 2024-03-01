@@ -23,7 +23,7 @@ namespace Blinkenlights.DataFetchers
         {
         }
 
-        public override FlightStatusData GetRemoteData(FlightStatusData existingData = null, bool overwrite = false)
+        protected override FlightStatusData GetRemoteData(FlightStatusData existingData = null, bool overwrite = false)
         {
 			return GetFlightStatusData(existingData, overwrite).Result;
 		}

@@ -13,10 +13,9 @@ namespace Blinkenlights.DataFetchers
     {
         public WeatherDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger<WeatherDataFetcher> logger, IApiStatusFactory apiStatusFactory) : base(databaseHandler, apiHandler, logger, apiStatusFactory)
         {
-            Start();
         }
 
-		public override WeatherData GetRemoteData(WeatherData existingData = null, bool overwrite = false)
+		protected override WeatherData GetRemoteData(WeatherData existingData = null, bool overwrite = false)
         {
             if (!overwrite && !IsExpired(existingData?.Status, ApiType.VisualCrossingWeather.Info()) && IsValid(existingData))
 			{

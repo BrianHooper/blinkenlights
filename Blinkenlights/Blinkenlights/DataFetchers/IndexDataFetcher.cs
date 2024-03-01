@@ -11,7 +11,7 @@ namespace Blinkenlights.DataFetchers
         {
         }
 
-        public override IndexModuleData GetRemoteData(IndexModuleData existingData = null, bool overwrite = false)
+		protected override IndexModuleData GetRemoteData(IndexModuleData existingData = null, bool overwrite = false)
         {
             return new IndexModuleData()
             {

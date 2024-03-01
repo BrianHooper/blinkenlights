@@ -18,7 +18,7 @@ namespace Blinkenlights.Transformers
 
         public override IModuleViewModel Transform()
         {
-            var outerSpaceData = this.dataFetcher.GetLocalData();
+            var outerSpaceData = this.dataFetcher.FetchRemoteData();
             if (outerSpaceData == null)
             {
                 //var errorStatus = this.ApiStatusFactory.Failed(ApiType.IssTracker, "Database lookup failed");

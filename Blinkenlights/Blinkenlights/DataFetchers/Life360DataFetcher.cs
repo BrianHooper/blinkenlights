@@ -12,10 +12,9 @@ namespace Blinkenlights.DataFetchers
     {
         public Life360DataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger<Life360DataFetcher> logger, IApiStatusFactory apiStatusFactory) : base(databaseHandler, apiHandler, logger, apiStatusFactory)
 		{
-            Start();
         }
 
-        public override Life360Data GetRemoteData(Life360Data existingData = null, bool overwrite = false)
+		protected override Life360Data GetRemoteData(Life360Data existingData = null, bool overwrite = false)
         {
             if (!overwrite && !IsExpired(existingData?.Status, ApiType.Life360.Info()) && IsValid(existingData))
 			{

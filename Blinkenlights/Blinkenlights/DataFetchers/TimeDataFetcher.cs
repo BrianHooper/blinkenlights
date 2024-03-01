@@ -11,10 +11,9 @@ namespace Blinkenlights.DataFetchers
     {
         public TimeDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger<TimeDataFetcher> logger, IApiStatusFactory apiStatusFactory) : base(databaseHandler, apiHandler, logger, apiStatusFactory)
         {
-            Start();
         }
 
-        public override TimeData GetRemoteData(TimeData existingData = null, bool overwrite = false)
+		protected override TimeData GetRemoteData(TimeData existingData = null, bool overwrite = false)
         {
             if (!overwrite && !IsExpired(existingData?.Status, ApiType.TimeZone.Info()))
 			{

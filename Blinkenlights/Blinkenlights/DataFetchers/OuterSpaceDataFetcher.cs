@@ -11,15 +11,11 @@ namespace Blinkenlights.DataFetchers
 {
     public class OuterSpaceDataFetcher : DataFetcherBase<OuterSpaceData>
 	{
-		IWebHostEnvironment WebHostEnvironment;
-
-		public OuterSpaceDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, IWebHostEnvironment webHostEnvironment, ILogger<OuterSpaceDataFetcher> logger, IApiStatusFactory apiStatusFactory) : base(databaseHandler, apiHandler, logger, apiStatusFactory)
+		public OuterSpaceDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger<OuterSpaceDataFetcher> logger, IApiStatusFactory apiStatusFactory) : base(databaseHandler, apiHandler, logger, apiStatusFactory)
         {
-            this.WebHostEnvironment = webHostEnvironment;
-            this.Start();
         }
 
-        public override OuterSpaceData GetRemoteData(OuterSpaceData existingData = null, bool overwrite = false)
+		protected override OuterSpaceData GetRemoteData(OuterSpaceData existingData = null, bool overwrite = false)
         {
             var issTrackerData = GetTrackerData(existingData?.IssTrackerData, overwrite); 
             var rocketModel = ProcessPageParseApiResponse(existingData?.RocketLaunches, overwrite);
@@ -68,7 +64,6 @@ namespace Blinkenlights.DataFetchers
 				People = people
 			};
 		}
-
 
 		private async Task<IssTrackerData> GetTrackerData(IssTrackerData existingData, bool overwrite)
         { 
@@ -180,6 +175,32 @@ namespace Blinkenlights.DataFetchers
 				var errorStatus = this.ApiStatusFactory.Failed(ApiType.RocketLaunches, "No headlines created", response.LastUpdateTime);
 				return RocketLaunches.Clone(existingData, errorStatus);
 			}
+		}
+		private async Task<RocketLaunchLiveData> GetRocketLaunchLiveData(RocketLaunchLiveData existingData, bool overwrite)
+		{
+			if (!overwrite && !IsExpired(existingData?.Status, ApiType.RocketLaunchLive.Info()))
+			{
+				return existingData;
+			}
+
+			this.Logger.LogInformation($"Calling {ApiType.RocketLaunchLive} remote API");
+			var response = await this.ApiHandler.Fetch(ApiType.RocketLaunchLive);
+			RocketLaunchLiveJsonModel peopleData;
+			try
+			{
+				peopleData = JsonSerializer.Deserialize<RocketLaunchLiveJsonModel>(response.Data);
+			}
+			catch (JsonException)
+			{
+				var errorStatus = this.ApiStatusFactory.Failed(ApiType.RocketLaunchLive, "Exception while deserializing API response");
+				return RocketLaunchLiveData.Clone(existingData, errorStatus);
+			}
+
+			var status = this.ApiStatusFactory.Success(ApiType.RocketLaunchLive, DateTime.Now, ApiSource.Prod);
+			return new RocketLaunchLiveData()
+			{
+				Status = status,
+			};
 		}
 	}
 }

@@ -12,10 +12,9 @@ namespace Blinkenlights.DataFetchers
     {
         public HeadlinesDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger<HeadlinesDataFetcher> logger, IApiStatusFactory apiStatusFactory) : base(databaseHandler, apiHandler, logger, apiStatusFactory)
 		{
-            Start();
         }
 
-        public override HeadlinesData GetRemoteData(HeadlinesData existingData = null, bool overwrite = false)
+		protected override HeadlinesData GetRemoteData(HeadlinesData existingData = null, bool overwrite = false)
         {
             var nytModel = ProcessNytResponse(existingData?.Headlines?.FirstOrDefault(h => string.Equals("NYT", h?.Key)), overwrite);
             var wikipediaModel = ProcessPageParseApiResponse(existingData?.Headlines?.FirstOrDefault(h => string.Equals("WIKI", h?.Key)), "WIKI", ApiType.Wikipedia, "Wikipedia - In the news", overwrite);

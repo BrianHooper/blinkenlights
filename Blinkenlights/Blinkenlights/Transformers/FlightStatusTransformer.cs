@@ -3,7 +3,6 @@ using Blinkenlights.Dataschemas;
 using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.ViewModels;
 using Blinkenlights.Models.ViewModels.FlightStatus;
-using Blinkenlights.Models.ViewModels.OuterSpace;
 
 namespace Blinkenlights.Transformers
 {
@@ -18,8 +17,7 @@ namespace Blinkenlights.Transformers
 
 		public override IModuleViewModel Transform()
 		{
-			this.dataFetcher.FetchRemoteData(true);
-			var data = this.dataFetcher.GetLocalData();
+			var data = this.dataFetcher.FetchRemoteData();
 			if (data == null)
 			{
 				return new FlightStatusViewModel();
