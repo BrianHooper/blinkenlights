@@ -23,8 +23,9 @@ namespace Blinkenlights.Transformers
 				return new FlightStatusViewModel();
 			}
 
-			return new FlightStatusViewModel()
+			return new FlightStatusViewModel(data.Status)
 			{
+				Flights = data.Flights
 			};
 		}
 	}

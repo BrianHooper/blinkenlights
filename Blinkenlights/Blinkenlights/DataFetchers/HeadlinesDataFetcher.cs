@@ -19,6 +19,11 @@ namespace Blinkenlights.DataFetchers
             var nytModel = ProcessNytResponse(existingData?.Headlines?.FirstOrDefault(h => string.Equals("NYT", h?.Key)), overwrite);
             var wikipediaModel = ProcessPageParseApiResponse(existingData?.Headlines?.FirstOrDefault(h => string.Equals("WIKI", h?.Key)), "WIKI", ApiType.Wikipedia, "Wikipedia - In the news", overwrite);
             var ycombinatorModel = ProcessPageParseApiResponse(existingData?.Headlines?.FirstOrDefault(h => string.Equals("YCOMB", h?.Key)), "YCOMB", ApiType.YCombinator, "YCombinator", overwrite);
+            var btownModel = ProcessPageParseApiResponse(existingData?.Headlines?.FirstOrDefault(h => string.Equals("BTOWN", h?.Key)), "BTOWN", ApiType.BTown, "BTown Blog", overwrite);
+            var nprModel = ProcessPageParseApiResponse(existingData?.Headlines?.FirstOrDefault(h => string.Equals("NPR", h?.Key)), "NPR", ApiType.Npr, "NPR", overwrite);
+            var apModel = ProcessPageParseApiResponse(existingData?.Headlines?.FirstOrDefault(h => string.Equals("APNEWS", h?.Key)), "APNEWS", ApiType.APNews, "AP News", overwrite);
+            var seattleTimesModel = ProcessPageParseApiResponse(existingData?.Headlines?.FirstOrDefault(h => string.Equals("SEATTLETIMES", h?.Key)), "SEATTLETIMES", ApiType.SeattleTimes, "Seattle Times", overwrite);
+
             return new HeadlinesData()
             {
                 Headlines = new List<HeadlinesContainer>()
@@ -26,6 +31,10 @@ namespace Blinkenlights.DataFetchers
                     nytModel.Result,
                     wikipediaModel.Result,
                     ycombinatorModel.Result,
+                    btownModel.Result,
+                    nprModel.Result,
+                    apModel.Result,
+                    seattleTimesModel.Result,
                 },
                 TimeStamp = DateTime.Now,
             };

@@ -26,13 +26,13 @@ namespace Blinkenlights.Transformers
             }
 
             var key = DateTime.Now.ToString("d MMM yyyy");
-            if (data?.Days?.TryGetValue(key, out var currentDayData) != true || currentDayData?.GlobalEvents?.Any() != true)
+            if (data?.Days?.TryGetValue(key, out var currentDayData) != true || (currentDayData?.GlobalEvents?.Any() != true && currentDayData?.RegionalEvents?.Any() != true))
             {
                 //var errorStatus = this.ApiStatusFactory.Failed(ApiType.WWII, "No data available for today");
                 return new WWIIDayModel();
             }
 
-            return new WWIIDayModel(currentDayData.Date, currentDayData.GlobalEvents, currentDayData.RegionalEvents, data.Status);
+            return new WWIIDayModel(currentDayData.Date, currentDayData.GlobalEvents, currentDayData.RegionalEvents);
         }
     }
 }

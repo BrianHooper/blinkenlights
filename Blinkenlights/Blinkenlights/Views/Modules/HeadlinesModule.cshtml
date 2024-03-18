@@ -16,22 +16,31 @@
 					{
 						@if (headlinesCategory?.Articles?.Any() == true)
 						{
-							<div class="headlines-header">@headlinesCategory.Title</div>
-							<ul class="headlines-articles">
-								@foreach (var headline in headlinesCategory.Articles)
-								{
-									<li class="headlines-article">
-										@if (!string.IsNullOrWhiteSpace(headline.Url))
-										{
-											<a href="@headline.Url" target="_blank" title="@headline.Title">@headline.Title</a>
-										}
-										else
-										{
-											@headline.Title
-										}
-									</li>
-								}
-							</ul>
+							<div class="headlines-category">
+								<div class="headlines-header">
+									<div class="headlines-header-body">
+										<div class="headlines-header-status">
+											<partial name="ApiStatus" model="@headlinesContainer.Status" />
+										</div>
+										<div class="headlines-header-title">@headlinesCategory.Title</div>
+									</div>
+								</div>
+								<ul class="headlines-articles">
+									@foreach (var headline in headlinesCategory.Articles)
+									{
+										<li class="headlines-article">
+											@if (!string.IsNullOrWhiteSpace(headline.Url))
+											{
+												<a href="@headline.Url" target="_blank" title="@headline.Title">@headline.Title</a>
+											}
+											else
+											{
+												@headline.Title
+											}
+										</li>
+									}
+								</ul>
+							</div>
 						}
 					}
 				}

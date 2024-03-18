@@ -3,8 +3,6 @@
 
 <link rel="stylesheet" href="~/css/utility.css" />
 
-<partial name="ModuleStatus" model="@Model" />
-
 <div id="utility-root" title="@Model.Status">
     <div class="util-body">
         @if (Model.MehData != null)
@@ -13,7 +11,10 @@
             @if (!string.IsNullOrWhiteSpace(Model.MehData.Title))
             {
                 <div class="util-block">
-                    <div class="util-row meh-row">
+                    <div class="util-row meh-row">                            
+                        <div class="util-col">
+                                <partial name="ApiStatus" model="@Model.MehData.Status" />
+                            </div>
                         <div class="util-col meh-title">@Model.MehData.Title</div>
                     </div>
                     <a class="util-url" href="@Model.MehData.Url" target="_blank"></a>
@@ -29,6 +30,9 @@
                 {
                     <div class="util-block">
                         <div class="util-row pkg-row">
+                            <div class="util-col">
+                                <partial name="ApiStatus" model="@package.ApiStatus" />
+                            </div>
                             <div class="util-col pkgtrack-icon">
                                 @if (!string.IsNullOrWhiteSpace(package.Icon))
                                 {
@@ -50,10 +54,12 @@
                 <div class="util-block">
                     <div class="util-row">
                         <div class="util-col">
-                            @Model.Life360Data.Distance
+                            <partial name="ApiStatus" model="@Model.Life360Data.Status" />
                         </div>
                         <div class="util-col">
-                            @Model.Life360Data.TimeDelta
+                            @Model.Life360Data.Distance
+                        </div>
+                        <div id="util-l360-tdelta" class="util-col" data-time-delta="@Model.Life360Data.TimeDelta">
                         </div>
                     </div>
                 </div>
@@ -62,4 +68,9 @@
     </div>
 </div>
 
-<script type="module" src="~/ts-dist/UtilityModule.js"></script>
+<script type="module">
+    import { RefreshLife360Utility } from "./ts-dist/UtilityModule.js";
+
+    RefreshLife360Utility();
+    setInterval(RefreshLife360Utility, 3600);
+</script>

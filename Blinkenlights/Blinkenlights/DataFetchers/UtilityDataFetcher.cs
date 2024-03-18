@@ -30,7 +30,7 @@ namespace Blinkenlights.DataFetchers
         private async Task<MehData> GetMehData(MehData existingData, bool overwrite)
         {
             //TODO Check if data is valid
-            if (!overwrite && !IsExpired(existingData?.ApiStatus, ApiType.Meh.Info()))
+            if (!overwrite && !IsExpired(existingData?.Status, ApiType.Meh.Info()))
             {
                 return existingData;
             }

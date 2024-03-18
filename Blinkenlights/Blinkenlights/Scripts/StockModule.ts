@@ -5,7 +5,7 @@
 
 const financeGraphSizes = {
     height: 80,
-    graphWidth: 350,
+    graphWidth: 300,
     axisWidth: 40,
     translateTop: 0,
     axisTranslateLeft: 30

@@ -37,7 +37,7 @@ namespace Blinkenlights.DataFetchers
             Life360JsonModel serverModel;
             try
             {
-                serverModel = Life360JsonModel.FromJson(response.Data);
+                serverModel = JsonSerializer.Deserialize<Life360JsonModel>(response.Data);
             }
             catch (JsonException e)
             {
@@ -54,7 +54,7 @@ namespace Blinkenlights.DataFetchers
 
             var locA = models.ElementAtOrDefault(0);
             var locB = models.ElementAtOrDefault(1);
-            var distance = FetchDistance(existingData?.DistanceData, locA, locB);
+            var distance = CalculateDistance(existingData?.DistanceData, locA, locB);
 
             var status = this.ApiStatusFactory.Success(ApiType.Life360, response.LastUpdateTime, response.ApiSource);
             return new Life360Data()
@@ -66,47 +66,49 @@ namespace Blinkenlights.DataFetchers
             };
         }
 
-        private Life360DistanceData FetchDistance(Life360DistanceData existingData, Life360LocationData locA, Life360LocationData locB)
+        private Life360DistanceData CalculateDistance(Life360DistanceData existingData, Life360LocationData locA, Life360LocationData locB)
         {
             if (locA == null || locB == null)
             {
-                var errorStatus = this.ApiStatusFactory.Failed(ApiType.Distance, $"Insufficient data to call api");
-                return Life360DistanceData.Clone(existingData, errorStatus);
+                return existingData;
             }
 
-			this.Logger.LogInformation($"Calling {ApiType.Distance} remote API");
-			var response = this.ApiHandler.Fetch(ApiType.Distance, "", locA.Latitude.ToString(), locA.Longitude.ToString(), locB.Latitude.ToString(), locB.Longitude.ToString()).Result;
-            if (response == null)
+            var distance = Haversine(locA.Latitude, locB.Latitude, locA.Longitude, locB.Longitude);
+            var timeDeltaSeconds = locA.TimeDeltaSeconds < locB.TimeDeltaSeconds ? locA.TimeDeltaSeconds : locB.TimeDeltaSeconds;
+            var time = string.Empty;
+            if (string.Equals(locA.Id, "5fc014c9-645c-4d0a-9dc4-205293ab2ba3", StringComparison.OrdinalIgnoreCase))
             {
-                var errorStatus = this.ApiStatusFactory.Failed(ApiType.Distance, $"API response was null");
-                return Life360DistanceData.Clone(existingData, errorStatus);
+                time = locA.ToString();
             }
-
-            DistanceJsonModel serverModel;
-            try
+            else
             {
-                serverModel = JsonSerializer.Deserialize<DistanceJsonModel>(response.Data);
-            }
-            catch (JsonException e)
-            {
-                var errorStatus = this.ApiStatusFactory.Failed(ApiType.Distance, $"Exception while deserializing API response: {e.Message}");
-                return Life360DistanceData.Clone(existingData, errorStatus);
+                time = locB.Time.ToString();
             }
 
-            var timeDelta = locA.TimeDeltaSeconds < locB.TimeDeltaSeconds ? locA.TimeDeltaStr : locB.TimeDeltaStr;
-
-            var status = this.ApiStatusFactory.Success(ApiType.Distance, DateTime.Now, ApiSource.Prod);
             return new Life360DistanceData()
             {
-                Distance = serverModel.distance.ToString(),
-                TimeDelta = timeDelta,
-                Status = status,
+                Distance = distance.ToString(),
+                TimeDelta = timeDeltaSeconds,
+                Time = time,
             };
+        }
+
+        private static double Haversine(double lat1, double lat2, double lon1, double lon2)
+        {
+            const double r = 6371e3; // meters
+            var dlat = (lat2 - lat1) / 2;
+            var dlon = (lon2 - lon1) / 2;
+
+            var q = Math.Pow(Math.Sin(dlat), 2) + Math.Cos(lat1) * Math.Cos(lat2) * Math.Pow(Math.Sin(dlon), 2);
+            var c = 2 * Math.Atan2(Math.Sqrt(q), Math.Sqrt(1 - q));
+
+            var d = r * c;
+            return d / 1000;
         }
 
         private static Life360LocationData Parse(Member member)
         {
-            return Life360LocationData.Parse(member?.FirstName, member?.Location?.Timestamp?.ToString(), member?.Location?.Latitude?.ToString(), member?.Location?.Longitude?.ToString());
+            return Life360LocationData.Parse(member?.FirstName, member?.Location?.Timestamp?.ToString(), member?.Location?.Latitude?.ToString(), member?.Location?.Longitude?.ToString(), member?.Id);
         }
 
         protected bool IsValid(Life360Data existingData = null)

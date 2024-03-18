@@ -58,7 +58,7 @@ namespace Blinkenlights.DataFetchers
                 var globalEvents = wWIIDayJsonModel.Events.FirstOrDefault(kv => string.Equals(kv.Key, "Global", StringComparison.OrdinalIgnoreCase)).Value;
                 var regionalEvents = wWIIDayJsonModel.Events.Where(kv => !string.Equals(kv.Key, "Global", StringComparison.OrdinalIgnoreCase)).ToList();
 
-                if (globalEvents?.Any() != true)
+                if (globalEvents?.Any() != true && regionalEvents?.Any() != true)
                 {
                     continue;
                 }

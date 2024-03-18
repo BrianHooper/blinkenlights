@@ -58,11 +58,11 @@
         [ApiInfo(typeof(WikiPotdApiInfo))]
         WikiPotd = 18,
 
-        [ApiInfo(typeof(DistanceApiInfo))]
-        Distance = 19,
+        //[ApiInfo(typeof(DistanceApiInfo))]
+        //Distance = 19,
 
-        [ApiInfo(typeof(FlightAwareApiInfo))]
-        FlightAware = 20,
+        //[ApiInfo(typeof(FlightAwareApiInfo))]
+        //FlightAware = 20,
 
 		[ApiInfo(typeof(PeopleInSpaceApiInfo))]
 		PeopleInSpace = 21,
@@ -71,6 +71,21 @@
 		AlphaVantageCurrency = 22,
 
 		[ApiInfo(typeof(RocketLaunchLiveApiInfo))]
-		RocketLaunchLive = 23
-	}
+		RocketLaunchLive = 23,
+
+        [ApiInfo(typeof(FlightRadarApiInfo))]
+        FlightRadar = 24,
+
+        [ApiInfo(typeof(BTownApiInfo))]
+        BTown = 25,
+
+        [ApiInfo(typeof(NprApiInfo))]
+        Npr = 26,
+
+        [ApiInfo(typeof(APNewsApiInfo))]
+        APNews = 27,
+
+        [ApiInfo(typeof(SeattleTimesApiInfo))]
+        SeattleTimes = 28
+    }
 }

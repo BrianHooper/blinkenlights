@@ -13,38 +13,53 @@
 					<img src="@Model.ImagePath" />
 				</div>
 				<div class="iss-update">
-					ISS Current Coordinates: @Model.Report
+					<div class="iss-update-status">
+						<partial name="ApiStatus" model="@Model.IssTrackerStatus" />
+					</div>
+					<div class="iss-update-report">ISS: @Model.Report</div>
 				</div>
 			}
 		</div>
-		@if(Model?.PeopleInSpace?.Any() == true)
-		{
-			<div class="outerspace-people">
-				<div class="outerspace-person title">
-					People currently in space:
+		<div class="outerspace-people">
+			<div class="outerspace-people-title">
+				<div class="">
+					<partial name="ApiStatus" model="@Model.PeopleInSpace?.Status" />
 				</div>
-				@foreach (var person in Model.PeopleInSpace)
+				<div class="">People in space:</div>
+			</div>
+			@if (Model.PeopleInSpace?.People?.Any() == true)
+			{
+				@foreach (var person in Model.PeopleInSpace.People)
 				{
 					<div class="outerspace-person">
 						<div class="outerspace-person-name">@person.Name</div>
 						<div class="outerspace-person-craft">@person.Craft</div>
 					</div>
 				}
-			</div>
-		}
-	</div>
-	@if(Model?.UpcomingRocketLaunches?.Any() == true)
-	{
-		<div class="outerspace-bottom">
-			<div class="outerspace-launches">
-				@foreach(var launch in Model.UpcomingRocketLaunches)
-				{
-					<a class="outerspace-url" href="@launch.Url" target="_blank">
-						<div class="outerspace-launch">@launch.Title</div>
-					</a>
-				}
-			</div>
+			}
 		</div>
-	}
+	</div>
+	<div class="outerspace-bottom">
+			<div class="outerspace-people-title">
+				<div class="">
+					<partial name="ApiStatus" model="@Model.UpcomingRocketLaunches?.Status" />
+				</div>
+				<div class="">Upcoming rocket launches:</div>
+			</div>
+		<div class="outerspace-launches">
+			@if (Model.UpcomingRocketLaunches?.Launches?.Any() == true)
+			{
+				@foreach (var launch in Model.UpcomingRocketLaunches.Launches)
+				{
+					<div class="outerspace-time">@launch.LaunchTime</div>
+					<div class="outerspace-provider">@launch.Provider</div>
+					<a class="outerspace-url" href="@launch.Url" target="_blank">
+						<div class="outerspace-title" title="@launch.Title">@launch.Name</div>
+					</a>
+					<div class="outerspace-provider">@launch.Location</div>
+				}
+			}
+		</div>
+	</div>
 </div>
 <script type="module" src="~/ts-dist/OuterSpaceModule.js"></script>

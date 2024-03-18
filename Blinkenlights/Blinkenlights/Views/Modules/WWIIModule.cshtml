@@ -25,7 +25,7 @@
 
         @if (Model?.RegionalEvents?.Any() == true)
         {
-            @foreach (var item in Model.RegionalEvents)//(int i = 0; i < Model.RegionalEvents.Count(); i++)
+            @foreach (var item in Model.RegionalEvents)
             {
                 <ul class="wwii-regional">
                     @for(int i = 0; i < item.Value.Count(); i++)

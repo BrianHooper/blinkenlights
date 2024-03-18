@@ -12,12 +12,15 @@ namespace Blinkenlights.Dataschemas
 
         public ApiStatus Status { get; init; }
 
+        public List<FlightData> Flights { get; init; }
+
         public static FlightStatusData Clone(FlightStatusData other, ApiStatus status)
         {
             return new FlightStatusData()
             {
                 Status = status,
-                TimeStamp = other?.TimeStamp
+                TimeStamp = other?.TimeStamp,
+                Flights = other?.Flights,
             };
         }
     }

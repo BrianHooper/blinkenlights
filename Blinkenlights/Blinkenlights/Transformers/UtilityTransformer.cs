@@ -27,9 +27,9 @@ namespace Blinkenlights.Transformers
                 return new UtilityViewModel();
             }
 
-            var life360Data = GetLife360Data(out var life360Status);
+            var life360Data = GetLife360Data();
 
-            return new UtilityViewModel(response.MehData?.ApiStatus, life360Status)
+            return new UtilityViewModel(response.MehData?.Status)
             {
                 MehData = response.MehData,
                 PackageTrackingData = response.PackageTrackingData,
@@ -37,27 +37,25 @@ namespace Blinkenlights.Transformers
             };
         }
 
-        private Life360UtilityModel GetLife360Data(out ApiStatus apiStatus)
+        private Life360UtilityModel GetLife360Data()
         {
             var life360data = this.Life360DataFetcher.FetchRemoteData();
             if (life360data == null)
             {
                 //apiStatus = this.ApiStatusFactory.Failed(ApiType.Life360, "Database lookup failed");
-                apiStatus = null;
                 return null;
             }
 
             if (life360data.DistanceData == null)
             {
-                apiStatus = life360data.Status;
                 return null;
             }
 
-            apiStatus = life360data.Status;
             return new Life360UtilityModel()
             {
+                Status = life360data.Status,
                 Distance = life360data.DistanceData.Distance,
-                TimeDelta = life360data.DistanceData.TimeDelta
+                TimeDelta = life360data.DistanceData.Time,
             };
         }
     }

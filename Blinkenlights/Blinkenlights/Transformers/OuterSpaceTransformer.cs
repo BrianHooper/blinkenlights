@@ -39,8 +39,9 @@ namespace Blinkenlights.Transformers
             {
                 ImagePath = $"data:image/png;base64, {trackerData.ImageData}",
                 Report = report,
-                PeopleInSpace = outerSpaceData.PeopleInSpace?.People,
-                UpcomingRocketLaunches = outerSpaceData.RocketLaunches?.Launches
+                PeopleInSpace = outerSpaceData.PeopleInSpace,
+                UpcomingRocketLaunches = outerSpaceData.RocketLaunches,
+                IssTrackerStatus = trackerData.Status,
             };
         }
     }
