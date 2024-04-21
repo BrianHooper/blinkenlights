@@ -84,10 +84,10 @@ namespace Blinkenlights.DataFetchers
             {
                 new Package()
                 {
-                    Name = "Present",
-                    TrackingNumber = "9434608205499799759287",
-                    Url = "https://tools.usps.com/go/TrackConfirmAction_input?strOrigTrackNum=9434608205499799759287",
-                    Carrier = "usps"
+                    Name = "Hose Reel",
+                    TrackingNumber = "775761253501",
+                    Url = "https://www.fedex.com/fedextrack/?trknbr=775761253501&trkqual=12027~775761253501~FDEG",
+                    Carrier = "fedex"
                 }
             };
         }
@@ -190,6 +190,7 @@ namespace Blinkenlights.DataFetchers
             {
                 "ups" => Path.Combine("images", "packagetracking", "ups.png"),
                 "usps" => Path.Combine("images", "packagetracking", "usps.png"),
+                "fedex" => Path.Combine("images", "packagetracking", "fedex.png"),
                 _ => null
             };
         }

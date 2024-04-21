@@ -35,7 +35,7 @@ namespace Blinkenlights.Transformers
             var longitude = trackerData.Longitude >= 0.0 ? $"{Math.Round(trackerData.Longitude.Value, 2)}° E" : $"{Math.Round(trackerData.Longitude.Value, 2) * -1}° W";
             var report = $"{latitude}, {longitude}";
 
-            return new OuterSpaceViewModel(trackerData.Status, outerSpaceData.PeopleInSpace?.Status, outerSpaceData.RocketLaunches?.Status)
+            return new OuterSpaceViewModel()
             {
                 ImagePath = $"data:image/png;base64, {trackerData.ImageData}",
                 Report = report,

@@ -1,4 +1,4 @@
-﻿#utility-root {
+#utility-root {
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -13,6 +13,14 @@
 
 .util-block {
     position: relative;
+    background-color: #666;
+    border-radius: 3px;
+    min-width: 0;
+    padding: 3px;
+    align-items: center;
+    display: flex;
+    gap: 10px;
+    padding-inline: 10px;
 }
 
 #meh-title-block {
@@ -26,18 +34,13 @@
 }
 
 .util-row {
-    background-color: #666;
-    border-radius: 3px;
-    min-width: 0;
-    padding: 3px;
-    align-items: center;
     display: flex;
     gap: 10px;
-    padding-inline: 10px;
 }
 
 .meh-row {
     display: flex;
+    overflow: hidden;
 }
 
 .pkg-row {

@@ -117,5 +117,11 @@ namespace Blinkenlights.Controllers
 		{
 			return GetPartialView<FlightStatusTransformer>("FlightStatusModule");
 		}
-	}
+
+        public IActionResult GetAutomataModule()
+        {
+            return GetPartialView<AutomataTransformer>("AutomataModule");
+        }
+
+    }
 }

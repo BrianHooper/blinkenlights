@@ -73,9 +73,11 @@ namespace Blinkenlights.DataFetchers
                 return existingData;
             }
 
-            var distance = Haversine(locA.Latitude, locB.Latitude, locA.Longitude, locB.Longitude);
+            var distanceKm = Haversine(locA.Latitude, locB.Latitude, locA.Longitude, locB.Longitude);
+            var distance = (distanceKm / 1.609344).ToString("0.##");
             var timeDeltaSeconds = locA.TimeDeltaSeconds < locB.TimeDeltaSeconds ? locA.TimeDeltaSeconds : locB.TimeDeltaSeconds;
-            var time = string.Empty;
+
+            string time;
             if (string.Equals(locA.Id, "5fc014c9-645c-4d0a-9dc4-205293ab2ba3", StringComparison.OrdinalIgnoreCase))
             {
                 time = locA.ToString();
@@ -95,15 +97,26 @@ namespace Blinkenlights.DataFetchers
 
         private static double Haversine(double lat1, double lat2, double lon1, double lon2)
         {
-            const double r = 6371e3; // meters
-            var dlat = (lat2 - lat1) / 2;
-            var dlon = (lon2 - lon1) / 2;
+            double R = 6371; // Earth radius in kilometers
 
-            var q = Math.Pow(Math.Sin(dlat), 2) + Math.Cos(lat1) * Math.Cos(lat2) * Math.Pow(Math.Sin(dlon), 2);
-            var c = 2 * Math.Atan2(Math.Sqrt(q), Math.Sqrt(1 - q));
+            // Convert latitude and longitude to radians
+            double lat1Rad = lat1 * Math.PI / 180;
+            double lat2Rad = lat2 * Math.PI / 180;
+            double lon1Rad = lon1 * Math.PI / 180;
+            double lon2Rad = lon2 * Math.PI / 180;
 
-            var d = r * c;
-            return d / 1000;
+            // Calculate differences
+            double dLat = lat2Rad - lat1Rad;
+            double dLon = lon2Rad - lon1Rad;
+
+            // Calculate flat earth distance
+            double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+                       Math.Cos(lat1Rad) * Math.Cos(lat2Rad) *
+                       Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+            double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+            double distance = R * c;
+
+            return distance;
         }
 
         private static Life360LocationData Parse(Member member)

@@ -11,10 +11,10 @@
             @if (!string.IsNullOrWhiteSpace(Model.MehData.Title))
             {
                 <div class="util-block">
-                    <div class="util-row meh-row">                            
-                        <div class="util-col">
-                                <partial name="ApiStatus" model="@Model.MehData.Status" />
-                            </div>
+                    <div class="meh-status">
+                        <partial name="ApiStatus" model="@Model.MehData.Status" />
+                    </div>
+                    <div class="util-row meh-row">
                         <div class="util-col meh-title">@Model.MehData.Title</div>
                     </div>
                     <a class="util-url" href="@Model.MehData.Url" target="_blank"></a>
@@ -29,10 +29,10 @@
                 foreach (var package in Model.PackageTrackingData.Packages)
                 {
                     <div class="util-block">
+                        <div class="pkgtrack-api">
+                            <partial name="ApiStatus" model="@package.ApiStatus" />
+                        </div>
                         <div class="util-row pkg-row">
-                            <div class="util-col">
-                                <partial name="ApiStatus" model="@package.ApiStatus" />
-                            </div>
                             <div class="util-col pkgtrack-icon">
                                 @if (!string.IsNullOrWhiteSpace(package.Icon))
                                 {
@@ -52,10 +52,10 @@
             @if (Model.Life360Data?.Distance != null)
             {
                 <div class="util-block">
+                    <div class="l360-api">
+                        <partial name="ApiStatus" model="@Model.Life360Data.Status" />
+                    </div>
                     <div class="util-row">
-                        <div class="util-col">
-                            <partial name="ApiStatus" model="@Model.Life360Data.Status" />
-                        </div>
                         <div class="util-col">
                             @Model.Life360Data.Distance
                         </div>
