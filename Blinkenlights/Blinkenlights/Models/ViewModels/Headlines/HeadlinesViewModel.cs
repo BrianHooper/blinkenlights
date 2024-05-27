@@ -10,14 +10,9 @@ namespace Blinkenlights.Models.ViewModels.Headlines
 		{
 		}
 
-		public HeadlinesViewModel(List<HeadlinesContainer> headlines) : base("Headlines", headlines.Select(h => h.Status).ToArray())
+		public HeadlinesViewModel(List<HeadlinesContainer> headlines) : base("Headlines")
         {
             Headlines = headlines;
-        }
-
-        public HeadlinesViewModel(ApiStatus status) : base("Headlines", status)
-        {
-
         }
     }
 }

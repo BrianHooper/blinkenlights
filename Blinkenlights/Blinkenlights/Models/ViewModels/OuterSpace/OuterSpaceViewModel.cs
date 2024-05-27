@@ -8,9 +8,11 @@ namespace Blinkenlights.Models.ViewModels.OuterSpace
 
         public string Report { get; set; }
 
-        public List<PersonInSpace> PeopleInSpace { get; set; }
+        public ApiStatus IssTrackerStatus { get; set; }
 
-        public List<RocketLaunch> UpcomingRocketLaunches { get; set; }
+        public PeopleInSpace PeopleInSpace { get; set; }
+
+        public RocketLaunches UpcomingRocketLaunches { get; set; }
 
 		public OuterSpaceViewModel() : base("OuterSpace") { }
 

@@ -29,7 +29,7 @@
 		<div id="time-countdown" class="time-block">
 		@foreach(var countdownInfo in Model.CountdownInfos) 
 		{
-			<div class="time-countdown-row time-row">
+			<div class="time-countdown-row time-row" title="@countdownInfo.Key">
 				<div class="time-countdown-name">@countdownInfo.Value</div>
 				<div class="time-countdown-remaining" endDate="@countdownInfo.Key"></div>
 			</div>

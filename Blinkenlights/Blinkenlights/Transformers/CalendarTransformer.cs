@@ -18,7 +18,7 @@ namespace Blinkenlights.Transformers
 
         public override IModuleViewModel Transform()
         {
-            var calendarDataRsp = this.dataFetcher.GetLocalData();
+            var calendarDataRsp = this.dataFetcher.FetchRemoteData();
 
             if (calendarDataRsp == null)
             {

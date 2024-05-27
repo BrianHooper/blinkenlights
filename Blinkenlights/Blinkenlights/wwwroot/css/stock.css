@@ -8,6 +8,15 @@
 
 .fin-data {
     position: relative;
+    background-color: #484848;
+    border-radius: 10px;
+    border: 1px solid #6a6a6a;
+}
+
+.cur-data {
+    background-color: #484848;
+    border-radius: 10px;
+    border: 1px solid #6a6a6a;
 }
 
 .fin-graph-block {
@@ -17,10 +26,7 @@
 
 .finance-block {
     display: flex;
-    background-color: #484848;
     padding: 10px;
-    border-radius: 10px;
-    border: 1px solid #6a6a6a;
 }
 
 .fin-table {

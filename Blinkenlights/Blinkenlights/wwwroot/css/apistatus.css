@@ -1,0 +1,28 @@
+.api-status-wrap {
+    display: flex;
+}
+
+.api-status {
+    display: flex;
+    border: 1px solid #484848;
+    background-color: #484848;
+    padding-inline: 5px;
+    border-radius: 5px;
+    font-size: 10px;
+    height: 12px;
+    gap: 0px 5px;
+    overflow: visible;
+    white-space: nowrap;
+}
+
+.api-status-icon-svg {
+    fill: gray;
+}
+
+.api-status-icon-success > .api-status-icon-svg {
+    fill: green;
+}
+
+.api-status-icon-error > .api-status-icon-svg {
+    fill: red;
+}

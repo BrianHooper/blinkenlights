@@ -13,7 +13,10 @@ namespace Blinkenlights.Models.ViewModels.OuterSpace
         [JsonPropertyName("latitude")]
         public float Latitude { get; set; }
 
-        [JsonPropertyName("longitude")]
-        public float Longitude { get; set; }
-    }
+		[JsonPropertyName("longitude")]
+		public float Longitude { get; set; }
+
+		[JsonPropertyName("image_encoded")]
+		public string ImageEncoded { get; set; }
+	}
 }

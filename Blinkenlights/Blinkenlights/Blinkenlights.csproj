@@ -37,14 +37,8 @@
 		<Exec Command="npm run build" />
 	</Target>
     <ItemGroup>
-        <Content Update="DataSources\WWII_DayByDay.json">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        <Content Update="wwwroot\**\*">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
-        <Content Update="DataSources\TimeZoneInfo.json">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
-    <ItemGroup>
-      <Folder Include="wwwroot\ts-dist\" />
     </ItemGroup>
 </Project>

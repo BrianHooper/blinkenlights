@@ -68,10 +68,6 @@ html, body, .index-root {
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#525252', endColorstr='#525252', GradientType=1 ); /* IE6-9 */
 }
 
-.status-field {
-    padding-block: 5px;
-    padding-inline: 10px;
-}
 
 .module-success {
     fill: green;
@@ -117,17 +113,6 @@ html, body, .index-root {
     white-space: nowrap;
 }
 
-.api-status {
-    display: flex;
-    gap: 0px 5px;
-    align-items: center;
-    height: 20px;
-}
-.api-source {
-    height: 10px;
-    width: 10px;
-    overflow: visible;
-}
 
 .module-status-icon {
     height: 15px;
@@ -136,25 +121,6 @@ html, body, .index-root {
     overflow: visible;
 }
 
-.api-source-cache {
-    fill: darkorange;
-}
-
-.api-source-prod {
-    fill: green;
-}
-
-.api-source-error {
-    fill: red;
-}
-
-.status-source {
-    width: 10px;
-}
-
-.status-lastupdate {
-    width: 60px;
-}
 
 .module-head {
     display: flex;

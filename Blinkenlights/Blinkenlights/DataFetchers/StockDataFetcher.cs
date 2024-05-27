@@ -12,10 +12,9 @@ namespace Blinkenlights.DataFetchers
     {
         public StockDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger<WeatherDataFetcher> logger, IApiStatusFactory apiStatusFactory) : base(databaseHandler, apiHandler, logger, apiStatusFactory)
         {
-            Start();
         }
 
-		public override StockData GetRemoteData(StockData existingData = null, bool overwrite = false)
+		protected override StockData GetRemoteData(StockData existingData = null, bool overwrite = false)
 		{
 			var msft = FetchStockData(existingData, "MSFT", overwrite);
 			var btc = FetchCurrencyData(existingData, "BTC", overwrite);
@@ -65,7 +64,7 @@ namespace Blinkenlights.DataFetchers
 			{
 				errorResponse = JsonSerializer.Deserialize<StockErrorModel>(response.Data);
 			}
-			catch (Exception ex) { }
+			catch (Exception) { }
 			if (!string.IsNullOrWhiteSpace(errorResponse?.Information) && errorResponse.Information.Contains("rate limit"))
 			{
 				var errorStatus = this.ApiStatusFactory.Failed(ApiType.AlphaVantageCurrency, "Rate limited", existingData?.Status?.LastUpdate, DateTime.Now.AddHours(2));
@@ -141,7 +140,8 @@ namespace Blinkenlights.DataFetchers
 			{
 				errorResponse = JsonSerializer.Deserialize<StockErrorModel>(response.Data);
 			}
-			catch (Exception ex) { }
+			catch (Exception) { }
+
 			if (!string.IsNullOrWhiteSpace(errorResponse?.Information) && errorResponse.Information.Contains("rate limit"))
 			{
 				var errorStatus = this.ApiStatusFactory.Failed(ApiType.AlphaVantage, "Rate limited", existingData?.Status?.LastUpdate, DateTime.Now.AddHours(2));

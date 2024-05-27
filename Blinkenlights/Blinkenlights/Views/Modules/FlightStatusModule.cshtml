@@ -1,0 +1,82 @@
+﻿@using Blinkenlights.Models.ViewModels.FlightStatus;
+@model FlightStatusViewModel
+
+<link rel="stylesheet" href="~/css/flightstatus.css" />
+
+<partial name="ModuleStatus" model="@Model" />
+
+
+<div class="flightstatus-root">
+	<div class="flightstatus-mapcontainer">
+		<div class="flightstatus-map">
+            <img src="~/images/flightstatusmap.png" />
+			@foreach (var flight in Model.Flights)
+			{
+				var inlineStyle = $"top: {flight.MapTopPercentage}%; left: {flight.MapLeftPercentage}%; transform: rotate({flight.Heading}deg); fill: {flight.Color};";
+				<div class="flightstatus-plane" style="@inlineStyle" data-flight-name="@flight.Fid">
+                    <svg height="100%"
+                     style="shape-rendering:geometricPrecision; text-rendering:geometricPrecision; image-rendering:optimizeQuality;"
+                     version="1.1"
+                     viewBox="0 0 846.66 846.66"
+                     width="100%"
+                     xml:space="preserve"
+                     id="svg1"
+                     sodipodi:docname="plane2.svg"
+                     inkscape:version="1.3.1 (91b66b0783, 2023-11-16)"
+                     xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+                     xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+                     xmlns="http://www.w3.org/2000/svg"
+                     xmlns:svg="http://www.w3.org/2000/svg"><defs id="defs1" /><sodipodi:namedview id="namedview1"
+                                                                                                   pagecolor="#505050"
+                                                                                                   bordercolor="#eeeeee"
+                                                                                                   borderopacity="1"
+                                                                                                   inkscape:showpageshadow="0"
+                                                                                                   inkscape:pageopacity="0"
+                                                                                                   inkscape:pagecheckerboard="0"
+                                                                                                   inkscape:deskcolor="#d1d1d1"
+                                                                                                   inkscape:document-units="mm"
+                                                                                                   inkscape:zoom="24.093939"
+                                                                                                   inkscape:cx="15.979123"
+                                                                                                   inkscape:cy="15.999875"
+                                                                                                   inkscape:window-width="1920"
+                                                                                                   inkscape:window-height="1009"
+                                                                                                   inkscape:window-x="-8"
+                                                                                                   inkscape:window-y="-8"
+                                                                                                   inkscape:window-maximized="1"
+                                                                                                   inkscape:current-layer="g1" />
+                    <g id="g1">
+                    <path d="m 418.88913,81.648758 c -9.88995,0.264687 -49.0926,7.80769 -49.0926,110.742582 v 106.45345 h -0.0517 c 0,5.51999 -2.34465,10.97946 -6.92464,14.77946 l -68.6263,57.05077 c -14.06999,12.83999 -32.96956,2.09741 -32.96956,-13.64257 v -13.95264 c 0,-16.55998 -25.01139,-16.38998 -25.01139,0 v 66.92098 h -0.10336 c 0,5.50999 -2.35464,10.97946 -6.92464,14.77946 L 109.399,524.36072 v 28.47372 l 232.95734,-94.7229 c 13.80999,-6.02999 27.44019,4.06832 27.44019,17.51831 v 156.99299 h -0.0517 c 0,5.02 -1.90777,10.02761 -5.78776,13.79761 l -49.86776,48.47249 v 55.81054 l 99.37378,-57.67089 c 5.80999,-3.46 13.26369,-3.73335 19.53369,-0.10336 l 99.58048,57.77425 v -55.81054 l -48.83423,-47.43896 c -4.21999,-3.54 -6.92464,-8.88114 -6.92464,-14.83114 V 475.62985 c 0.04,-13.39999 13.7917,-23.07004 26.56168,-17.88004 l 233.88752,95.08463 V 524.36072 L 618.82524,425.86545 c -5.06,-3.48 -8.37159,-9.26467 -8.37159,-15.86466 v -66.92098 c 0,-16.38998 -25.06306,-16.55998 -25.06306,0 l -0.0517,13.95264 c 0.01,16.12998 -18.94263,25.23945 -31.52262,14.77946 l -68.57462,-57.05078 c -5.06,-3.48 -8.42326,-9.30635 -8.42326,-15.91634 V 192.39134 c 0,-119.959875 -51.31552,-110.200906 -55.65551,-110.690906 -0.0175,-0.0025 -0.86092,-0.08949 -2.27377,-0.05168 z"
+                      style="stroke:#000000;fill-opacity:1"
+                      id="path4"
+                      class="plane-background" /><path d="m 423.33331,43.201495 c -14.11999,-0.67 -92.13908,2.289997 -92.13908,149.189845 v 97.51343 l -36.63859,30.48909 c -24.13997,-48.30995 -96.99665,-30.91399 -96.99665,22.68595 v 57.92928 L 79.168289,499.50436 c -5.059995,3.48 -8.371581,9.30635 -8.371581,15.91634 v 66.09415 c 0,13.39999 13.811697,23.05004 26.561684,17.88005 L 331.19423,504.31027 v 120.25105 l -48.83422,47.43896 c -4.23,3.55 -6.92464,8.88114 -6.92464,14.83114 v 97.35839 h 0.0517 c -0.02,14.66998 16.00882,24.18148 28.9388,16.69148 l 118.90747,-68.98803 117.77058,68.31624 c 14.34998,9.00999 30.12735,-1.64971 30.12735,-16.01969 v -97.35839 h -0.0517 c 0,-5.02 -1.95944,-10.06929 -5.83944,-13.84929 L 515.47238,624.56132 V 504.31027 l 232.90566,94.72289 c 13.81999,6.02 27.49186,-4.07832 27.49186,-17.51831 V 515.4207 h -0.10335 c 0,-5.51999 -2.35465,-11.03114 -6.92464,-14.83113 L 649.10762,401.00909 v -57.92928 c 0,-53.59994 -72.85668,-70.9959 -96.99665,-22.68595 l -36.63859,-30.48909 v -97.51343 c 0,-146.899848 -78.01909,-149.859845 -92.13907,-149.189845 z m -4.44418,38.447263 c 1.41285,-0.03781 2.25627,0.04918 2.27377,0.05168 4.33999,0.49 55.65551,-9.268969 55.65551,110.690906 v 106.45345 c 0,6.60999 3.36326,12.43634 8.42326,15.91634 l 68.57462,57.05078 c 12.57999,10.45999 31.53262,1.35052 31.52262,-14.77946 l 0.0517,-13.95264 c 0,-16.55998 25.06306,-16.38998 25.06306,0 v 66.92098 c 0,6.59999 3.31159,12.38466 8.37159,15.86466 l 118.44237,98.49527 v 28.47372 L 503.38009,457.74981 c -12.76998,-5.19 -26.52168,4.48005 -26.56168,17.88004 v 156.99299 c 0,5.95 2.70465,11.29114 6.92464,14.83114 l 48.83423,47.43896 v 55.81054 L 432.9968,692.92923 c -6.27,-3.62999 -13.7237,-3.35664 -19.53369,0.10336 l -99.37378,57.67089 v -55.81054 l 49.86776,-48.47249 c 3.87999,-3.77 5.78776,-8.77761 5.78776,-13.79761 h 0.0517 V 475.62985 c 0,-13.44999 -13.6302,-23.5483 -27.44019,-17.51831 L 109.399,552.83444 v -28.47372 l 119.78596,-99.58047 c 4.57,-3.8 6.92464,-9.26947 6.92464,-14.77946 h 0.10336 v -66.92098 c 0,-16.38998 25.01139,-16.55998 25.01139,0 v 13.95264 c 0,15.73998 18.89957,26.48256 32.96956,13.64257 l 68.6263,-57.05077 c 4.57999,-3.8 6.92464,-9.25947 6.92464,-14.77946 h 0.0517 V 192.39134 c 0,-102.934892 39.20265,-110.477895 49.0926,-110.742582 z"
+                                                       style="stroke:#000000;fill-opacity:1"
+                                                       id="path3"
+                                                       class="plane-outline" />
+            </g>
+            </svg>
+				</div>
+			}
+		</div>
+	</div>
+
+	<div class="flightstatus-tablecontainer">
+		@foreach(var flight in Model.Flights)
+		{
+            var legendStyle = $"background-color: {flight.Color};";
+            var route = $"{flight.SourceAirport} => {flight.DestAirport}";
+            <div class="flightstatus-row" data-flight-name="@flight.Fid">
+                <div class="flightstatus-legend" style="@legendStyle">&nbsp;</div>
+                <div class="flightstatus-code">@flight.FlightCode</div>
+                <div class="flightstatus-route">@route</div>
+                <div class="flightstatus-aircraft">@flight.AircraftType</div>
+                <div class="flightstatus-overlay-container"><div class="flightstatus-overlay"></div></div>
+            </div>
+		}
+	</div>
+</div>
+
+<script type="module">
+    import { AddEventHandlers } from "./ts-dist/FlightStatusModule.js";
+
+    AddEventHandlers();
+</script>

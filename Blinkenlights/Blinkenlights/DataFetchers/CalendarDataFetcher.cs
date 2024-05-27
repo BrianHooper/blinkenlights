@@ -13,10 +13,9 @@ namespace Blinkenlights.DataFetchers
     {
         public CalendarDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger<CalendarDataFetcher> logger, IApiStatusFactory apiStatusFactory) : base(databaseHandler, apiHandler, logger, apiStatusFactory)
         {
-            this.Start();
         }
 
-        public override CalendarModuleData GetRemoteData(CalendarModuleData existingData = null, bool overwrite = false)
+		protected override CalendarModuleData GetRemoteData(CalendarModuleData existingData = null, bool overwrite = false)
         {
             if (!overwrite && !IsExpired(existingData?.Status, ApiType.GoogleCalendar.Info()) && IsValid(existingData))
 			{

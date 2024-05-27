@@ -7,10 +7,31 @@ namespace Blinkenlights.Controllers
 {
     public class ModulesController : BlinkenController
     {
-        public ModulesController(IServiceProvider serviceProvider) : base(serviceProvider)
+        private readonly ILogger<ModulesController> logger;
+
+        public ModulesController(IServiceProvider serviceProvider, ILogger<ModulesController> logger) : base(serviceProvider)
         {
+            this.logger = logger;
         }
 
+        public async Task<IActionResult> GetSingleFlightData(string fid)
+        {
+            this.logger.LogInformation($"Getting flight data for {fid}");
+            var dataFetcher = this.ServiceProvider.GetService<IDataFetcher<FlightStatusData>>() as FlightStatusDataFetcher;
+            if (dataFetcher == null)
+            {
+                return Problem($"Failed to get DataFetcher<{typeof(FlightStatusData).Name}>");
+            }
+            var singleflightdata = await dataFetcher.GetFlightData(fid);
+            if (!string.IsNullOrWhiteSpace(singleflightdata))
+            {
+                return Ok(singleflightdata);
+            }
+            else
+            {
+                return Problem("API response empty");
+            }
+        }
 
         private IActionResult FetchRemoteData<T>() where T : IDatabaseData
         {
@@ -37,6 +58,7 @@ namespace Blinkenlights.Controllers
                 "Utility" => FetchRemoteData<UtilityData>(),
                 "Weather" => FetchRemoteData<WeatherData>(),
                 "WWII" => FetchRemoteData<WWIIData>(),
+                "FlightStatus" => FetchRemoteData<FlightStatusData>(),
                 _ => Problem($"Failed to match {id}")
             };
         }
@@ -84,11 +106,22 @@ namespace Blinkenlights.Controllers
         public IActionResult GetOuterSpaceModule()
         {
             return GetPartialView<OuterSpaceTransformer>("OuterSpaceModule");
+		}
+
+		public IActionResult GetStockModule()
+		{
+			return GetPartialView<StockTransformer>("StockModule");
+		}
+
+		public IActionResult GetFlightStatusModule()
+		{
+			return GetPartialView<FlightStatusTransformer>("FlightStatusModule");
+		}
+
+        public IActionResult GetAutomataModule()
+        {
+            return GetPartialView<AutomataTransformer>("AutomataModule");
         }
 
-        public IActionResult GetStockModule()
-        {
-            return GetPartialView<StockTransformer>("StockModule");
-        }
     }
 }

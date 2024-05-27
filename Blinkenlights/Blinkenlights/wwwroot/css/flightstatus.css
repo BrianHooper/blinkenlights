@@ -1,0 +1,125 @@
+.flightstatus-root {
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    overflow-y: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.flightstatus-root::-webkit-scrollbar { /* WebKit */
+    width: 0;
+    height: 0;
+}
+
+.flightstatus-mapcontainer {
+    height: 200px;
+    width: 225px;
+    border-radius: 3px;
+}
+
+.flightstatus-map {
+    height: 200px;
+    width: 225px;
+    display: flex;
+    position: relative;
+}
+
+.flightstatus-map > img {
+    object-fit: contain;
+}
+
+.flightstatus-plane {
+    position: absolute;
+    height: 24px;
+    width: 24px;
+    z-index: 0;
+}
+
+.flightstatus-tablecontainer {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0px 10px;
+}
+
+.flightstatus-row {
+    display: flex;
+    gap: 10px;
+    overflow: hidden;
+    white-space: nowrap;
+    cursor: pointer;
+    padding: 5px;
+    position: relative;
+}
+
+.plane-outline {
+    fill: black;
+}
+
+.flightstatus-legend {
+    width: 10px;
+    height: 10px;
+}
+
+.flightstatus-code {
+    width: 50px;
+}
+
+.flightstatus-route {
+    width: 60px;
+}
+
+.flightstatus-row-highlight {
+    background-color: #121212;
+}
+
+.flightstatus-plane-highlight {
+    height: 36px;
+    width: 36px;
+    z-index: 1;
+}
+
+.flightstatus-overlay-container {
+    position: fixed;
+    overflow: visible;
+    display: none;
+    z-index: 10;
+}
+
+.flightstatus-tablecontainer div:nth-child(odd) > .flightstatus-overlay-container > .flightstatus-overlay {
+    right: 0px;
+}
+
+.flightstatus-tablecontainer div:nth-child(even) > .flightstatus-overlay-container > .flightstatus-overlay {
+    left: 175px;
+}
+
+.flightstatus-overlay {
+    position: absolute;
+    width: 300px;
+    white-space: normal;
+    bottom: -20px;
+    padding: 10px;
+    background-color: #121212;
+}
+
+.flightstatus-overlay-show {
+    display: flex;
+}
+
+.flightstatus-overlay-row {
+    display: flex;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.flightstatus-overlay-key {
+    width: 30%;
+}
+
+.flightstatus-overlay-value {
+    width: 70%;
+}

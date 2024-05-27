@@ -36,6 +36,9 @@
     display: flex;
     flex-direction: column;
     gap: 2px;
+    padding-block: 5px;
+    margin: 0;
+    border-bottom: 1px solid #1E1E1E;
 }
 
 #wwii-body > li {

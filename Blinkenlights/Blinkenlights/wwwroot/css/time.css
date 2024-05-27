@@ -14,7 +14,13 @@
     display: flex;
     justify-content: space-between;
     padding: 2px 5px;
+}
+
+#time-worldclock {
     font-size: 16px;
+}
+#time-countdown {
+    font-size: 13px;
 }
 
 #time-divider {

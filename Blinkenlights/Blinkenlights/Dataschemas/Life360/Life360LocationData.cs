@@ -9,8 +9,9 @@
         public DateTime Time { get; init; }
         public int TimeDeltaSeconds { get; init; }
         public string TimeDeltaStr { get; init; }
+        public string Id { get; init; }
 
-        public static Life360LocationData Parse(string name, string timestamp, string latitudeStr, string longitudeStr)
+        public static Life360LocationData Parse(string name, string timestamp, string latitudeStr, string longitudeStr, string id)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -59,7 +60,8 @@
                 TimeStr = timeStr,
                 Time = lastSignalDateTime,
                 TimeDeltaSeconds = deltaSecondsTotal,
-                TimeDeltaStr = timeDeltaStr
+                TimeDeltaStr = timeDeltaStr,
+                Id = id,
             };
         }
     }

@@ -21,5 +21,15 @@
 		public string Title { get; set; }
 
 		public string Url { get; set; }
+
+		public string Provider { get; set; }
+
+		public string Name { get; set; }
+
+		public string LaunchTime { get; set; }
+
+		public string Location { get; set; }
+
+
 	}
 }

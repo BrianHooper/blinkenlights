@@ -108,13 +108,13 @@ function SetModuleStatus(key: string, status: string): void {
     $("<div/>", { "class": "module-status" }).html(sourceIcon).appendTo(container);
     $("<div/>", { "class": "module-title" }).html(key).appendTo(container);
 
-    var d = new Date();
+    //var d = new Date();
 
-    var dateStr = d.toLocaleString("en-US", {
-        hour: "numeric",
-        minute: "2-digit"
-    });
-    $("<div/>", { "class": "module-time" }).html(dateStr).appendTo(container);
+    //var dateStr = d.toLocaleString("en-US", {
+    //    hour: "numeric",
+    //    minute: "2-digit"
+    //});
+    //$("<div/>", { "class": "module-time" }).html(dateStr).appendTo(container);
 }
 
 function SetApiResult(moduleName: string, apiStatusStr: string): void {

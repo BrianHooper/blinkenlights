@@ -18,7 +18,7 @@ namespace Blinkenlights.Transformers
 
         public override IModuleViewModel Transform()
         {
-            var outerSpaceData = this.dataFetcher.GetLocalData();
+            var outerSpaceData = this.dataFetcher.FetchRemoteData();
             if (outerSpaceData == null)
             {
                 //var errorStatus = this.ApiStatusFactory.Failed(ApiType.IssTracker, "Database lookup failed");
@@ -35,12 +35,13 @@ namespace Blinkenlights.Transformers
             var longitude = trackerData.Longitude >= 0.0 ? $"{Math.Round(trackerData.Longitude.Value, 2)}° E" : $"{Math.Round(trackerData.Longitude.Value, 2) * -1}° W";
             var report = $"{latitude}, {longitude}";
 
-            return new OuterSpaceViewModel(trackerData.Status, outerSpaceData.PeopleInSpace?.Status, outerSpaceData.RocketLaunches?.Status)
+            return new OuterSpaceViewModel()
             {
-                ImagePath = trackerData.FilePath,
+                ImagePath = $"data:image/png;base64, {trackerData.ImageData}",
                 Report = report,
-                PeopleInSpace = outerSpaceData.PeopleInSpace?.People,
-                UpcomingRocketLaunches = outerSpaceData.RocketLaunches?.Launches
+                PeopleInSpace = outerSpaceData.PeopleInSpace,
+                UpcomingRocketLaunches = outerSpaceData.RocketLaunches,
+                IssTrackerStatus = trackerData.Status,
             };
         }
     }

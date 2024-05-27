@@ -18,7 +18,7 @@ namespace Blinkenlights.Transformers
 
         public override IModuleViewModel Transform()
         {
-            var response = this.DataFetcher.GetLocalData();
+            var response = this.DataFetcher.FetchRemoteData();
             if (response is null)
             {
                 //var errorStatus = this.ApiStatusFactory.Failed(ApiType.TimeZone, "Failed to get local data");

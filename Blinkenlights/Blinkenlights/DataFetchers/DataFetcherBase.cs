@@ -14,35 +14,15 @@ namespace Blinkenlights.DataFetchers
 		protected ILogger Logger { get; init; }
 		protected IApiStatusFactory ApiStatusFactory { get; init; }
 
-		protected System.Timers.Timer FetchTimer { get; init; }
-
         public DataFetcherBase(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger logger, IApiStatusFactory apiStatusFactory)
         {
             this.DatabaseHandler = databaseHandler;
             this.ApiHandler = apiHandler;
             this.Logger = logger;
             this.ApiStatusFactory = apiStatusFactory;
-
-            this.FetchTimer = new System.Timers.Timer();
-
-            this.FetchTimer.Elapsed += OnTimer;
-            this.FetchTimer.AutoReset = false;
         }
 
-        public void Start()
-        {
-            this.FetchTimer.Start();
-        }
-
-        public void OnTimer(Object source, ElapsedEventArgs e)
-        {
-            this.FetchRemoteData();
-            this.FetchTimer.Stop();
-            this.FetchTimer.Interval = TimeSpan.FromMinutes(1).TotalMilliseconds;
-            this.FetchTimer.Start();
-        }
-
-        public T GetLocalData()
+        private T GetLocalData()
         {
             return this.DatabaseHandler.Get<T>();
         }
@@ -55,9 +35,9 @@ namespace Blinkenlights.DataFetchers
             return updatedData;
         }
 
-		public abstract T GetRemoteData(T existingData = default, bool overwrite = false);
+		protected abstract T GetRemoteData(T existingData = default, bool overwrite = false);
 
-        public static bool IsExpired(ApiStatus status, IApiInfo apiInfo)
+		protected static bool IsExpired(ApiStatus status, IApiInfo apiInfo)
         {
             if (status?.LastUpdate == null || apiInfo == null)
             {

@@ -12,10 +12,9 @@ namespace Blinkenlights.DataFetchers
     {
         public UtilityDataFetcher(IDatabaseHandler databaseHandler, IApiHandler apiHandler, ILogger<UtilityDataFetcher> logger, IApiStatusFactory apiStatusFactory) : base(databaseHandler, apiHandler, logger, apiStatusFactory)
         {
-            Start();
         }
 
-		public override UtilityData GetRemoteData(UtilityData existingData = null, bool overwrite = false)
+		protected override UtilityData GetRemoteData(UtilityData existingData = null, bool overwrite = false)
         {
             var mehData = GetMehData(existingData?.MehData, overwrite);
             var packageTrakingData = GetPackageTrackingData(existingData?.PackageTrackingData, overwrite);
@@ -31,7 +30,7 @@ namespace Blinkenlights.DataFetchers
         private async Task<MehData> GetMehData(MehData existingData, bool overwrite)
         {
             //TODO Check if data is valid
-            if (!overwrite && !IsExpired(existingData?.ApiStatus, ApiType.Meh.Info()))
+            if (!overwrite && !IsExpired(existingData?.Status, ApiType.Meh.Info()))
             {
                 return existingData;
             }
@@ -85,10 +84,10 @@ namespace Blinkenlights.DataFetchers
             {
                 new Package()
                 {
-                    Name = "Present",
-                    TrackingNumber = "9434608205499799759287",
-                    Url = "https://tools.usps.com/go/TrackConfirmAction_input?strOrigTrackNum=9434608205499799759287",
-                    Carrier = "usps"
+                    Name = "Hose Reel",
+                    TrackingNumber = "775761253501",
+                    Url = "https://www.fedex.com/fedextrack/?trknbr=775761253501&trkqual=12027~775761253501~FDEG",
+                    Carrier = "fedex"
                 }
             };
         }
@@ -191,6 +190,7 @@ namespace Blinkenlights.DataFetchers
             {
                 "ups" => Path.Combine("images", "packagetracking", "ups.png"),
                 "usps" => Path.Combine("images", "packagetracking", "usps.png"),
+                "fedex" => Path.Combine("images", "packagetracking", "fedex.png"),
                 _ => null
             };
         }

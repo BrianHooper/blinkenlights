@@ -18,8 +18,7 @@ namespace Blinkenlights.Transformers
 
         public override IModuleViewModel Transform()
         {
-            this.DataFetcher.FetchRemoteData(true);
-            var response = this.DataFetcher.GetLocalData();
+            var response = this.DataFetcher.FetchRemoteData();
             if (response == null)
             {
                 //var status = this.ApiStatusFactory.Failed(ApiType.Life360, "Api response is null");

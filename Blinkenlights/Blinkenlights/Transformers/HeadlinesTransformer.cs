@@ -18,7 +18,7 @@ namespace Blinkenlights.Transformers
 
         public override IModuleViewModel Transform()
         {
-            var response = this.DataFetcher.GetLocalData();
+            var response = this.DataFetcher.FetchRemoteData();
             if (response == null)
             {
                 //var errorStatus = ApiStatus.Failed("Headlines data", "Database Lookup failed");

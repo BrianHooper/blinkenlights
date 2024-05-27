@@ -1,7 +1,6 @@
 ﻿using Blinkenlights.Models.Api.ApiHandler;
 using Blinkenlights.Models.ViewModels.Authentication;
 using System.Text.Json;
-using static System.Net.WebRequestMethods;
 
 namespace Blinkenlights.Models.Api.ApiInfoTypes
 {
@@ -37,8 +36,10 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 
     public abstract class ApiInfoBase : IApiInfo
     {
+		protected const string PAGE_PARSE_API_HOST = "http://127.0.0.1:5001";
+		//protected const string PAGE_PARSE_API_HOST = "http://192.168.1.20:5001";
 
-        public virtual ApiRestType ApiRestType { get; } = ApiRestType.Get;
+		public virtual ApiRestType ApiRestType { get; } = ApiRestType.Get;
 
         public virtual ApiServerType ServerType { get; } = ApiServerType.Unknown;
 
@@ -142,7 +143,7 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 
 		public override StringSecretsPair Endpoint(params string[] queryParameters)
         {
-            var endpoint = "http://127.0.0.1:5001/wikipedia";
+            var endpoint = $"{PAGE_PARSE_API_HOST}/wikipedia";
             return new StringSecretsPair(endpoint);
         }
     }
@@ -156,8 +157,8 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 		public override TimeSpan Timeout { get; } = TimeSpan.FromHours(4);
 
 		public override StringSecretsPair Endpoint(params string[] queryParameters)
-        {
-            var endpoint = "http://127.0.0.1:5001/googlecalendar";
+		{
+			var endpoint = $"{PAGE_PARSE_API_HOST}/googlecalendar";
             return new StringSecretsPair(endpoint);
         }
 
@@ -180,8 +181,8 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 		public override TimeSpan Timeout { get; } = TimeSpan.FromHours(1);
 
 		public override StringSecretsPair Endpoint(params string[] queryParameters)
-        {
-            var endpoint = "http://127.0.0.1:5001/rockets";
+		{
+			var endpoint = $"{PAGE_PARSE_API_HOST}/rockets";
             return new StringSecretsPair(endpoint);
         }
     }
@@ -195,8 +196,8 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 		public override TimeSpan Timeout { get; } = TimeSpan.FromHours(4);
 
 		public override StringSecretsPair Endpoint(params string[] queryParameters)
-        {
-            var endpoint = "http://127.0.0.1:5001/ycombinator";
+		{
+			var endpoint = $"{PAGE_PARSE_API_HOST}/ycombinator";
             return new StringSecretsPair(endpoint);
         }
     }
@@ -233,8 +234,8 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 		public override TimeSpan Timeout { get; } = TimeSpan.FromHours(4);
 
 		public override StringSecretsPair Endpoint(params string[] queryParameters)
-        {
-            var endpoint = "http://127.0.0.1:5001/astronomypotd";
+		{
+			var endpoint = $"{PAGE_PARSE_API_HOST}/astronomypotd";
             return new StringSecretsPair(endpoint);
         }
     }
@@ -342,8 +343,8 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
         public override ApiRestType ApiRestType { get; } = ApiRestType.Post;
 
         public override StringSecretsPair Endpoint(params string[] queryParameters)
-        {
-            var endpoint = "http://127.0.0.1:5001/packagetracking";
+		{
+			var endpoint = $"{PAGE_PARSE_API_HOST}/packagetracking";
             return new StringSecretsPair(endpoint);
         }
 
@@ -394,8 +395,8 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 		public override TimeSpan Timeout { get; } = TimeSpan.FromMinutes(5);
 
 		public override StringSecretsPair Endpoint(params string[] queryParameters)
-        {
-            var endpoint = "http://127.0.0.1:5001/isstracker";
+		{
+			var endpoint = $"{PAGE_PARSE_API_HOST}/isstracker";
             return new StringSecretsPair(endpoint);
         }
     }
@@ -426,40 +427,40 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 		public override TimeSpan Timeout { get; } = TimeSpan.FromHours(4);
 
 		public override StringSecretsPair Endpoint(params string[] queryParameters)
-        {
-            var endpoint = "http://127.0.0.1:5001/wikipotd";
+		{
+			var endpoint = $"{PAGE_PARSE_API_HOST}/wikipotd";
             return new StringSecretsPair(endpoint);
         }
     }
 
-    public class DistanceApiInfo : ApiInfoBase
-	{
-		public override int? DailyRateLimit { get; } = 200;
+ //   public class DistanceApiInfo : ApiInfoBase
+	//{
+	//	public override int? DailyRateLimit { get; } = 200;
 
-		public override ApiServerType ServerType { get; } = ApiServerType.Remote;
+	//	public override ApiServerType ServerType { get; } = ApiServerType.Remote;
 
-		public override TimeSpan Timeout { get; } = TimeSpan.FromMinutes(5);
+	//	public override TimeSpan Timeout { get; } = TimeSpan.FromMinutes(5);
 
-		public override StringSecretsPair Endpoint(params string[] queryParameters)
-        {
-            var lat1str = queryParameters?.ElementAtOrDefault(0);
-            var long1str = queryParameters?.ElementAtOrDefault(1);
-            var lat2str = queryParameters?.ElementAtOrDefault(2);
-            var long2str = queryParameters?.ElementAtOrDefault(3);
+	//	public override StringSecretsPair Endpoint(params string[] queryParameters)
+ //       {
+ //           var lat1str = queryParameters?.ElementAtOrDefault(0);
+ //           var long1str = queryParameters?.ElementAtOrDefault(1);
+ //           var lat2str = queryParameters?.ElementAtOrDefault(2);
+ //           var long2str = queryParameters?.ElementAtOrDefault(3);
 
-            var endpoint = string.Format("https://distance-calculator.p.rapidapi.com/distance/simple?lat_1={0}&long_1={1}&lat_2={2}&long_2={3}&unit=miles&decimal_places=2", lat1str, long1str, lat2str, long2str);
-            return new StringSecretsPair(endpoint);
-        }
+ //           var endpoint = string.Format("https://distance-calculator.p.rapidapi.com/distance/simple?lat_1={0}&long_1={1}&lat_2={2}&long_2={3}&unit=miles&decimal_places=2", lat1str, long1str, lat2str, long2str);
+ //           return new StringSecretsPair(endpoint);
+ //       }
 
-        public override Dictionary<string, StringSecretsPair> Headers()
-        {
-            return new Dictionary<string, StringSecretsPair>()
-            {
-                { "X-RapidAPI-Key", new StringSecretsPair(ApiSecretType.RapidApiKey) },
-                { "X-RapidAPI-Host", new StringSecretsPair("distance-calculator.p.rapidapi.com") }
-            };
-        }
-    }
+ //       public override Dictionary<string, StringSecretsPair> Headers()
+ //       {
+ //           return new Dictionary<string, StringSecretsPair>()
+ //           {
+ //               { "X-RapidAPI-Key", new StringSecretsPair(ApiSecretType.RapidApiKey) },
+ //               { "X-RapidAPI-Host", new StringSecretsPair("distance-calculator.p.rapidapi.com") }
+ //           };
+ //       }
+ //   }
 
     public class FlightAwareApiInfo : ApiInfoBase
 	{
@@ -471,7 +472,8 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 
 		public override StringSecretsPair Endpoint(params string[] queryParameters)
         {
-            var endpoint = "https://aeroapi.flightaware.com/aeroapi/flights/search?query=-latlong %2245.67 -122.50 47.30 -122.08%22";
+            //var endpoint = "https://aeroapi.flightaware.com/aeroapi/flights/search?query=-latlong %2246.80 -123.30 48.00 -121.30%22 -originOrDestination %22KSEA%22";
+            var endpoint = string.Empty;
             return new StringSecretsPair(endpoint);
         }
 
@@ -512,9 +514,108 @@ namespace Blinkenlights.Models.Api.ApiInfoTypes
 			var from_currency = queryParameters?.ElementAtOrDefault(0);
 			var to_currency = queryParameters?.ElementAtOrDefault(1);
 
-            var endpoint = "https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=" + from_currency + "&to_currency=" + to_currency + "&apikey={0}";
+			var endpoint = "https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=" + from_currency + "&to_currency=" + to_currency + "&apikey={0}";
 			return new StringSecretsPair(endpoint, ApiSecretType.FinanceApiKey);
 		}
 	}
+
+	public class RocketLaunchLiveApiInfo : ApiInfoBase
+	{
+		public override int? DailyRateLimit { get; } = 25;
+
+		public override ApiServerType ServerType { get; } = ApiServerType.Remote;
+
+		public override TimeSpan Timeout { get; } = TimeSpan.FromHours(4);
+
+		public override StringSecretsPair Endpoint(params string[] queryParameters)
+		{
+			var endpoint = "https://fdo.rocketlaunch.live/json/launches/next/5";
+			return new StringSecretsPair(endpoint);
+		}
+	}
+
+	public class FlightRadarApiInfo : ApiInfoBase
+	{
+		public override int? DailyRateLimit { get; } = 10000;
+
+		public override ApiServerType ServerType { get; } = ApiServerType.Remote;
+
+		public override TimeSpan Timeout { get; } = TimeSpan.FromMinutes(1);
+
+		public override StringSecretsPair Endpoint(params string[] queryParameters)
+		{
+            var fid = queryParameters.ElementAtOrDefault(0);
+            if (!string.IsNullOrWhiteSpace(fid))
+            {
+                var endpoint = $"{PAGE_PARSE_API_HOST}/flightradar/{fid}";
+                return new StringSecretsPair(endpoint);
+            }
+            else
+            {
+                var endpoint = $"{PAGE_PARSE_API_HOST}/flightradar";
+                return new StringSecretsPair(endpoint);
+            }
+        }
+    }
+
+    public class BTownApiInfo : ApiInfoBase
+    {
+        public override int? DailyRateLimit { get; } = 25;
+
+        public override ApiServerType ServerType { get; } = ApiServerType.Remote;
+
+        public override TimeSpan Timeout { get; } = TimeSpan.FromHours(4);
+
+        public override StringSecretsPair Endpoint(params string[] queryParameters)
+        {
+            var endpoint = $"{PAGE_PARSE_API_HOST}/btown";
+            return new StringSecretsPair(endpoint);
+        }
+    }
+
+    public class NprApiInfo : ApiInfoBase
+    {
+        public override int? DailyRateLimit { get; } = 25;
+
+        public override ApiServerType ServerType { get; } = ApiServerType.Remote;
+
+        public override TimeSpan Timeout { get; } = TimeSpan.FromHours(4);
+
+        public override StringSecretsPair Endpoint(params string[] queryParameters)
+        {
+            var endpoint = $"{PAGE_PARSE_API_HOST}/npr";
+            return new StringSecretsPair(endpoint);
+        }
+    }
+
+    public class APNewsApiInfo : ApiInfoBase
+    {
+        public override int? DailyRateLimit { get; } = 25;
+
+        public override ApiServerType ServerType { get; } = ApiServerType.Remote;
+
+        public override TimeSpan Timeout { get; } = TimeSpan.FromHours(4);
+
+        public override StringSecretsPair Endpoint(params string[] queryParameters)
+        {
+            var endpoint = $"{PAGE_PARSE_API_HOST}/apnews";
+            return new StringSecretsPair(endpoint);
+        }
+    }
+
+    public class SeattleTimesApiInfo : ApiInfoBase
+    {
+        public override int? DailyRateLimit { get; } = 25;
+
+        public override ApiServerType ServerType { get; } = ApiServerType.Remote;
+
+        public override TimeSpan Timeout { get; } = TimeSpan.FromHours(4);
+
+        public override StringSecretsPair Endpoint(params string[] queryParameters)
+        {
+            var endpoint = $"{PAGE_PARSE_API_HOST}/seattletimes";
+            return new StringSecretsPair(endpoint);
+        }
+    }
 }
 

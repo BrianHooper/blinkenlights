@@ -8,7 +8,7 @@ namespace Blinkenlights.Models.ViewModels.WWII
 		{
 		}
 
-		public WWIIDayModel(string date, List<string> globalEvents, List<KeyValuePair<string, List<string>>> regionalEvents, ApiStatus status) : base("WWII", status)
+		public WWIIDayModel(string date, List<string> globalEvents, List<KeyValuePair<string, List<string>>> regionalEvents) : base("WWII")
 		{
 			Date = date;
 			GlobalEvents = globalEvents;

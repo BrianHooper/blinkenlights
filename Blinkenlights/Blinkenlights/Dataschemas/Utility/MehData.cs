@@ -8,7 +8,7 @@
 
         public string ImageUrl { get; set; }
 
-        public ApiStatus ApiStatus { get; set; }
+        public ApiStatus Status { get; set; }
 
         public MehData() { }
 
@@ -17,7 +17,7 @@
             Title = title;
             Url = url;
             ImageUrl = imageUrl;
-            ApiStatus = status;
+            Status = status;
         }
 
         public static MehData Clone(MehData other, ApiStatus status)
@@ -27,7 +27,7 @@
                 Title = other?.Title,
                 Url = other?.Url,
                 ImageUrl = other?.ImageUrl,
-                ApiStatus = status
+                Status = status
             };
         }
     }
